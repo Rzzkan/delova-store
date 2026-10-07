@@ -30,8 +30,11 @@ export function CheckoutForm() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Gagal memproses pesanan");
-      track("InitiateCheckout", { value: data.total, num_items: items.length });
+      const ids = items.map((i) => i.productId);
+      track("InitiateCheckout", { content_ids: ids, value: data.total, num_items: items.length });
+      track("Lead", { content_ids: ids, value: data.total, num_items: items.length });
       clear();
+      await new Promise((r) => setTimeout(r, 300)); // beri waktu pixel mengirim sebelum pindah ke WhatsApp
       window.location.href = data.waUrl;
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Terjadi kesalahan");

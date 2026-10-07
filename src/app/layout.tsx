@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { CartProvider } from "@/components/CartProvider";
 import { Pixels } from "@/components/Pixels";
+import { getTracking } from "@/lib/tracking";
 
 const site = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
@@ -16,10 +17,12 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true, googleBot: { "max-image-preview": "large", "max-snippet": -1 } },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { verifyDomain } = await getTracking();
   return (
     <html lang="id">
       <head>
+        {verifyDomain && <meta name="facebook-domain-verification" content={verifyDomain} />}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fredoka:wght@500;600;700&family=Poppins:wght@600;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet" />

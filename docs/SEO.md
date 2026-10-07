@@ -6,3 +6,7 @@
 4. Isi deskripsi produk di Shopee dengan kalimat lengkap (disinkronkan ke halaman produk).
 5. Tambahkan Google Business Profile bila ada lokasi fisik, dan minta ulasan pembeli.
 6. Cek Search Console mingguan: halaman terindeks, kueri, CTR.
+
+## Pixel & Analytics
+Atur di `/admin/pelacakan` (Meta Pixel, TikTok Pixel, GA4, verifikasi domain Meta). Pengaturan admin diutamakan; env `NEXT_PUBLIC_*_ID` jadi cadangan.
+Uji: Meta Pixel Helper (Chrome), TikTok Pixel Helper, GA4 → Reports → Realtime.

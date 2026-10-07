@@ -106,7 +106,7 @@ export function PurchasePanel({ product, variants }: { product: Product; variant
             {added ? "✓ Masuk keranjang" : needVariant ? "Pilih varian dulu" : "Tambah ke Keranjang"}
           </button>
           <a className="btn-shopee" href={product.shopeeUrl} target="_blank" rel="noopener noreferrer"
-            onClick={() => track("Contact", { content_name: "shopee_click", content_ids: [product.id] })}>
+            onClick={() => track("ShopeeClick", { content_ids: [product.id], content_name: product.name, value: product.price })}>
             Beli di Shopee
           </a>
         </div>
