@@ -2,6 +2,7 @@ import type { Client, InStatement } from "@libsql/client";
 import { getDb } from "../db";
 import { detectCategory, defaultCategoryForShop } from "../categories";
 import { slugify } from "../format";
+import { maskBuyer } from "../reviews";
 import { isMock } from "./config";
 import { shopGet, type J, type ShopAuth } from "./client";
 
@@ -153,9 +154,43 @@ async function fetchAndStore(db: Client, shop: ShopRow, itemIds: number[]): Prom
   return n;
 }
 
+/** Ambil ulasan terbaru toko (bintang 4–5 yang berkomentar). Kurasi admin (unggulan/sembunyi) dipertahankan. */
+export async function syncReviews(db: Client, shop: ShopRow): Promise<number> {
+  let cursor = "";
+  let n = 0;
+  for (let page = 0; page < 5; page++) {
+    const params: Record<string, string | number> = { page_size: 50 };
+    if (cursor) params.cursor = cursor;
+    const r = await shopGet(shop, "/api/v2/product/get_comment", params);
+    for (const c of (r.item_comment_list ?? []) as J[]) {
+      const comment = String(c.comment ?? "").trim();
+      const rating = Number(c.rating_star);
+      if (c.hidden || rating < 4 || comment.length < 10) continue;
+      const buyer = String(c.buyer_username ?? "pembeli");
+      await db.execute({
+        sql: `INSERT INTO reviews (id, shop_id, item_id, product_id, buyer, rating, comment, images, reply, created_at, source, synced_at)
+              VALUES (?,?,?,?,?,?,?,?,?,?, 'shopee', ?)
+              ON CONFLICT(id) DO UPDATE SET comment=excluded.comment, rating=excluded.rating, images=excluded.images,
+                reply=excluded.reply, synced_at=excluded.synced_at`,
+        args: [
+          `${shop.shop_id}-${c.comment_id}`, shop.shop_id, Number(c.item_id) || null,
+          c.item_id ? `${shop.shop_id}-${c.item_id}` : null, maskBuyer(buyer), rating, comment.slice(0, 1200),
+          JSON.stringify((c.media?.image_url_list ?? []).slice(0, 4)), c.comment_reply?.reply ? String(c.comment_reply.reply).slice(0, 600) : null,
+          c.create_time ?? null, nowSec(),
+        ],
+      });
+      n++;
+    }
+    if (!r.more || !r.next_cursor) break;
+    cursor = String(r.next_cursor);
+  }
+  return n;
+}
+
 async function purgeMockData(db: Client) {
   await db.batch(
     [
+      "DELETE FROM reviews WHERE source = 'mock'",
       "DELETE FROM variants WHERE product_id IN (SELECT id FROM products WHERE shop_id IN (SELECT shop_id FROM shops WHERE is_mock = 1))",
       "DELETE FROM products WHERE shop_id IN (SELECT shop_id FROM shops WHERE is_mock = 1)",
       "DELETE FROM shops WHERE is_mock = 1",
@@ -190,10 +225,18 @@ export async function syncShop(shopId: number): Promise<SyncResult> {
       );
       removed++;
     }
+    // Ulasan bersifat tambahan: kegagalannya tidak boleh menggagalkan sinkron produk.
+    let note: string | null = null;
+    try {
+      const nr = await syncReviews(db, fresh);
+      note = `${nr} ulasan`;
+    } catch (e) {
+      note = `Ulasan gagal: ${(e instanceof Error ? e.message : String(e)).slice(0, 200)}`;
+    }
     await db.execute({ sql: "UPDATE shops SET last_sync_at = ? WHERE shop_id = ?", args: [nowSec(), shopId] });
     await db.execute({
       sql: "INSERT INTO sync_logs (shop_id, started_at, finished_at, status, upserted, removed, message) VALUES (?,?,?,?,?,?,?)",
-      args: [shopId, started, nowSec(), "ok", upserted, removed, null],
+      args: [shopId, started, nowSec(), "ok", upserted, removed, note],
     });
     return { shopId, name: fresh.name, upserted, removed };
   } catch (e) {

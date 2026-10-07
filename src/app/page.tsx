@@ -3,6 +3,14 @@ import { ProductGrid } from "@/components/ProductCard";
 import { CATEGORIES } from "@/lib/categories";
 import { categoryCounts, listProducts, listShops } from "@/lib/products";
 import { thumb } from "@/lib/format";
+import { getHome } from "@/lib/settings";
+import { homeReviews, ratingSummary } from "@/lib/reviews";
+import { ReviewCard } from "@/components/ReviewCard";
+
+/** "Dipakai *diwariskan* cinta" → kata di antara tanda * dicetak miring emas. */
+function Accent({ text }: { text: string }) {
+  return <>{text.split(/(\*[^*]+\*)/g).map((p, i) => (p.startsWith("*") && p.endsWith("*") ? <em key={i} className="text-gold">{p.slice(1, -1)}</em> : p))}</>;
+}
 
 export const dynamic = "force-dynamic";
 
@@ -14,16 +22,19 @@ const TRUST = [
 ];
 
 export default async function Home() {
-  const [featured, latest, best, counts, shops] = await Promise.all([
+  const [home, reviews, summary, featured, latest, best, counts, shops] = await Promise.all([
+    getHome(),
+    homeReviews(6),
+    ratingSummary(),
     listProducts({ featured: true, limit: 4, sort: "terlaris" }),
     listProducts({ limit: 8, sort: "terbaru" }),
     listProducts({ limit: 4, sort: "terlaris" }),
     categoryCounts(),
     listShops(),
   ]);
-  const heroImg = featured.items[0]?.images[0];
+  const heroImg = home.hero.image || featured.items[0]?.images[0];
   const catImg = async (slug: string) => (await listProducts({ category: slug, limit: 1, sort: "terlaris" })).items[0]?.images[0];
-  const catImages = await Promise.all(CATEGORIES.map((c) => catImg(c.slug)));
+  const catImages = await Promise.all(CATEGORIES.map(async (c) => home.categoryImages[c.slug] || (await catImg(c.slug))));
 
   return (
     <>
@@ -31,16 +42,16 @@ export default async function Home() {
       <section className="pattern-kawung relative overflow-hidden">
         <div className="container-x grid items-center gap-10 py-14 md:grid-cols-2 md:py-24">
           <div>
-            <p className="eyebrow">Wastra Indonesia · Modern</p>
+            <p className="eyebrow">{home.hero.eyebrow}</p>
             <h1 className="mt-4 text-5xl font-semibold leading-[1.05] text-maroon md:text-7xl">
-              Dipakai dengan bangga, <em className="text-gold">diwariskan</em> dengan cinta.
+              <Accent text={home.hero.title} />
             </h1>
             <p className="mt-6 max-w-md text-base leading-relaxed text-ink/70">
-              Kebaya, batik, gamis, dan hijab dengan siluet masa kini — untuk bunda, si kecil, dan keluarga. Sedikit lebih rapi, banyak lebih nyaman.
+              {home.hero.subtitle}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/produk" className="btn-primary">Belanja Sekarang</Link>
-              <Link href="/produk?kategori=kebaya" className="btn-outline">Koleksi Kebaya</Link>
+              {home.hero.cta1Label && <Link href={home.hero.cta1Href} className="btn-primary">{home.hero.cta1Label}</Link>}
+              {home.hero.cta2Label && <Link href={home.hero.cta2Href} className="btn-outline">{home.hero.cta2Label}</Link>}
             </div>
           </div>
           <div className="relative mx-auto w-full max-w-md">
@@ -95,11 +106,16 @@ export default async function Home() {
       <section className="mt-24 bg-maroon text-cream">
         <div className="pattern-kawung-light">
           <div className="container-x grid items-center gap-8 py-16 md:grid-cols-2">
-            <h2 className="text-4xl font-semibold leading-tight md:text-6xl">Wastra bukan sekadar pakaian. Ia cerita yang kita pakai.</h2>
+            <div>
+              {home.story.image && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={home.story.image} alt="" loading="lazy" className="mb-6 aspect-[16/10] w-full rounded-3xl object-cover" />
+              )}
+              <h2 className="text-4xl font-semibold leading-tight md:text-6xl">{home.story.title}</h2>
+            </div>
             <div className="space-y-4 text-cream/80">
-              <p>Delova menghadirkan kebaya, batik, dan hijab dengan potongan yang nyaman dipakai setiap hari maupun di hari istimewa.</p>
-              <p>Satu keluarga, tiga toko: <strong>Wardrobe</strong> untuk bunda, <strong>Kids</strong> untuk si kecil, dan <strong>Scarf</strong> untuk hijab.</p>
-              <Link href="/produk" className="btn mt-2 border border-gold-light text-gold-light hover:bg-gold-light hover:text-maroon-dark">Temukan gayamu</Link>
+              {home.story.body.split("\n").filter(Boolean).map((para, i) => (<p key={i}>{para}</p>))}
+              {home.story.ctaLabel && <Link href={home.story.ctaHref} className="btn mt-2 border border-gold-light text-gold-light hover:bg-gold-light hover:text-maroon-dark">{home.story.ctaLabel}</Link>}
             </div>
           </div>
         </div>
@@ -110,6 +126,22 @@ export default async function Home() {
         <div className="mb-8 text-center"><p className="eyebrow">Paling dicari</p><h2 className="mt-2 text-4xl font-semibold md:text-5xl">Terlaris Minggu Ini</h2></div>
         <ProductGrid items={best.items} />
       </section>
+
+      {/* ULASAN */}
+      {reviews.length > 0 && (
+        <section className="container-x mt-24">
+          <div className="mb-8 text-center">
+            <p className="eyebrow">Ulasan</p>
+            <h2 className="mt-2 text-4xl font-semibold md:text-5xl">{home.reviews.title}</h2>
+            <p className="mt-2 text-sm text-ink/60">
+              {summary ? <><span className="text-gold">★</span> {summary.avg.toFixed(1)} · {summary.sold.toLocaleString("id-ID")}+ produk terjual · </> : null}{home.reviews.subtitle}
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {reviews.map((r) => (<ReviewCard key={r.id} r={r} />))}
+          </div>
+        </section>
+      )}
 
       {/* TOKO */}
       <section className="container-x mt-24">

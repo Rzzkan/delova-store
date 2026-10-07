@@ -26,7 +26,11 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
     <div className="container-x space-y-10 py-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-5xl font-semibold">Admin</h1>
-        <form action="/api/admin/logout" method="post"><button className="btn-outline !py-2">Keluar</button></form>
+        <div className="flex flex-wrap gap-2">
+          <a href="/admin/tampilan" className="btn-primary !py-2">Tampilan Beranda</a>
+          <a href="/admin/ulasan" className="btn-primary !py-2">Ulasan Unggulan</a>
+          <form action="/api/admin/logout" method="post"><button className="btn-outline !py-2">Keluar</button></form>
+        </div>
       </div>
 
       {sp.ok && <p className="rounded-xl bg-sage/20 p-3 text-sm">{sp.ok}</p>}

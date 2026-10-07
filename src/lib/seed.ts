@@ -67,5 +67,22 @@ export async function seedMock(db: Client): Promise<void> {
       });
     });
   });
+  const REVIEWS: [number, string, number, string, string | null, number][] = [
+    [0, "r***a", 5, "Bahannya adem banget dan jahitannya rapi. Dipakai wisuda adikku, banyak yang nanya belinya dimana. Ukuran M pas untuk tinggi 160.", "Terima kasih kak, semoga awet ya 🤍", 1],
+    [4, "s***i", 5, "Dress kawungnya cantik, jatuh dan tidak menerawang. Resletingnya depan jadi gampang buat menyusui. Pasti repeat order!", null, 1],
+    [8, "d***h", 5, "Kebaya anak pink-nya lembut, anakku nyaman dan tidak gatal. Fotonya sesuai dengan aslinya, warnanya cantik.", "Sama-sama kak, salam untuk si kecil!", 1],
+    [12, "n***a", 5, "Hijab segi empatnya jatuh, mudah dibentuk, dan warnanya tidak pudar setelah dicuci beberapa kali. Sudah beli 4 warna.", null, 1],
+    [6, "a***n", 5, "Rok lilitnya praktis banget, tinggal lilit tanpa kancing. Motif batiknya halus dan pengiriman cepat.", null, 0],
+    [1, "t***i", 4, "Kebaya tulle sage-nya elegan dan ringan, packing rapi. Kurang satu bintang karena kurirnya agak telat.", "Maaf atas keterlambatannya kak, terima kasih sudah mampir 🙏", 0],
+    [13, "m***k", 5, "Pashmina voal-nya adem dan tidak menerawang sama sekali, cocok untuk dipakai harian. Bahan lembut.", null, 0],
+    [7, "h***o", 5, "Beli set couple untuk seragam keluarga lebaran. Bahan katunnya halus, jahitan kuat, semua anggota keluarga suka.", null, 0],
+  ];
+  REVIEWS.forEach(([di, buyer, rating, comment, reply, feat], i) => {
+    const d = DEFS[di];
+    stmts.push({
+      sql: "INSERT OR IGNORE INTO reviews (id, shop_id, item_id, product_id, buyer, rating, comment, images, reply, created_at, featured, source, synced_at) VALUES (?,?,?,?,?,?,?,?,?,?,?, 'mock', ?)",
+      args: [`mock-${i}`, d.shop, 1000 + di, `${d.shop}-${1000 + di}`, buyer, rating, comment, "[]", reply, ts - (i + 1) * 86400 * 2, feat, ts],
+    });
+  });
   await db.batch(stmts, "write");
 }

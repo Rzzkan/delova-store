@@ -30,3 +30,6 @@ Nama, deskripsi, foto, harga & harga coret, stok, varian (ukuran/warna) beserta 
 - Rate limit Shopee dihormati lewat retry bertahap (backoff).
 - Webhook diverifikasi dengan HMAC-SHA256 atas `URL|body`. Jika verifikasi gagal terus, cek `SHOPEE_WEBHOOK_URL` (harus sama persis dengan URL di dashboard Shopee).
 - Fitur ini diuji terhadap server Shopee tiruan yang memverifikasi signature; belum diuji pada akun Shopee sungguhan. Respons Live Push bisa berbeda per jenis event — periksa log bila ada yang tidak tersinkron.
+
+## 6. Ulasan
+Sinkron memanggil `product.get_comment` per toko (maks. 250 ulasan terbaru; hanya bintang 4–5 dengan komentar ≥10 huruf; ulasan yang disembunyikan Shopee dilewati). Jika API ini ditolak atau berbeda perilakunya pada akunmu, sinkron produk tetap berhasil dan pesan error muncul di *Riwayat Sinkron* di admin — gunakan **Tambah ulasan manual** di `/admin/ulasan` sebagai cadangan. Pastikan pembeli setuju ulasannya ditampilkan; nama selalu disamarkan.

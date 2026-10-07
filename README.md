@@ -29,6 +29,8 @@ Ikuti **[docs/SHOPEE_SETUP.md](docs/SHOPEE_SETUP.md)**. Ringkasnya:
 | `src/lib/shopee/sync.ts` | `get_item_list` → `get_item_base_info` + `get_item_extra_info` + `get_model_list`; upsert ke DB; hapus produk yang hilang di Shopee |
 | Kurasi admin | Sembunyikan, tandai unggulan, override kategori — **tidak ditimpa** saat sinkron |
 | Checkout | Keranjang → form → server hitung ulang harga & stok → pesan WhatsApp ke admin. Tiap produk juga punya tombol **Beli di Shopee** |
+| Tampilan beranda | `/admin/tampilan`: ganti foto hero, foto tiap kategori, banner cerita, teks & tombol, bar pengumuman. Foto diunggah (otomatis dikecilkan ke WebP) dan disimpan di tabel `media` pada database — tanpa layanan storage tambahan |
+| Ulasan unggulan | Ulasan bintang 4–5 diambil dari Shopee (`get_comment`) saat sinkron. `/admin/ulasan`: centang **Unggulan** untuk tampil di beranda, sembunyikan, atau tambah manual. Nama pembeli disamarkan (`b***i`) |
 | Pixel | Meta & TikTok Pixel (isi ID di env): ViewContent, AddToCart, InitiateCheckout |
 | SEO | Metadata, JSON-LD Product, `sitemap.xml`, `robots.txt` |
 

@@ -1,11 +1,8 @@
-const MSGS = [
-  "Stok & harga tersinkron langsung dengan toko Shopee Delova",
-  "Gratis ongkir & garansi Shopee untuk pembelian lewat Shopee",
-  "Order via WhatsApp: dilayani admin ramah, kirim ke seluruh Indonesia",
-  "Kebaya • Batik • Hijab • Delova Kids",
-];
-export function AnnouncementBar() {
-  const row = [...MSGS, ...MSGS];
+import { getHome } from "@/lib/settings";
+
+export async function AnnouncementBar() {
+  const { announcements } = await getHome();
+  const row = [...announcements, ...announcements];
   return (
     <div className="overflow-hidden bg-maroon py-2 text-xs tracking-wide text-cream" role="note">
       <div className="marquee flex w-max gap-12 whitespace-nowrap">

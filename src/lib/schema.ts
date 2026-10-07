@@ -69,4 +69,32 @@ CREATE TABLE IF NOT EXISTS leads (
   items TEXT,
   total INTEGER
 );
+CREATE TABLE IF NOT EXISTS settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS media (
+  id TEXT PRIMARY KEY,
+  mime TEXT NOT NULL,
+  data BLOB NOT NULL,
+  size INTEGER NOT NULL,
+  created_at INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS reviews (
+  id TEXT PRIMARY KEY,
+  shop_id INTEGER,
+  item_id INTEGER,
+  product_id TEXT,
+  buyer TEXT NOT NULL,
+  rating INTEGER NOT NULL,
+  comment TEXT NOT NULL,
+  images TEXT NOT NULL DEFAULT '[]',
+  reply TEXT,
+  created_at INTEGER,
+  featured INTEGER NOT NULL DEFAULT 0,
+  hidden INTEGER NOT NULL DEFAULT 0,
+  source TEXT NOT NULL DEFAULT 'shopee',
+  synced_at INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_reviews_product ON reviews(product_id);
 `;
