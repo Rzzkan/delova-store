@@ -18,7 +18,7 @@ const BLURB: Record<BrandSlug, string> = {
   wardrobe: "Kebaya, batik & gamis untuk bunda",
   kids: "Busana anak perempuan yang ceria",
   scarf: "Hijab segi empat, pashmina & bergo",
-  daily: "Busana harian yang nyaman & simpel",
+  daily: "Blouse, cardigan, skirt & inner untuk sehari-hari",
 };
 
 const TRUST = [
@@ -63,7 +63,7 @@ export async function BrandHome({ brand }: { brand: BrandSlug }) {
             </div>
           </div>
           <div className="relative mx-auto w-full max-w-md">
-            <div className="absolute -inset-3 rounded-[2.5rem] border-2 border-accent/60" aria-hidden />
+            <div className="hero-ring absolute -inset-3 rounded-[2.5rem] border-2 border-accent/60" aria-hidden />
             <div className="aspect-[4/5] overflow-hidden rounded-[2rem] bg-sand shadow-2xl shadow-brand/10">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {heroImg && <img src={heroImg} alt={`Koleksi unggulan ${b.name}`} className="h-full w-full object-cover" />}
@@ -89,7 +89,7 @@ export async function BrandHome({ brand }: { brand: BrandSlug }) {
       {cats.length > 1 && (
         <section className="container-x mt-20">
           <div className="mb-8 text-center"><p className="eyebrow">Jelajahi</p><h2 className="mt-2 text-3xl md:text-4xl">Belanja per Kategori</h2></div>
-          <div className={`mx-auto grid grid-cols-2 gap-4 ${cats.length >= 3 ? "md:grid-cols-3" : "md:grid-cols-2"} max-w-4xl`}>
+          <div className={`mx-auto grid grid-cols-2 gap-4 ${cats.length >= 4 ? "md:grid-cols-4 max-w-6xl" : cats.length === 3 ? "md:grid-cols-3 max-w-4xl" : "md:grid-cols-2 max-w-4xl"}`}>
             {cats.map((c, i) => (
               <Link key={c.slug} href={`/produk?brand=${brand}&kategori=${c.slug}`} className="group relative aspect-[3/4] overflow-hidden rounded-3xl bg-sand">
                 {catImages[i] && (

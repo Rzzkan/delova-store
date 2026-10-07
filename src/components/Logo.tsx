@@ -23,6 +23,13 @@ export function Logo({ brand, imageUrl, size = "md" }: { brand: BrandSlug; image
       </span>
     );
   }
+  if (brand === "daily") {
+    return (
+      <span className="inline-block whitespace-nowrap leading-none text-ink" role="img" aria-label="Delova Daily">
+        <span aria-hidden style={{ fontFamily: "Poppins, Inter, sans-serif", fontWeight: 800, letterSpacing: "-0.05em", fontSize: 26 * sc }}>Delova Daily</span>
+      </span>
+    );
+  }
   const sub = brand === "scarf" ? "scarf" : "wardrobe";
   return (
     <span className="inline-block leading-none" role="img" aria-label={`Delova ${sub}`}>

@@ -56,7 +56,7 @@ export default async function Catalog({ searchParams }: { searchParams: SP }) {
             </Link>
           ))}
         </div>
-        {(!brand || brand === "wardrobe") && (
+        {(!brand || brand === "wardrobe" || brand === "daily") && (
           <div className="flex flex-wrap gap-2" role="group" aria-label="Filter kategori">
             <Link href={href({ kategori: undefined })} className={`chip ${!kategori ? "chip-on" : ""}`}>Semua kategori</Link>
             {CATEGORIES.filter((c) => !brand || BRANDS[brand].categories.includes(c.slug)).map((c) => (<Link key={c.slug} href={href({ kategori: c.slug })} className={`chip ${kategori === c.slug ? "chip-on" : ""}`}>{c.label}</Link>))}

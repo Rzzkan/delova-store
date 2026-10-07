@@ -14,6 +14,14 @@ export function GET(req: Request) {
   }
   if (cur.trim()) lines.push(cur.trim());
   const rot = (v - 1) * 18;
+  const minimal = u.searchParams.get("m") === "1";
+  if (minimal) {
+    const shade = (v - 1) * 6;
+    const svgm = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000"><rect width="800" height="1000" fill="#${c}"/><rect width="800" height="1000" fill="#fff" opacity="${0.04 * shade}"/>
+<text x="400" y="${470 - lines.length * 26}" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-weight="700" font-size="50" fill="#181818" fill-opacity=".85">${lines.map((l, i) => `<tspan x="400" dy="${i ? 62 : 0}">${l}</tspan>`).join("")}</text>
+<text x="400" y="920" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="22" letter-spacing="8" fill="#181818" fill-opacity=".5">DELOVA DAILY · ${v}</text></svg>`;
+    return new Response(svgm, { headers: { "Content-Type": "image/svg+xml", "Cache-Control": "public, max-age=86400" } });
+  }
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
 <defs>
 <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#${c}"/><stop offset="1" stop-color="#${c}" stop-opacity=".62"/></linearGradient>

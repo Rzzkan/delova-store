@@ -4,6 +4,10 @@ export const CATEGORIES = [
   { slug: "gamis", label: "Gamis & Dress", blurb: "Modest dress harian & pesta" },
   { slug: "hijab", label: "Hijab & Scarf", blurb: "Pashmina, segi empat, instan" },
   { slug: "anak", label: "Delova Kids", blurb: "Busana anak perempuan" },
+  { slug: "blouse", label: "Blouse", blurb: "Atasan & blouse harian" },
+  { slug: "cardigan", label: "Cardigan", blurb: "Cardigan & outer rajut" },
+  { slug: "skirt", label: "Skirt", blurb: "Rok simpel & versatile" },
+  { slug: "inner", label: "Inner", blurb: "Inner & tank top" },
 ] as const;
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"] | "lainnya";
@@ -20,7 +24,19 @@ const RULES: [CategorySlug, string[]][] = [
 ];
 
 /** Tebak kategori dari nama produk; fallback ke kategori bawaan toko Shopee-nya. */
-export function detectCategory(name: string, shopDefault?: string | null): CategorySlug {
+const DAILY_RULES: [CategorySlug, string[]][] = [
+  ["cardigan", ["cardigan", "kardigan", "rajut", "outer", "knit"]],
+  ["skirt", ["skirt", "rok"]],
+  ["inner", ["inner", "tank", "singlet", "camisole", "dalaman"]],
+  ["blouse", ["blouse", "blus", "kemeja", "atasan", "top", "tunik", "shirt"]],
+];
+
+export function detectCategory(name: string, shopDefault?: string | null, brand?: string): CategorySlug {
+  if (brand === "daily") {
+    const n = name.toLowerCase();
+    for (const [slug, kws] of DAILY_RULES) if (kws.some((k) => n.includes(k))) return slug;
+    return "blouse";
+  }
   if (shopDefault === "anak") return "anak";
   const n = name.toLowerCase();
   for (const [slug, kws] of RULES) if (kws.some((k) => n.includes(k))) return slug;
@@ -31,5 +47,6 @@ export function defaultCategoryForShop(shopName: string): CategorySlug {
   const n = shopName.toLowerCase();
   if (n.includes("kids")) return "anak";
   if (n.includes("scarf")) return "hijab";
+  if (n.includes("daily")) return "blouse";
   return "gamis";
 }

@@ -11,7 +11,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const nowSec = () => Math.floor(Date.now() / 1000);
 const chunk = <T,>(a: T[], n: number) => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, i * n + n));
 
-type ShopRow = ShopAuth & { name: string; default_category: string | null; shopee_url: string | null };
+type ShopRow = ShopAuth & { name: string; default_category: string | null; shopee_url: string | null; brand: string };
 
 export type SyncResult = { shopId: number; name: string; upserted: number; removed: number; error?: string };
 
@@ -23,6 +23,7 @@ async function loadShop(db: Client, shopId: number): Promise<ShopRow | null> {
     shop_id: Number(x.shop_id),
     name: String(x.name),
     default_category: (x.default_category as string) ?? null,
+    brand: String(x.brand ?? "wardrobe"),
     shopee_url: (x.shopee_url as string) ?? null,
     access_token: (x.access_token as string) ?? null,
     refresh_token: (x.refresh_token as string) ?? null,
@@ -105,7 +106,7 @@ async function buildItem(shop: ShopRow, item: J, extra: J | undefined): Promise<
   if (original !== null && original <= price) original = null;
 
   const name = String(item.item_name);
-  const category = detectCategory(name, shop.default_category);
+  const category = detectCategory(name, shop.default_category, shop.brand);
   const url = `https://shopee.co.id/product/${shop.shop_id}/${itemId}`;
 
   // UPSERT: kolom hasil sinkron diperbarui, kolom kurasi admin (hidden, featured, category_override, slug) dipertahankan.

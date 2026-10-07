@@ -67,20 +67,20 @@ export const BRANDS: Record<BrandSlug, Brand> = {
   daily: {
     slug: "daily", name: "Delova Daily", short: "Daily", home: "/daily", catalog: "/produk?brand=daily",
     shopeeUrl: "https://shopee.co.id/delovadaily", // perkiraan — ubah di /admin/tampilan bila berbeda
-    categories: ["gamis"],
+    categories: ["blouse", "cardigan", "skirt", "inner"],
     nav: [
-      { label: "Semua Delova Daily", href: "/produk?brand=daily" },
-      { label: "Terlaris", href: "/produk?brand=daily&urut=terlaris" },
-      { label: "Terbaru", href: "/produk?brand=daily&urut=terbaru" },
+      { label: "Blouse", href: "/produk?brand=daily&kategori=blouse" },
+      { label: "Cardigan", href: "/produk?brand=daily&kategori=cardigan" },
+      { label: "Skirt", href: "/produk?brand=daily&kategori=skirt" },
+      { label: "Inner", href: "/produk?brand=daily&kategori=inner" },
     ],
-    announcements: ["Busana harian yang nyaman, simpel, dan mudah dipadukan", "Stok & harga tersinkron dengan toko Shopee Delova Daily", "Butuh busana acara? Lihat Delova Wardrobe ✦"],
+    announcements: ["Effortless style for every day", "Stok & harga tersinkron dengan toko Shopee Delova Daily", "Butuh busana acara? Lihat Delova Wardrobe"],
     hero: {
-      eyebrow: "Delova Daily", title: "Nyaman untuk *setiap hari*.",
-      subtitle: "Busana harian dengan bahan adem, potongan simpel, dan mudah dipadukan — dari rumah, kerja, sampai jalan-jalan.",
+      eyebrow: "Delova Daily", title: "Effortless style, *for every day.*",
+      subtitle: "Blouse, cardigan, skirt, dan inner yang nyaman, versatile, serta mudah dipadupadankan — untuk bekerja, hangout, hingga rutinitas sehari-hari.",
       cta1Label: "Belanja Delova Daily", cta1Href: "/produk?brand=daily", cta2Label: "Lihat Terlaris", cta2Href: "/produk?brand=daily&urut=terlaris",
     },
-    dot: "#B5654A",
-    provisional: true,
+    dot: "#111111",
   },
 };
 
