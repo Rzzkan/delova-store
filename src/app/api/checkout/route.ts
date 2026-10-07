@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { randomBytes } from "node:crypto";
 import { getDb } from "@/lib/db";
 import { getProductsByIds, getVariantsByIds } from "@/lib/products";
 import { orderMessage, waLink, waNumber, type OrderLine } from "@/lib/whatsapp";
@@ -31,14 +32,16 @@ export async function POST(req: Request) {
     const stock = v ? v.stock : p.stock;
     if (stock < qty) return NextResponse.json({ error: `Stok "${p.name}${v ? ` (${v.name})` : ""}" tidak cukup (sisa ${stock})` }, { status: 409 });
     const price = v ? v.price : p.price;
-    lines.push({ name: p.name, variant: v?.name, qty, price });
+    lines.push({ name: p.name, variant: v?.name, qty, price, slug: p.slug, image: v?.image || p.images[0] || "" });
     total += price * qty;
   }
 
   const db = await getDb();
-  await db.execute({
-    sql: "INSERT INTO leads (created_at, name, phone, address, note, items, total) VALUES (?,?,?,?,?,?,?)",
-    args: [Math.floor(Date.now() / 1000), name, phone, address, note, JSON.stringify(lines), total],
+  const token = randomBytes(12).toString("base64url");
+  const ins = await db.execute({
+    sql: "INSERT INTO leads (created_at, name, phone, address, note, items, total, token) VALUES (?,?,?,?,?,?,?,?)",
+    args: [Math.floor(Date.now() / 1000), name, phone, address, note, JSON.stringify(lines), total, token],
   });
-  return NextResponse.json({ ok: true, total, waUrl: waLink(orderMessage({ name, phone, address, note }, lines, total)) });
+  const orderNo = Number(ins.lastInsertRowid);
+  return NextResponse.json({ ok: true, total, orderNo, token, waUrl: waLink(orderMessage({ name, phone, address, note }, lines, total, orderNo, token)) });
 }

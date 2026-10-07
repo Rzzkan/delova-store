@@ -18,7 +18,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
     listShops(),
     listProducts({ includeHidden: true, limit: 50, page, sort: "terbaru" }),
     db.execute("SELECT l.*, s.name AS shop_name FROM sync_logs l LEFT JOIN shops s ON s.shop_id = l.shop_id ORDER BY l.id DESC LIMIT 8"),
-    db.execute("SELECT COUNT(*) AS n FROM leads"),
+    db.execute("SELECT id, created_at, name, total, token FROM leads ORDER BY id DESC LIMIT 10"),
   ]);
   const mock = isMock();
 
@@ -59,7 +59,21 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
             </div>
           ))}
         </div>
-        <p className="mt-3 text-xs text-ink/50">Pesanan WhatsApp tercatat: {Number(leads.rows[0].n)}</p>
+        
+      </section>
+
+      <section>
+        <h2 className="mb-4 text-3xl font-semibold">Pesanan WhatsApp Terbaru</h2>
+        {leads.rows.length ? (
+          <ul className="divide-y divide-sand rounded-2xl border border-sand bg-white text-sm">
+            {leads.rows.map((l) => (
+              <li key={String(l.id)} className="flex items-center justify-between gap-3 p-3">
+                <span>#{String(l.id)} · {String(l.name)} · Rp{Number(l.total).toLocaleString("id-ID")} <span className="text-ink/40">· {timeAgo(Number(l.created_at))}</span></span>
+                {l.token ? <a className="text-maroon underline" href={`/pesanan/${String(l.token)}`}>Lihat foto & detail</a> : null}
+              </li>
+            ))}
+          </ul>
+        ) : <p className="text-sm text-ink/50">Belum ada pesanan.</p>}
       </section>
 
       <section>

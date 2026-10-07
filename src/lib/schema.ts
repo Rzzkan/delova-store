@@ -67,7 +67,8 @@ CREATE TABLE IF NOT EXISTS leads (
   address TEXT,
   note TEXT,
   items TEXT,
-  total INTEGER
+  total INTEGER,
+  token TEXT
 );
 CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
