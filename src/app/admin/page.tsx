@@ -5,7 +5,7 @@ import { getDb } from "@/lib/db";
 import { isMock } from "@/lib/shopee/config";
 import { listProducts, listShops } from "@/lib/products";
 import { timeAgo } from "@/lib/format";
-import { ProductRow, SyncButton } from "@/components/AdminControls";
+import { ProductRow, ShopBrandSelect, SyncButton } from "@/components/AdminControls";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Admin", robots: { index: false } };
@@ -51,11 +51,12 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
             <SyncButton label="Sinkron semua" />
           </div>
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {shops.map((s) => (
             <div key={s.shopId} className="rounded-2xl border border-sand bg-white p-5">
               <p className="font-display text-xl">{s.name}</p>
               <p className="text-xs text-ink/50">ID {s.shopId} · {s.isMock ? "data contoh" : s.authorized ? "terhubung" : "belum diotorisasi"}</p>
+              <ShopBrandSelect shopId={s.shopId} brand={s.brand} />
               <p className="mt-2 text-sm">Sinkron terakhir: {timeAgo(s.lastSyncAt)}</p>
               {!s.isMock && s.authorized && <div className="mt-3"><SyncButton shopId={s.shopId} label="Sinkron toko ini" /></div>}
             </div>

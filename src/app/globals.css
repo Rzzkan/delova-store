@@ -5,7 +5,8 @@
 /* ───────── Tema per brand ─────────
    Wardrobe: taupe #867971 + pink #E7BCBD (dari logo)
    Kids:     biru #44849F + kuning #F1CC5E + plum #523A4E (dari logo pelangi)
-   Scarf:    sage + champagne (SEMENTARA — sesuaikan setelah logo Scarf ada) */
+   Scarf:    sage + champagne (SEMENTARA — sesuaikan setelah logo Scarf ada)
+   Daily:    clay/terakota + sand (SEMENTARA) */
 :root, [data-brand="wardrobe"] {
   color-scheme: light;
   --ink: 58 50 46; --cream: 255 250 249; --sand: 240 228 227; --blush: 246 227 227;
@@ -25,6 +26,12 @@
   --accent: 201 166 107; --accent-light: 230 211 174; --accent-ink: 138 106 47;
   --font-display: "Inter", system-ui, sans-serif; --display-tracking: -0.025em; --display-weight: 800;
 }
+[data-brand="daily"] {
+  --ink: 62 48 42; --cream: 253 249 244; --sand: 238 226 214; --blush: 244 224 214;
+  --brand: 154 82 58; --brand-dark: 117 60 41; --brand-light: 181 101 74;
+  --accent: 221 182 140; --accent-light: 238 217 192; --accent-ink: 140 76 40;
+  --font-display: "Inter", system-ui, sans-serif; --display-tracking: -0.025em; --display-weight: 800;
+}
 html { scroll-behavior: smooth; }
 body { @apply bg-cream font-sans text-ink antialiased; }
 h1, h2, h3, .font-display { font-family: var(--font-display); font-weight: var(--display-weight) !important; letter-spacing: var(--display-tracking); }
@@ -36,6 +43,9 @@ h1 em, h2 em { font-style: normal; }
 }
 [data-brand="scarf"] .pattern-kawung {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%237C8B6F' stroke-opacity='.28' stroke-width='1'%3E%3Cellipse cx='24' cy='12' rx='6' ry='12'/%3E%3Cellipse cx='24' cy='36' rx='6' ry='12'/%3E%3Cellipse cx='12' cy='24' rx='12' ry='6'/%3E%3Cellipse cx='36' cy='24' rx='12' ry='6'/%3E%3C/g%3E%3C/svg%3E");
+}
+[data-brand="daily"] .pattern-kawung {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23B5654A' stroke-opacity='.22' stroke-width='1'%3E%3Cellipse cx='24' cy='12' rx='6' ry='12'/%3E%3Cellipse cx='24' cy='36' rx='6' ry='12'/%3E%3Cellipse cx='12' cy='24' rx='12' ry='6'/%3E%3Cellipse cx='36' cy='24' rx='12' ry='6'/%3E%3C/g%3E%3C/svg%3E");
 }
 [data-brand="kids"] .pattern-kawung {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Ccircle cx='12' cy='14' r='4' fill='%23E84234' fill-opacity='.35'/%3E%3Ccircle cx='62' cy='30' r='3' fill='%2357AEA5' fill-opacity='.45'/%3E%3Ccircle cx='34' cy='66' r='4' fill='%23F1CC5E' fill-opacity='.7'/%3E%3Ccircle cx='78' cy='72' r='3' fill='%2344849F' fill-opacity='.35'/%3E%3Crect x='42' y='10' width='6' height='6' rx='1.5' transform='rotate(25 45 13)' fill='%2386AC33' fill-opacity='.4'/%3E%3Crect x='8' y='52' width='6' height='6' rx='1.5' transform='rotate(-20 11 55)' fill='%23F96605' fill-opacity='.35'/%3E%3C/svg%3E");

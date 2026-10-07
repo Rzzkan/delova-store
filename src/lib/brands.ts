@@ -1,6 +1,6 @@
 /** Tiga brand Delova — masing-masing punya toko Shopee, logo, dan tone warna sendiri (warna: globals.css). */
-export type BrandSlug = "wardrobe" | "kids" | "scarf";
-export const BRAND_SLUGS: BrandSlug[] = ["wardrobe", "kids", "scarf"];
+export type BrandSlug = "wardrobe" | "kids" | "scarf" | "daily";
+export const BRAND_SLUGS: BrandSlug[] = ["wardrobe", "kids", "scarf", "daily"];
 
 export type Brand = {
   slug: BrandSlug;
@@ -64,6 +64,24 @@ export const BRANDS: Record<BrandSlug, Brand> = {
     dot: "#7C8B6F",
     provisional: true,
   },
+  daily: {
+    slug: "daily", name: "Delova Daily", short: "Daily", home: "/daily", catalog: "/produk?brand=daily",
+    shopeeUrl: "https://shopee.co.id/delovadaily", // perkiraan — ubah di /admin/tampilan bila berbeda
+    categories: ["gamis"],
+    nav: [
+      { label: "Semua Delova Daily", href: "/produk?brand=daily" },
+      { label: "Terlaris", href: "/produk?brand=daily&urut=terlaris" },
+      { label: "Terbaru", href: "/produk?brand=daily&urut=terbaru" },
+    ],
+    announcements: ["Busana harian yang nyaman, simpel, dan mudah dipadukan", "Stok & harga tersinkron dengan toko Shopee Delova Daily", "Butuh busana acara? Lihat Delova Wardrobe ✦"],
+    hero: {
+      eyebrow: "Delova Daily", title: "Nyaman untuk *setiap hari*.",
+      subtitle: "Busana harian dengan bahan adem, potongan simpel, dan mudah dipadukan — dari rumah, kerja, sampai jalan-jalan.",
+      cta1Label: "Belanja Delova Daily", cta1Href: "/produk?brand=daily", cta2Label: "Lihat Terlaris", cta2Href: "/produk?brand=daily&urut=terlaris",
+    },
+    dot: "#B5654A",
+    provisional: true,
+  },
 };
 
 export const isBrand = (v: unknown): v is BrandSlug => typeof v === "string" && (BRAND_SLUGS as string[]).includes(v);
@@ -73,5 +91,6 @@ export function brandForShop(name: string): BrandSlug {
   const n = name.toLowerCase();
   if (n.includes("kids")) return "kids";
   if (n.includes("scarf")) return "scarf";
+  if (n.includes("daily")) return "daily";
   return "wardrobe";
 }

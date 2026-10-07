@@ -10,7 +10,7 @@ export function Logo({ brand, imageUrl, size = "md" }: { brand: BrandSlug; image
   const sc = size === "lg" ? 1.5 : 1;
   if (imageUrl) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={imageUrl} alt={`Delova ${brand}`} style={{ height: 40 * sc }} className="w-auto" />;
+    return <img src={imageUrl} alt={`Delova ${brand}`} style={{ height: 40 * sc, maxWidth: 220 * sc }} className="w-auto object-contain" />;
   }
   const big = { fontSize: 28 * sc, lineHeight: 1 };
   if (brand === "kids") {

@@ -12,12 +12,13 @@ export async function Shell({ brand = "wardrobe", children }: { brand?: BrandSlu
   const home = await getHome();
   const b = BRANDS[brand];
   const messages = brand === "wardrobe" ? home.announcements : b.announcements;
+  const shopeeUrls = Object.fromEntries(BRAND_SLUGS.map((x) => [x, home.shopeeUrls[x] || BRANDS[x].shopeeUrl])) as Record<BrandSlug, string>;
   const logo = (size?: "md" | "lg", slug: BrandSlug = brand) => <Logo brand={slug} imageUrl={home.logos[slug]} size={size} />;
   return (
     <div data-brand={brand} className="min-h-screen bg-cream text-ink">
       <AnnouncementBar messages={messages} />
       <nav aria-label="Pilih brand Delova" className="border-b border-sand bg-white">
-        <ul className="container-x flex items-center gap-1 text-xs">
+        <ul className="container-x flex items-center gap-1 overflow-x-auto whitespace-nowrap text-xs">
           {BRAND_SLUGS.map((s) => (
             <li key={s}>
               <Link href={BRANDS[s].home} aria-current={s === brand ? "page" : undefined}
@@ -30,7 +31,7 @@ export async function Shell({ brand = "wardrobe", children }: { brand?: BrandSlu
       </nav>
       <Header brand={brand} nav={b.nav} logo={logo()} />
       <main>{children}</main>
-      <Footer brand={brand} logo={logo("lg")} />
+      <Footer brand={brand} logo={logo("lg")} shopeeUrls={shopeeUrls} />
     </div>
   );
 }

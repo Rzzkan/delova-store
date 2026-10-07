@@ -7,6 +7,7 @@ const SHOPS = [
   { id: 1, name: "Delova Wardrobe", slug: "delovawardrobe", cat: "gamis", brand: "wardrobe" },
   { id: 2, name: "Delova Kids", slug: "delovakids", cat: "anak", brand: "kids" },
   { id: 3, name: "Delova Scarf", slug: "delovascarf", cat: "hijab", brand: "scarf" },
+  { id: 4, name: "Delova Daily", slug: "delovadaily", cat: "gamis", brand: "daily" },
 ];
 
 type Def = {
@@ -32,6 +33,10 @@ const DEFS: Def[] = [
   { shop: 3, name: "Pashmina Voal Ultrafine Motif Parang", price: 69000, sold: 3180, rating: 4.9, color: "4B5A7A", variants: ["Navy", "Dusty Pink", "Sage"], desc: "Pashmina voal ultrafine, tidak menerawang." },
   { shop: 3, name: "Bergo Instan Jersey Premium", price: 49000, sold: 2740, rating: 4.8, color: "6B6258", variants: ["Black", "Mocca", "Cream", "Maroon"], desc: "Hijab instan bergo jersey, tinggal pakai." },
   { shop: 3, name: "Hijab Segi Empat Satin Silk Mega Mendung", price: 65000, sold: 1620, rating: 4.8, color: "5B7BA0", variants: ["Biru", "Rose", "Emerald"], stock: 0, desc: "Satin silk motif mega mendung — stok sedang habis." },
+  { shop: 4, name: "Daster Rayon Motif Batik Harian", price: 99000, orig: 129000, sold: 2140, rating: 4.8, color: "B5654A", variants: ["All Size", "Jumbo"], featured: true, desc: "Daster rayon adem dengan motif batik, nyaman untuk di rumah." },
+  { shop: 4, name: "Tunik Linen Basic", price: 139000, sold: 760, rating: 4.8, color: "A8957D", variants: ["S", "M", "L", "XL"], desc: "Tunik linen potongan simpel, mudah dipadukan." },
+  { shop: 4, name: "Setelan Kulot Katun Harian", price: 169000, sold: 540, rating: 4.7, color: "6F7E6B", variants: ["M", "L", "XL"], desc: "Setelan atasan + kulot katun, adem untuk aktivitas harian." },
+  { shop: 4, name: "Outer Rajut Basic", price: 149000, sold: 380, rating: 4.8, color: "8C6A55", variants: ["All Size"], desc: "Outer rajut ringan untuk dipakai berlapis." },
 ];
 
 const ph = (t: string, c: string, v: number) => `/api/ph?t=${encodeURIComponent(t)}&c=${c}&v=${v}`;

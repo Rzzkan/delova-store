@@ -22,10 +22,13 @@ async function init(): Promise<Client> {
   try { await c.execute("ALTER TABLE shops ADD COLUMN brand TEXT NOT NULL DEFAULT 'wardrobe'"); } catch { /* sudah ada */ }
   await c.execute("UPDATE shops SET brand='kids' WHERE brand='wardrobe' AND (lower(name) LIKE '%kids%' OR lower(slug) LIKE '%kids%')");
   await c.execute("UPDATE shops SET brand='scarf' WHERE brand='wardrobe' AND (lower(name) LIKE '%scarf%' OR lower(slug) LIKE '%scarf%')");
+  await c.execute("UPDATE shops SET brand='daily' WHERE brand='wardrobe' AND (lower(name) LIKE '%daily%' OR lower(slug) LIKE '%daily%')");
   await c.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_token ON leads(token)");
   if (isMock()) {
     const r = await c.execute("SELECT COUNT(*) AS n FROM products");
-    if (Number(r.rows[0].n) === 0) await seedMock(c);
+    const daily = await c.execute("SELECT COUNT(*) AS n FROM shops WHERE brand = 'daily'");
+    // seed ulang aman (INSERT OR IGNORE): melengkapi data contoh bila ada brand baru
+    if (Number(r.rows[0].n) === 0 || Number(daily.rows[0].n) === 0) await seedMock(c);
   }
   return c;
 }

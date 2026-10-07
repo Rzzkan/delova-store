@@ -11,6 +11,7 @@ export type HomeSettings = {
   reviews: { title: string; subtitle: string };
   logos: Record<string, string>;
   brandHeroes: Record<string, string>;
+  shopeeUrls: Record<string, string>;
 };
 
 export const HOME_DEFAULTS: HomeSettings = {
@@ -33,7 +34,7 @@ export const HOME_DEFAULTS: HomeSettings = {
   categoryImages: {},
   story: {
     title: "Wastra bukan sekadar pakaian. Ia cerita yang kita pakai.",
-    body: "Delova menghadirkan kebaya, batik, dan hijab dengan potongan yang nyaman dipakai setiap hari maupun di hari istimewa.\nSatu keluarga, tiga toko: Wardrobe untuk bunda, Kids untuk si kecil, dan Scarf untuk hijab.",
+    body: "Delova menghadirkan kebaya, batik, dan hijab dengan potongan yang nyaman dipakai setiap hari maupun di hari istimewa.\nSatu keluarga, empat toko: Wardrobe untuk bunda, Kids untuk si kecil, Scarf untuk hijab, dan Daily untuk busana harian.",
     image: "",
     ctaLabel: "Temukan gayamu",
     ctaHref: "/produk",
@@ -41,6 +42,7 @@ export const HOME_DEFAULTS: HomeSettings = {
   reviews: { title: "Kata Pembeli Delova", subtitle: "Ulasan asli dari pembeli di Shopee" },
   logos: {},
   brandHeroes: {},
+  shopeeUrls: {},
 };
 
 const KEY = "home";
@@ -56,6 +58,7 @@ function merge(stored: Partial<HomeSettings> | null): HomeSettings {
     reviews: { ...d.reviews, ...(s.reviews ?? {}) },
     logos: { ...(s.logos ?? {}) },
     brandHeroes: { ...(s.brandHeroes ?? {}) },
+    shopeeUrls: { ...(s.shopeeUrls ?? {}) },
   };
 }
 
@@ -94,6 +97,7 @@ export async function saveHome(input: Partial<HomeSettings>): Promise<HomeSettin
     reviews: { title: str(cur.reviews.title, 80), subtitle: str(cur.reviews.subtitle, 140) },
     logos: Object.fromEntries(BRAND_SLUGS.map((b) => [b, img(cur.logos[b])]).filter(([, v]) => v)),
     brandHeroes: Object.fromEntries(BRAND_SLUGS.map((b) => [b, img(cur.brandHeroes[b])]).filter(([, v]) => v)),
+    shopeeUrls: Object.fromEntries(BRAND_SLUGS.map((b) => [b, str(cur.shopeeUrls[b], 300).trim()]).filter(([, v]) => String(v).startsWith("https://"))),
   };
   if (!clean.announcements.length) clean.announcements = HOME_DEFAULTS.announcements;
   const db = await getDb();

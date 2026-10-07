@@ -14,6 +14,13 @@ function Accent({ text }: { text: string }) {
   return <>{text.split(/(\*[^*]+\*)/g).map((p, i) => (p.startsWith("*") && p.endsWith("*") ? <em key={i} className="text-accent-ink">{p.slice(1, -1)}</em> : p))}</>;
 }
 
+const BLURB: Record<BrandSlug, string> = {
+  wardrobe: "Kebaya, batik & gamis untuk bunda",
+  kids: "Busana anak perempuan yang ceria",
+  scarf: "Hijab segi empat, pashmina & bergo",
+  daily: "Busana harian yang nyaman & simpel",
+};
+
 const TRUST = [
   ["Sinkron Shopee", "Stok & harga selalu sama dengan toko resmi"],
   ["Dua Cara Beli", "Checkout WhatsApp atau langsung di Shopee"],
@@ -33,6 +40,7 @@ export async function BrandHome({ brand }: { brand: BrandSlug }) {
     listProducts({ brand, limit: 4, sort: "terlaris" }),
     categoryCounts(brand),
   ]);
+  const shopeeUrl = home.shopeeUrls[brand] || b.shopeeUrl;
   const hero = brand === "wardrobe" ? home.hero : b.hero;
   const heroImg = (brand === "wardrobe" ? home.hero.image : home.brandHeroes[brand]) || featured.items[0]?.images[0] || best.items[0]?.images[0];
   const cats = CATEGORIES.filter((c) => b.categories.includes(c.slug) && (counts[c.slug] ?? 0) > 0);
@@ -65,7 +73,7 @@ export async function BrandHome({ brand }: { brand: BrandSlug }) {
       </section>
 
       {b.provisional && (
-        <p className="bg-accent-light/60 py-2 text-center text-xs text-ink/70">Tampilan Delova Scarf masih sementara — kirim logo & warna brand untuk disesuaikan.</p>
+        <p className="bg-accent-light/60 py-2 text-center text-xs text-ink/70">Tampilan {b.name} masih sementara — unggah logo di admin & kirim warna brand untuk disesuaikan.</p>
       )}
 
       {/* TRUST */}
@@ -150,12 +158,12 @@ export async function BrandHome({ brand }: { brand: BrandSlug }) {
 
       {/* KELUARGA DELOVA — masing-masing tile memakai tema brand-nya sendiri */}
       <section className="container-x mt-24">
-        <div className="mb-8 text-center"><p className="eyebrow">Keluarga Delova</p><h2 className="mt-2 text-3xl md:text-4xl">Tiga toko, satu keluarga</h2></div>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="mb-8 text-center"><p className="eyebrow">Keluarga Delova</p><h2 className="mt-2 text-3xl md:text-4xl">Empat toko, satu keluarga</h2></div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {BRAND_SLUGS.map((s) => (
             <Link key={s} href={BRANDS[s].home} data-brand={s} className={`group flex flex-col items-center gap-5 rounded-3xl border-2 bg-cream p-8 text-center transition hover:-translate-y-1 hover:shadow-xl ${s === brand ? "border-brand" : "border-sand"}`}>
               <Logo brand={s} imageUrl={home.logos[s]} size="lg" />
-              <p className="text-sm text-ink/70">{s === "wardrobe" ? "Kebaya, batik & gamis untuk bunda" : s === "kids" ? "Busana anak perempuan yang ceria" : "Hijab segi empat, pashmina & bergo"}</p>
+              <p className="text-sm text-ink/70">{BLURB[s]}</p>
               <span className="btn-primary !py-2">Kunjungi</span>
             </Link>
           ))}
@@ -166,7 +174,7 @@ export async function BrandHome({ brand }: { brand: BrandSlug }) {
       <section className="container-x mt-12">
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-sand bg-white p-6 md:p-8">
           <div><p className="eyebrow">Toko resmi</p><h2 className="mt-1 text-2xl">{b.name} di Shopee</h2></div>
-          <a href={b.shopeeUrl} target="_blank" rel="noopener noreferrer" className="btn-shopee">Buka toko Shopee</a>
+          <a href={shopeeUrl} target="_blank" rel="noopener noreferrer" className="btn-shopee">Buka toko Shopee</a>
         </div>
       </section>
     </>

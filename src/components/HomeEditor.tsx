@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { CATEGORIES } from "@/lib/categories";
-import { BRANDS } from "@/lib/brands";
+import { BRANDS, BRAND_SLUGS } from "@/lib/brands";
 import type { HomeSettings } from "@/lib/settings";
 import { ImageField } from "./ImageField";
 
@@ -64,16 +64,20 @@ export function HomeEditor({ initial }: { initial: HomeSettings }) {
         </div>
       </section>
 
-      <section className="space-y-4"><h2 className="text-2xl font-semibold">Logo & Foto Brand</h2>
-        <p className="text-sm text-ink/60">Logo bawaan digambar dengan teks mengikuti logo Delova. Unggah file logo (PNG transparan paling bagus) untuk menggantikannya.</p>
-        <div className="grid gap-6 md:grid-cols-3">
-          {(["wardrobe", "kids", "scarf"] as const).map((b) => (
-            <ImageField key={b} label={`Logo Delova ${b[0].toUpperCase()}${b.slice(1)}`} value={s.logos[b] ?? ""} onChange={(v) => setS((p) => ({ ...p, logos: { ...p.logos, [b]: v } }))} />
-          ))}
-          {(["kids", "scarf"] as const).map((b) => (
-            <ImageField key={`h${b}`} label={`Foto hero halaman ${b[0].toUpperCase()}${b.slice(1)}`} hint="Kosong = otomatis foto produk." value={s.brandHeroes[b] ?? ""} onChange={(v) => setS((p) => ({ ...p, brandHeroes: { ...p.brandHeroes, [b]: v } }))} />
-          ))}
-        </div>
+      <section className="space-y-6"><h2 className="text-2xl font-semibold">Logo, Foto & Link Toko per Brand</h2>
+        <p className="text-sm text-ink/60">Unggah logo tiap toko (PNG dengan latar transparan paling bagus, lebar ≥ 400px). Logo menggantikan wordmark bawaan di header, footer, dan kartu brand. Kosongkan untuk kembali ke bawaan.</p>
+        {BRAND_SLUGS.map((b) => (
+          <div key={b} className="rounded-3xl border border-sand bg-white p-5">
+            <h3 className="mb-4 text-xl">{BRANDS[b].name}</h3>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <ImageField label="Logo" hint="PNG transparan." value={s.logos[b] ?? ""} onChange={(v) => setS((p) => ({ ...p, logos: { ...p.logos, [b]: v } }))} />
+              {b !== "wardrobe" && (
+                <ImageField label="Foto hero halaman brand" hint="Kosong = otomatis foto produk." value={s.brandHeroes[b] ?? ""} onChange={(v) => setS((p) => ({ ...p, brandHeroes: { ...p.brandHeroes, [b]: v } }))} />
+              )}
+              <Field label="Link toko Shopee"><input className="input" placeholder={BRANDS[b].shopeeUrl} value={s.shopeeUrls[b] ?? ""} onChange={(e) => setS((p) => ({ ...p, shopeeUrls: { ...p.shopeeUrls, [b]: e.target.value } }))} /></Field>
+            </div>
+          </div>
+        ))}
       </section>
 
       <section className="space-y-4"><h2 className="text-2xl font-semibold">Bar Pengumuman & Judul Ulasan</h2>

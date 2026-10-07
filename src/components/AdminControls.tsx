@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CATEGORIES } from "@/lib/categories";
+import { BRANDS, BRAND_SLUGS } from "@/lib/brands";
 
 export function SyncButton({ shopId, label = "Sinkron sekarang" }: { shopId?: number; label?: string }) {
   const router = useRouter();
@@ -49,5 +50,17 @@ export function ProductRow({ p }: { p: { id: string; name: string; shop: string;
       <td className="pr-3"><input type="checkbox" checked={s.featured} onChange={(e) => save({ featured: e.target.checked })} aria-label="Unggulan" /></td>
       <td><input type="checkbox" checked={s.hidden} onChange={(e) => save({ hidden: e.target.checked })} aria-label="Sembunyikan" /></td>
     </tr>
+  );
+}
+
+export function ShopBrandSelect({ shopId, brand }: { shopId: number; brand: string }) {
+  const [v, setV] = useState(brand);
+  return (
+    <label className="mt-2 flex items-center gap-2 text-xs text-ink/60">Brand:
+      <select className="rounded-lg border border-sand bg-white px-2 py-1 text-sm text-ink" value={v}
+        onChange={async (e) => { const prev = v; setV(e.target.value); const r = await fetch("/api/admin/shop", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ shopId, brand: e.target.value }) }); if (!r.ok) setV(prev); }}>
+        {BRAND_SLUGS.map((b) => (<option key={b} value={b}>{BRANDS[b].name}</option>))}
+      </select>
+    </label>
   );
 }
