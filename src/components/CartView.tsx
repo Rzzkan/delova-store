@@ -9,7 +9,7 @@ export function CartView() {
   if (!items.length)
     return (
       <div className="py-24 text-center">
-        <p className="font-display text-3xl">Keranjangmu masih kosong</p>
+        <p className="font-display text-2xl">Keranjangmu masih kosong</p>
         <p className="mt-2 text-ink/60">Yuk, pilih kebaya, batik, atau hijab favoritmu.</p>
         <Link href="/produk" className="btn-primary mt-8">Mulai Belanja</Link>
       </div>
@@ -24,9 +24,9 @@ export function CartView() {
               {i.image && <img src={thumb(i.image)} alt={i.name} className="h-full w-full object-cover" />}
             </Link>
             <div className="flex flex-1 flex-col">
-              <Link href={`/produk/${i.slug}`} className="text-sm font-medium hover:text-maroon">{i.name}</Link>
+              <Link href={`/produk/${i.slug}`} className="text-sm font-medium hover:text-brand">{i.name}</Link>
               {i.variantName && <p className="text-xs text-ink/55">Varian: {i.variantName}</p>}
-              <p className="mt-1 text-sm text-maroon">{idr(i.price)}</p>
+              <p className="mt-1 text-sm text-brand">{idr(i.price)}</p>
               <div className="mt-auto flex items-center justify-between pt-3">
                 <div className="flex items-center rounded-full border border-sand bg-white text-sm">
                   <button className="h-8 w-8" onClick={() => setQty(i.key, i.qty - 1)} aria-label="Kurangi">−</button>
@@ -35,7 +35,7 @@ export function CartView() {
                 </div>
                 <div className="flex items-center gap-4 text-xs">
                   <a href={i.shopeeUrl} target="_blank" rel="noopener noreferrer" className="text-[#EE4D2D] hover:underline">Beli di Shopee</a>
-                  <button onClick={() => remove(i.key)} className="text-ink/50 hover:text-maroon">Hapus</button>
+                  <button onClick={() => remove(i.key)} className="text-ink/50 hover:text-brand">Hapus</button>
                 </div>
               </div>
             </div>
@@ -43,7 +43,7 @@ export function CartView() {
         ))}
       </ul>
       <aside className="h-fit rounded-3xl border border-sand bg-white p-6">
-        <h2 className="text-2xl font-semibold">Ringkasan</h2>
+        <h2 className="text-xl font-semibold">Ringkasan</h2>
         <div className="mt-4 flex justify-between text-sm"><span className="text-ink/60">Subtotal</span><span className="font-medium">{idr(total)}</span></div>
         <p className="mt-1 text-xs text-ink/50">Ongkir dihitung admin saat konfirmasi.</p>
         <Link href="/checkout" className="btn-primary mt-6 w-full">Checkout via WhatsApp</Link>

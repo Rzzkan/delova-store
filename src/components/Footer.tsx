@@ -1,46 +1,41 @@
 import Link from "next/link";
-import { CATEGORIES } from "@/lib/categories";
+import type { ReactNode } from "react";
+import { BRANDS, BRAND_SLUGS, type BrandSlug } from "@/lib/brands";
 import { waNumber } from "@/lib/whatsapp";
 
-const SHOPEE = [
-  ["Delova Wardrobe", "https://shopee.co.id/delovawardrobe"],
-  ["Delova Kids", "https://shopee.co.id/delovakids"],
-  ["Delova Scarf", "https://shopee.co.id/delovascarf"],
-];
-const SOCIAL = [
-  ["Instagram", "https://www.instagram.com/delovawardrobe"],
-  ["TikTok", "https://www.tiktok.com/@delovawardrobe"],
-  ["IG Kids", "https://www.instagram.com/delovakids"],
-  ["IG Scarf", "https://www.instagram.com/delovawardrobescarf"],
-];
+const SOCIALS: Record<BrandSlug, [string, string][]> = {
+  wardrobe: [["Instagram", "https://www.instagram.com/delovawardrobe"], ["TikTok", "https://www.tiktok.com/@delovawardrobe"]],
+  kids: [["Instagram", "https://www.instagram.com/delovakids"], ["TikTok", "https://www.tiktok.com/@delovakids"]],
+  scarf: [["Instagram", "https://www.instagram.com/delovawardrobescarf"], ["TikTok", "https://www.tiktok.com/@delovascarf"]],
+};
 
-export function Footer() {
+export function Footer({ brand, logo }: { brand: BrandSlug; logo: ReactNode }) {
   const wa = waNumber();
   return (
-    <footer className="relative mt-24 overflow-hidden bg-maroon-dark text-cream">
+    <footer className="relative mt-24 overflow-hidden bg-brand-dark text-cream">
       <div className="pattern-kawung-light absolute inset-0" aria-hidden />
       <div className="container-x relative grid gap-10 py-14 md:grid-cols-4">
         <div className="md:col-span-1">
-          <p className="font-display text-3xl tracking-[.18em]">DELOVA</p>
-          <p className="mt-3 text-sm leading-relaxed text-cream/70">Wastra Indonesia dalam siluet modern, untuk bunda, si kecil, dan seluruh keluarga.</p>
+          <div className="inline-block rounded-xl bg-cream px-4 py-3">{logo}</div>
+          <p className="mt-3 text-sm leading-relaxed text-cream/70">Satu keluarga Delova: busana wastra modern untuk bunda, si kecil, dan hijab pelengkap gayamu.</p>
         </div>
         <div>
-          <p className="eyebrow">Belanja</p>
+          <p className="eyebrow !text-accent">Belanja</p>
           <ul className="mt-4 space-y-2 text-sm text-cream/80">
-            {CATEGORIES.map((c) => (<li key={c.slug}><Link className="hover:text-gold-light" href={`/produk?kategori=${c.slug}`}>{c.label}</Link></li>))}
+            {BRANDS[brand].nav.map((n) => (<li key={n.href}><Link className="hover:text-accent-light" href={n.href}>{n.label}</Link></li>))}
           </ul>
         </div>
         <div>
-          <p className="eyebrow">Toko Resmi Shopee</p>
+          <p className="eyebrow !text-accent">Toko Resmi Shopee</p>
           <ul className="mt-4 space-y-2 text-sm text-cream/80">
-            {SHOPEE.map(([l, u]) => (<li key={u}><a className="hover:text-gold-light" href={u} target="_blank" rel="noopener noreferrer">{l}</a></li>))}
+            {BRAND_SLUGS.map((b) => (<li key={b}><a className="hover:text-accent-light" href={BRANDS[b].shopeeUrl} target="_blank" rel="noopener noreferrer">{BRANDS[b].name}</a></li>))}
           </ul>
         </div>
         <div>
-          <p className="eyebrow">Ikuti & Hubungi</p>
+          <p className="eyebrow !text-accent">Ikuti & Hubungi</p>
           <ul className="mt-4 space-y-2 text-sm text-cream/80">
-            {SOCIAL.map(([l, u]) => (<li key={u}><a className="hover:text-gold-light" href={u} target="_blank" rel="noopener noreferrer">{l}</a></li>))}
-            {wa && <li><a className="hover:text-gold-light" href={`https://wa.me/${wa}`} target="_blank" rel="noopener noreferrer">WhatsApp Admin</a></li>}
+            {SOCIALS[brand].map(([l, u]) => (<li key={u}><a className="hover:text-accent-light" href={u} target="_blank" rel="noopener noreferrer">{l}</a></li>))}
+            {wa && <li><a className="hover:text-accent-light" href={`https://wa.me/${wa}`} target="_blank" rel="noopener noreferrer">WhatsApp Admin</a></li>}
           </ul>
         </div>
       </div>

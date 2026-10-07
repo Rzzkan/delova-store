@@ -3,7 +3,7 @@ import type { Review } from "@/lib/reviews";
 import { thumb } from "@/lib/format";
 
 const Stars = ({ n }: { n: number }) => (
-  <span className="text-gold" aria-label={`${n} dari 5 bintang`} role="img">{"★".repeat(n)}<span className="text-sand">{"★".repeat(5 - n)}</span></span>
+  <span className="text-accent-ink" aria-label={`${n} dari 5 bintang`} role="img">{"★".repeat(n)}<span className="text-sand">{"★".repeat(5 - n)}</span></span>
 );
 
 const date = (t: number | null) => (t ? new Date(t * 1000).toLocaleDateString("id-ID", { month: "short", year: "numeric" }) : "");
@@ -22,11 +22,11 @@ export function ReviewCard({ r }: { r: Review }) {
         </div>
       )}
       {r.reply && (
-        <p className="mt-4 rounded-xl bg-cream p-3 text-xs leading-relaxed text-ink/70"><span className="font-medium text-maroon">Balasan Delova:</span> {r.reply}</p>
+        <p className="mt-4 rounded-xl bg-cream p-3 text-xs leading-relaxed text-ink/70"><span className="font-medium text-brand">Balasan Delova:</span> {r.reply}</p>
       )}
       <figcaption className="mt-4 flex items-center justify-between gap-3 border-t border-sand pt-3 text-xs text-ink/60">
         <span>{r.buyer}{r.source === "shopee" && <span className="ml-2 rounded-full bg-[#EE4D2D]/10 px-2 py-0.5 text-[10px] text-[#EE4D2D]">Ulasan Shopee</span>}</span>
-        {r.productSlug && r.productName && <Link href={`/produk/${r.productSlug}`} className="line-clamp-1 max-w-[50%] text-right hover:text-maroon">{r.productName}</Link>}
+        {r.productSlug && r.productName && <Link href={`/produk/${r.productSlug}`} className="line-clamp-1 max-w-[50%] text-right hover:text-brand">{r.productName}</Link>}
       </figcaption>
     </figure>
   );

@@ -1,3 +1,4 @@
+import { Shell } from "@/components/Shell";
 import { redirect } from "next/navigation";
 import { isAdmin } from "@/lib/auth";
 import { getDb } from "@/lib/db";
@@ -23,9 +24,10 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
   const mock = isMock();
 
   return (
+    <Shell>
     <div className="container-x space-y-10 py-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-5xl font-semibold">Admin</h1>
+        <h1 className="text-4xl font-semibold">Admin</h1>
         <div className="flex flex-wrap gap-2">
           <a href="/admin/tampilan" className="btn-primary !py-2">Tampilan Beranda</a>
           <a href="/admin/ulasan" className="btn-primary !py-2">Ulasan Unggulan</a>
@@ -34,16 +36,16 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
       </div>
 
       {sp.ok && <p className="rounded-xl bg-sage/20 p-3 text-sm">{sp.ok}</p>}
-      {sp.err && <p role="alert" className="rounded-xl bg-blush p-3 text-sm text-maroon">{sp.err}</p>}
+      {sp.err && <p role="alert" className="rounded-xl bg-blush p-3 text-sm text-brand">{sp.err}</p>}
       {mock && (
-        <p className="rounded-xl border border-gold bg-gold/10 p-4 text-sm">
+        <p className="rounded-xl border border-accent bg-accent/10 p-4 text-sm">
           <strong>Mode demo.</strong> Produk di bawah adalah data contoh. Isi <code>SHOPEE_PARTNER_ID</code> & <code>SHOPEE_PARTNER_KEY</code> di <code>.env.local</code>, lalu hubungkan toko Shopee — lihat <code>docs/SHOPEE_SETUP.md</code>.
         </p>
       )}
 
       <section>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-3xl font-semibold">Toko Shopee</h2>
+          <h2 className="text-2xl font-semibold">Toko Shopee</h2>
           <div className="flex items-start gap-3">
             <a href="/api/shopee/auth" className="btn-outline !px-4 !py-2">+ Hubungkan toko Shopee</a>
             <SyncButton label="Sinkron semua" />
@@ -52,7 +54,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
         <div className="grid gap-4 md:grid-cols-3">
           {shops.map((s) => (
             <div key={s.shopId} className="rounded-2xl border border-sand bg-white p-5">
-              <p className="font-display text-2xl">{s.name}</p>
+              <p className="font-display text-xl">{s.name}</p>
               <p className="text-xs text-ink/50">ID {s.shopId} · {s.isMock ? "data contoh" : s.authorized ? "terhubung" : "belum diotorisasi"}</p>
               <p className="mt-2 text-sm">Sinkron terakhir: {timeAgo(s.lastSyncAt)}</p>
               {!s.isMock && s.authorized && <div className="mt-3"><SyncButton shopId={s.shopId} label="Sinkron toko ini" /></div>}
@@ -63,13 +65,13 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
       </section>
 
       <section>
-        <h2 className="mb-4 text-3xl font-semibold">Pesanan WhatsApp Terbaru</h2>
+        <h2 className="mb-4 text-2xl font-semibold">Pesanan WhatsApp Terbaru</h2>
         {leads.rows.length ? (
           <ul className="divide-y divide-sand rounded-2xl border border-sand bg-white text-sm">
             {leads.rows.map((l) => (
               <li key={String(l.id)} className="flex items-center justify-between gap-3 p-3">
                 <span>#{String(l.id)} · {String(l.name)} · Rp{Number(l.total).toLocaleString("id-ID")} <span className="text-ink/40">· {timeAgo(Number(l.created_at))}</span></span>
-                {l.token ? <a className="text-maroon underline" href={`/pesanan/${String(l.token)}`}>Lihat foto & detail</a> : null}
+                {l.token ? <a className="text-brand underline" href={`/pesanan/${String(l.token)}`}>Lihat foto & detail</a> : null}
               </li>
             ))}
           </ul>
@@ -77,18 +79,18 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
       </section>
 
       <section>
-        <h2 className="mb-4 text-3xl font-semibold">Riwayat Sinkron</h2>
+        <h2 className="mb-4 text-2xl font-semibold">Riwayat Sinkron</h2>
         {logs.rows.length ? (
           <table className="w-full text-left text-sm"><thead className="text-xs uppercase tracking-wider text-ink/50"><tr><th className="py-2">Waktu</th><th>Toko</th><th>Status</th><th>Diperbarui</th><th>Dihapus</th><th>Pesan</th></tr></thead>
             <tbody>{logs.rows.map((l) => (
               <tr key={String(l.id)} className="border-t border-sand"><td className="py-2">{timeAgo(Number(l.finished_at))}</td><td>{String(l.shop_name ?? l.shop_id)}</td>
-                <td className={l.status === "ok" ? "text-sage" : "text-maroon"}>{String(l.status)}</td><td>{Number(l.upserted)}</td><td>{Number(l.removed)}</td><td className="max-w-xs truncate">{String(l.message ?? "")}</td></tr>
+                <td className={l.status === "ok" ? "text-sage" : "text-brand"}>{String(l.status)}</td><td>{Number(l.upserted)}</td><td>{Number(l.removed)}</td><td className="max-w-xs truncate">{String(l.message ?? "")}</td></tr>
             ))}</tbody></table>
         ) : <p className="text-sm text-ink/50">Belum ada sinkron.</p>}
       </section>
 
       <section>
-        <h2 className="mb-1 text-3xl font-semibold">Produk ({total})</h2>
+        <h2 className="mb-1 text-2xl font-semibold">Produk ({total})</h2>
         <p className="mb-4 text-xs text-ink/50">Harga & stok hanya bisa diubah di Shopee. Di sini kamu mengatur tampilan: kategori, unggulan, sembunyikan.</p>
         <div className="overflow-x-auto">
           <table className="w-full text-left"><thead className="text-xs uppercase tracking-wider text-ink/50"><tr><th className="py-2">Produk</th><th>Harga</th><th>Stok</th><th>Kategori</th><th>Unggulan</th><th>Sembunyi</th></tr></thead>
@@ -102,5 +104,6 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
         )}
       </section>
     </div>
+    </Shell>
   );
 }

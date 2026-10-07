@@ -49,7 +49,7 @@ export function ImageField({ label, hint, value, onChange }: { label: string; hi
           <input ref={input} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => pick(e.target.files?.[0])} />
           <input className="input !py-2 text-xs" placeholder="…atau tempel link gambar https://" value={value.startsWith("/api/media/") ? "" : value} onChange={(e) => onChange(e.target.value)} aria-label={`${label} — link gambar`} />
           {hint && <p className="text-xs text-ink/50">{hint}</p>}
-          {err && <p role="alert" className="text-xs text-maroon">{err}</p>}
+          {err && <p role="alert" className="text-xs text-brand">{err}</p>}
         </div>
       </div>
     </div>

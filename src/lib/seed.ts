@@ -4,9 +4,9 @@ import { slugify } from "./format";
 
 /** Data contoh untuk MODE DEMO (saat kredensial Shopee belum diisi). */
 const SHOPS = [
-  { id: 1, name: "Delova Wardrobe", slug: "delovawardrobe", cat: "gamis" },
-  { id: 2, name: "Delova Kids", slug: "delovakids", cat: "anak" },
-  { id: 3, name: "Delova Scarf", slug: "delovascarf", cat: "hijab" },
+  { id: 1, name: "Delova Wardrobe", slug: "delovawardrobe", cat: "gamis", brand: "wardrobe" },
+  { id: 2, name: "Delova Kids", slug: "delovakids", cat: "anak", brand: "kids" },
+  { id: 3, name: "Delova Scarf", slug: "delovascarf", cat: "hijab", brand: "scarf" },
 ];
 
 type Def = {
@@ -41,8 +41,8 @@ export async function seedMock(db: Client): Promise<void> {
   const stmts: InStatement[] = [];
   for (const s of SHOPS) {
     stmts.push({
-      sql: "INSERT OR IGNORE INTO shops (shop_id, name, slug, default_category, shopee_url, last_sync_at, is_mock) VALUES (?,?,?,?,?,?,1)",
-      args: [s.id, s.name, s.slug, s.cat, `https://shopee.co.id/${s.slug}`, ts],
+      sql: "INSERT OR IGNORE INTO shops (shop_id, name, slug, default_category, brand, shopee_url, last_sync_at, is_mock) VALUES (?,?,?,?,?,?,?,1)",
+      args: [s.id, s.name, s.slug, s.cat, s.brand, `https://shopee.co.id/${s.slug}`, ts],
     });
   }
   DEFS.forEach((d, i) => {

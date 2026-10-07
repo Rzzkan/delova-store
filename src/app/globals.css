@@ -2,27 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light; }
+/* ───────── Tema per brand ─────────
+   Wardrobe: taupe #867971 + pink #E7BCBD (dari logo)
+   Kids:     biru #44849F + kuning #F1CC5E + plum #523A4E (dari logo pelangi)
+   Scarf:    sage + champagne (SEMENTARA — sesuaikan setelah logo Scarf ada) */
+:root, [data-brand="wardrobe"] {
+  color-scheme: light;
+  --ink: 58 50 46; --cream: 255 250 249; --sand: 240 228 227; --blush: 246 227 227;
+  --brand: 117 103 95; --brand-dark: 87 75 69; --brand-light: 134 121 113;
+  --accent: 231 188 189; --accent-light: 243 217 218; --accent-ink: 169 87 94;
+  --font-display: "Inter", system-ui, sans-serif; --display-tracking: -0.025em; --display-weight: 800;
+}
+[data-brand="kids"] {
+  --ink: 82 58 78; --cream: 255 251 242; --sand: 247 235 211; --blush: 253 231 223;
+  --brand: 58 118 144; --brand-dark: 44 90 112; --brand-light: 68 132 159;
+  --accent: 241 204 94; --accent-light: 247 227 160; --accent-ink: 194 80 10;
+  --font-display: "Fredoka", "Inter", sans-serif; --display-tracking: 0; --display-weight: 600;
+}
+[data-brand="scarf"] {
+  --ink: 63 58 54; --cream: 251 248 242; --sand: 236 227 211; --blush: 232 237 226;
+  --brand: 95 111 82; --brand-dark: 68 80 59; --brand-light: 124 139 111;
+  --accent: 201 166 107; --accent-light: 230 211 174; --accent-ink: 138 106 47;
+  --font-display: "Inter", system-ui, sans-serif; --display-tracking: -0.025em; --display-weight: 800;
+}
 html { scroll-behavior: smooth; }
 body { @apply bg-cream font-sans text-ink antialiased; }
-h1, h2, h3, .font-display { font-family: "Cormorant Garamond", Georgia, serif; }
+h1, h2, h3, .font-display { font-family: var(--font-display); font-weight: var(--display-weight) !important; letter-spacing: var(--display-tracking); }
+h1 em, h2 em { font-style: normal; }
 
+/* Pola latar: kawung halus (Wardrobe/Scarf), confetti (Kids) */
 .pattern-kawung {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23B8893B' stroke-opacity='.22' stroke-width='1'%3E%3Cellipse cx='24' cy='12' rx='6' ry='12'/%3E%3Cellipse cx='24' cy='36' rx='6' ry='12'/%3E%3Cellipse cx='12' cy='24' rx='12' ry='6'/%3E%3Cellipse cx='36' cy='24' rx='12' ry='6'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23E7BCBD' stroke-opacity='.55' stroke-width='1'%3E%3Cellipse cx='24' cy='12' rx='6' ry='12'/%3E%3Cellipse cx='24' cy='36' rx='6' ry='12'/%3E%3Cellipse cx='12' cy='24' rx='12' ry='6'/%3E%3Cellipse cx='36' cy='24' rx='12' ry='6'/%3E%3C/g%3E%3C/svg%3E");
+}
+[data-brand="scarf"] .pattern-kawung {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%237C8B6F' stroke-opacity='.28' stroke-width='1'%3E%3Cellipse cx='24' cy='12' rx='6' ry='12'/%3E%3Cellipse cx='24' cy='36' rx='6' ry='12'/%3E%3Cellipse cx='12' cy='24' rx='12' ry='6'/%3E%3Cellipse cx='36' cy='24' rx='12' ry='6'/%3E%3C/g%3E%3C/svg%3E");
+}
+[data-brand="kids"] .pattern-kawung {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Ccircle cx='12' cy='14' r='4' fill='%23E84234' fill-opacity='.35'/%3E%3Ccircle cx='62' cy='30' r='3' fill='%2357AEA5' fill-opacity='.45'/%3E%3Ccircle cx='34' cy='66' r='4' fill='%23F1CC5E' fill-opacity='.7'/%3E%3Ccircle cx='78' cy='72' r='3' fill='%2344849F' fill-opacity='.35'/%3E%3Crect x='42' y='10' width='6' height='6' rx='1.5' transform='rotate(25 45 13)' fill='%2386AC33' fill-opacity='.4'/%3E%3Crect x='8' y='52' width='6' height='6' rx='1.5' transform='rotate(-20 11 55)' fill='%23F96605' fill-opacity='.35'/%3E%3C/svg%3E");
 }
 .pattern-kawung-light {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23FAF4EA' stroke-opacity='.14' stroke-width='1'%3E%3Cellipse cx='24' cy='12' rx='6' ry='12'/%3E%3Cellipse cx='24' cy='36' rx='6' ry='12'/%3E%3Cellipse cx='12' cy='24' rx='12' ry='6'/%3E%3Cellipse cx='36' cy='24' rx='12' ry='6'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-opacity='.10' stroke-width='1'%3E%3Cellipse cx='24' cy='12' rx='6' ry='12'/%3E%3Cellipse cx='24' cy='36' rx='6' ry='12'/%3E%3Cellipse cx='12' cy='24' rx='12' ry='6'/%3E%3Cellipse cx='36' cy='24' rx='12' ry='6'/%3E%3C/g%3E%3C/svg%3E");
 }
 @layer components {
-  .btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium tracking-wide transition active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50; }
-  .btn-primary { @apply btn bg-maroon text-cream hover:bg-maroon-dark; }
-  .btn-outline { @apply btn border border-maroon text-maroon hover:bg-maroon hover:text-cream; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wide transition active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primary { @apply btn bg-brand text-cream hover:bg-brand-dark; }
+  .btn-outline { @apply btn border border-brand text-brand hover:bg-brand hover:text-cream; }
   .btn-shopee { @apply btn bg-[#EE4D2D] text-white hover:bg-[#d8431f]; }
-  .chip { @apply rounded-full border border-sand bg-white px-4 py-1.5 text-sm text-ink/80 transition hover:border-maroon hover:text-maroon; }
-  .chip-on { @apply border-maroon bg-maroon text-cream hover:text-cream; }
+  .chip { @apply rounded-full border border-sand bg-white px-4 py-1.5 text-sm text-ink/80 transition hover:border-brand hover:text-brand; }
+  .chip-on { @apply border-brand bg-brand text-cream hover:text-cream; }
   .container-x { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
-  .eyebrow { @apply text-xs uppercase tracking-[.25em] text-gold; }
-  .input { @apply w-full rounded-xl border border-sand bg-white px-4 py-3 text-sm outline-none transition focus:border-maroon; }
+  .eyebrow { @apply text-xs uppercase tracking-[.25em] text-accent-ink; }
+  .input { @apply w-full rounded-xl border border-sand bg-white px-4 py-3 text-sm outline-none transition focus:border-brand; }
 }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .marquee { animation: marquee 28s linear infinite; }

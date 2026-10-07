@@ -1,4 +1,5 @@
 import { getDb } from "./db";
+import type { BrandSlug } from "./brands";
 
 export type Review = {
   id: string;
@@ -47,12 +48,12 @@ export function maskBuyer(name: string): string {
  * Ulasan beranda: yang ditandai "unggulan" oleh admin tampil dulu.
  * Jika belum cukup, diisi otomatis ulasan bintang 5 dengan komentar paling informatif.
  */
-export async function homeReviews(limit = 6): Promise<Review[]> {
+export async function homeReviews(limit = 6, brand?: BrandSlug): Promise<Review[]> {
   const db = await getDb();
   const r = await db.execute({
-    sql: `${SELECT} WHERE r.hidden = 0 AND r.rating >= 4 AND length(r.comment) >= 20
+    sql: `${SELECT} LEFT JOIN shops s ON s.shop_id = r.shop_id WHERE ${brand ? "s.brand = ? AND " : ""}r.hidden = 0 AND r.rating >= 4 AND length(r.comment) >= 20
           ORDER BY r.featured DESC, (r.rating = 5) DESC, length(r.comment) DESC, r.created_at DESC LIMIT ?`,
-    args: [limit],
+    args: brand ? [brand, limit] : [limit],
   });
   return r.rows.map((x) => toReview(x as never));
 }
@@ -74,11 +75,13 @@ export async function allReviews(limit = 100): Promise<Review[]> {
 }
 
 /** Skor rata-rata tertimbang jumlah terjual, dari data produk Shopee. */
-export async function ratingSummary(): Promise<{ avg: number; sold: number } | null> {
+export async function ratingSummary(brand?: BrandSlug): Promise<{ avg: number; sold: number } | null> {
   const db = await getDb();
-  const r = await db.execute(
-    "SELECT SUM(rating * sold) AS w, SUM(CASE WHEN rating IS NOT NULL THEN sold ELSE 0 END) AS s, SUM(sold) AS total FROM products WHERE hidden = 0 AND status = 'NORMAL'",
-  );
+  const r = await db.execute({
+    sql: `SELECT SUM(p.rating * p.sold) AS w, SUM(CASE WHEN p.rating IS NOT NULL THEN p.sold ELSE 0 END) AS s, SUM(p.sold) AS total
+          FROM products p LEFT JOIN shops s ON s.shop_id = p.shop_id WHERE p.hidden = 0 AND p.status = 'NORMAL' ${brand ? "AND s.brand = ?" : ""}`,
+    args: brand ? [brand] : [],
+  });
   const w = Number(r.rows[0].w ?? 0), s = Number(r.rows[0].s ?? 0), total = Number(r.rows[0].total ?? 0);
   return s > 0 ? { avg: w / s, sold: total } : null;
 }

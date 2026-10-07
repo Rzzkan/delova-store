@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { CATEGORIES } from "@/lib/categories";
+import { BRANDS } from "@/lib/brands";
 import type { HomeSettings } from "@/lib/settings";
 import { ImageField } from "./ImageField";
 
@@ -23,7 +24,7 @@ export function HomeEditor({ initial }: { initial: HomeSettings }) {
 
   return (
     <div className="space-y-12">
-      <section className="space-y-4"><h2 className="text-3xl font-semibold">Hero (bagian paling atas)</h2>
+      <section className="space-y-4"><h2 className="text-2xl font-semibold">Hero (bagian paling atas)</h2>
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-4">
             <Field label="Teks kecil di atas judul"><input className="input" value={s.hero.eyebrow} onChange={(e) => hero("eyebrow", e.target.value)} /></Field>
@@ -40,16 +41,16 @@ export function HomeEditor({ initial }: { initial: HomeSettings }) {
         </div>
       </section>
 
-      <section className="space-y-4"><h2 className="text-3xl font-semibold">Foto Kategori</h2>
+      <section className="space-y-4"><h2 className="text-2xl font-semibold">Foto Kategori</h2>
         <p className="text-sm text-ink/60">Kosong = otomatis memakai foto produk terlaris di kategori itu. Rasio ideal 3:4.</p>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {CATEGORIES.map((c) => (
+          {CATEGORIES.filter((c) => BRANDS.wardrobe.categories.includes(c.slug)).map((c) => (
             <ImageField key={c.slug} label={c.label} value={s.categoryImages[c.slug] ?? ""} onChange={(v) => setS((p) => ({ ...p, categoryImages: { ...p.categoryImages, [c.slug]: v } }))} />
           ))}
         </div>
       </section>
 
-      <section className="space-y-4"><h2 className="text-3xl font-semibold">Banner Cerita Brand</h2>
+      <section className="space-y-4"><h2 className="text-2xl font-semibold">Banner Cerita Brand</h2>
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-4">
             <Field label="Judul"><textarea className="input" rows={2} value={s.story.title} onChange={(e) => story("title", e.target.value)} /></Field>
@@ -63,8 +64,20 @@ export function HomeEditor({ initial }: { initial: HomeSettings }) {
         </div>
       </section>
 
-      <section className="space-y-4"><h2 className="text-3xl font-semibold">Bar Pengumuman & Judul Ulasan</h2>
-        <Field label="Pengumuman berjalan (satu baris = satu pesan, maks 8)"><textarea className="input" rows={4} value={s.announcements.join("\n")} onChange={(e) => setS((p) => ({ ...p, announcements: e.target.value.split("\n") }))} /></Field>
+      <section className="space-y-4"><h2 className="text-2xl font-semibold">Logo & Foto Brand</h2>
+        <p className="text-sm text-ink/60">Logo bawaan digambar dengan teks mengikuti logo Delova. Unggah file logo (PNG transparan paling bagus) untuk menggantikannya.</p>
+        <div className="grid gap-6 md:grid-cols-3">
+          {(["wardrobe", "kids", "scarf"] as const).map((b) => (
+            <ImageField key={b} label={`Logo Delova ${b[0].toUpperCase()}${b.slice(1)}`} value={s.logos[b] ?? ""} onChange={(v) => setS((p) => ({ ...p, logos: { ...p.logos, [b]: v } }))} />
+          ))}
+          {(["kids", "scarf"] as const).map((b) => (
+            <ImageField key={`h${b}`} label={`Foto hero halaman ${b[0].toUpperCase()}${b.slice(1)}`} hint="Kosong = otomatis foto produk." value={s.brandHeroes[b] ?? ""} onChange={(v) => setS((p) => ({ ...p, brandHeroes: { ...p.brandHeroes, [b]: v } }))} />
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-4"><h2 className="text-2xl font-semibold">Bar Pengumuman & Judul Ulasan</h2>
+        <Field label="Pengumuman berjalan Wardrobe (satu baris = satu pesan, maks 8)"><textarea className="input" rows={4} value={s.announcements.join("\n")} onChange={(e) => setS((p) => ({ ...p, announcements: e.target.value.split("\n") }))} /></Field>
         <div className="grid gap-3 md:grid-cols-2">
           <Field label="Judul bagian ulasan"><input className="input" value={s.reviews.title} onChange={(e) => setS((p) => ({ ...p, reviews: { ...p.reviews, title: e.target.value } }))} /></Field>
           <Field label="Sub-judul"><input className="input" value={s.reviews.subtitle} onChange={(e) => setS((p) => ({ ...p, reviews: { ...p.reviews, subtitle: e.target.value } }))} /></Field>

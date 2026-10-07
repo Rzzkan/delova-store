@@ -54,7 +54,7 @@ export function PurchasePanel({ product, variants }: { product: Product; variant
           <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
             {images.map((src, i) => (
               <button key={src + i} onClick={() => setGallery(i)} aria-label={`Foto ${i + 1}`}
-                className={`h-20 w-16 flex-none overflow-hidden rounded-xl border-2 ${i === gallery ? "border-maroon" : "border-transparent"}`}>
+                className={`h-20 w-16 flex-none overflow-hidden rounded-xl border-2 ${i === gallery ? "border-brand" : "border-transparent"}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={thumb(src)} alt="" className="h-full w-full object-cover" />
               </button>
@@ -64,15 +64,15 @@ export function PurchasePanel({ product, variants }: { product: Product; variant
       </div>
 
       <div className="lg:py-4">
-        <h1 className="text-4xl font-semibold leading-tight text-ink md:text-5xl">{product.name}</h1>
+        <h1 className="text-3xl font-semibold leading-tight text-ink md:text-4xl">{product.name}</h1>
         <p className="mt-3 text-sm text-ink/60">
           {product.rating ? `★ ${product.rating.toFixed(1)} · ` : ""}{product.sold.toLocaleString("id-ID")} terjual
         </p>
 
         <div className="mt-6 flex items-baseline gap-3">
-          <span className="font-display text-4xl font-semibold text-maroon">{idr(price)}</span>
+          <span className="font-display text-3xl font-semibold text-brand">{idr(price)}</span>
           {original && original > price && <span className="text-ink/40 line-through">{idr(original)}</span>}
-          {pct > 0 && <span className="rounded-full bg-blush px-2.5 py-0.5 text-xs font-medium text-maroon">Hemat {pct}%</span>}
+          {pct > 0 && <span className="rounded-full bg-blush px-2.5 py-0.5 text-xs font-medium text-brand">Hemat {pct}%</span>}
         </div>
 
         {variants.length > 0 && (
@@ -82,7 +82,7 @@ export function PurchasePanel({ product, variants }: { product: Product; variant
               {variants.map((v) => (
                 <button key={v.id} type="button" disabled={v.stock <= 0} onClick={() => { setVid(v.id); setQty(1); }}
                   aria-pressed={v.id === vid}
-                  className={`rounded-xl border px-4 py-2 text-sm transition disabled:cursor-not-allowed disabled:text-ink/30 disabled:line-through ${v.id === vid ? "border-maroon bg-maroon text-cream" : "border-sand bg-white hover:border-maroon"}`}>
+                  className={`rounded-xl border px-4 py-2 text-sm transition disabled:cursor-not-allowed disabled:text-ink/30 disabled:line-through ${v.id === vid ? "border-brand bg-brand text-cream" : "border-sand bg-white hover:border-brand"}`}>
                   {v.name}
                 </button>
               ))}
@@ -96,7 +96,7 @@ export function PurchasePanel({ product, variants }: { product: Product; variant
             <span className="w-8 text-center text-sm" aria-live="polite">{qty}</span>
             <button type="button" className="h-10 w-10 text-lg" onClick={() => setQty((q) => Math.min(Math.max(stock, 1), q + 1))} aria-label="Tambah">+</button>
           </div>
-          <p className={`text-sm ${stock <= 0 && !needVariant ? "text-maroon" : "text-ink/60"}`}>
+          <p className={`text-sm ${stock <= 0 && !needVariant ? "text-brand" : "text-ink/60"}`}>
             {needVariant ? "Pilih varian untuk melihat stok" : stock <= 0 ? "Stok habis" : stock <= 5 ? `Sisa ${stock} — segera checkout` : `Stok tersedia (${stock})`}
           </p>
         </div>
@@ -119,7 +119,7 @@ export function PurchasePanel({ product, variants }: { product: Product; variant
 
         {product.description && (
           <div className="mt-10 border-t border-sand pt-8">
-            <h2 className="text-2xl font-semibold">Detail Produk</h2>
+            <h2 className="text-xl font-semibold">Detail Produk</h2>
             <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-ink/75">{product.description}</p>
           </div>
         )}

@@ -39,7 +39,7 @@ export function ProductRow({ p }: { p: { id: string; name: string; shop: string;
     <tr className="border-t border-sand align-middle text-sm">
       <td className="max-w-xs py-2 pr-3"><span className="line-clamp-2">{s.name}</span><span className="text-xs text-ink/40">{s.shop}</span></td>
       <td className="pr-3">Rp{s.price.toLocaleString("id-ID")}</td>
-      <td className={`pr-3 ${s.stock <= 0 ? "text-maroon" : ""}`}>{s.stock}</td>
+      <td className={`pr-3 ${s.stock <= 0 ? "text-brand" : ""}`}>{s.stock}</td>
       <td className="pr-3">
         <select className="rounded-lg border border-sand bg-white px-2 py-1" value={s.category} onChange={(e) => save({ category_override: e.target.value })} aria-label="Kategori">
           {CATEGORIES.map((c) => (<option key={c.slug} value={c.slug}>{c.label}</option>))}

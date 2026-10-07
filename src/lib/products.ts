@@ -1,4 +1,5 @@
 import { getDb } from "./db";
+import { isBrand, type BrandSlug } from "./brands";
 
 export type Product = {
   id: string;
@@ -21,6 +22,7 @@ export type Product = {
   shopeeCreatedAt: number | null;
   syncedAt: number;
   shopName?: string;
+  brand: BrandSlug;
 };
 
 export type Variant = {
@@ -43,6 +45,7 @@ export type Shop = {
   authorized: boolean;
   lastSyncAt: number | null;
   isMock: boolean;
+  brand: BrandSlug;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,6 +72,7 @@ const toProduct = (r: Row): Product => ({
   shopeeCreatedAt: r.shopee_created_at == null ? null : Number(r.shopee_created_at),
   syncedAt: Number(r.synced_at),
   shopName: r.shop_name ?? undefined,
+  brand: isBrand(r.brand) ? r.brand : "wardrobe",
 });
 
 const toVariant = (r: Row): Variant => ({
@@ -83,7 +87,7 @@ const toVariant = (r: Row): Variant => ({
   image: r.image ?? null,
 });
 
-const SELECT = `SELECT p.*, COALESCE(p.category_override, p.category) AS eff_category, s.name AS shop_name
+const SELECT = `SELECT p.*, COALESCE(p.category_override, p.category) AS eff_category, s.name AS shop_name, s.brand AS brand
   FROM products p LEFT JOIN shops s ON s.shop_id = p.shop_id`;
 
 export type ListOpts = {
@@ -96,6 +100,7 @@ export type ListOpts = {
   featured?: boolean;
   includeHidden?: boolean;
   excludeId?: string;
+  brand?: BrandSlug;
 };
 
 const ORDER: Record<string, string> = {
@@ -122,6 +127,10 @@ export async function listProducts(o: ListOpts = {}): Promise<{ items: Product[]
     where.push("p.name LIKE ?");
     args.push(`%${o.q}%`);
   }
+  if (o.brand) {
+    where.push("s.brand = ?");
+    args.push(o.brand);
+  }
   if (o.featured) where.push("p.featured = 1");
   if (o.excludeId) {
     where.push("p.id <> ?");
@@ -134,7 +143,7 @@ export async function listProducts(o: ListOpts = {}): Promise<{ items: Product[]
 
   const [rows, count] = await Promise.all([
     db.execute({ sql: `${SELECT} ${w} ORDER BY (p.stock > 0) DESC, ${order} LIMIT ? OFFSET ?`, args: [...args, limit, offset] }),
-    db.execute({ sql: `SELECT COUNT(*) AS n FROM products p ${w}`, args }),
+    db.execute({ sql: `SELECT COUNT(*) AS n FROM products p LEFT JOIN shops s ON s.shop_id = p.shop_id ${w}`, args }),
   ]);
   return { items: rows.rows.map((r) => toProduct(r as Row)), total: Number(count.rows[0].n) };
 }
@@ -165,11 +174,13 @@ export async function getVariantsByIds(ids: string[]): Promise<Variant[]> {
   return r.rows.map((x) => toVariant(x as Row));
 }
 
-export async function categoryCounts(): Promise<Record<string, number>> {
+export async function categoryCounts(brand?: BrandSlug): Promise<Record<string, number>> {
   const db = await getDb();
-  const r = await db.execute(
-    "SELECT COALESCE(category_override, category) AS c, COUNT(*) AS n FROM products WHERE hidden = 0 AND status = 'NORMAL' GROUP BY c",
-  );
+  const r = await db.execute({
+    sql: `SELECT COALESCE(p.category_override, p.category) AS c, COUNT(*) AS n FROM products p LEFT JOIN shops s ON s.shop_id = p.shop_id
+          WHERE p.hidden = 0 AND p.status = 'NORMAL' ${brand ? "AND s.brand = ?" : ""} GROUP BY c`,
+    args: brand ? [brand] : [],
+  });
   return Object.fromEntries(r.rows.map((x) => [String(x.c), Number(x.n)]));
 }
 
@@ -184,6 +195,7 @@ export async function listShops(): Promise<Shop[]> {
     authorized: !!x.access_token,
     lastSyncAt: x.last_sync_at == null ? null : Number(x.last_sync_at),
     isMock: !!x.is_mock,
+    brand: isBrand(x.brand) ? x.brand : "wardrobe",
   }));
 }
 

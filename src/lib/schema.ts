@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS shops (
   name TEXT NOT NULL,
   slug TEXT NOT NULL,
   default_category TEXT,
+  brand TEXT NOT NULL DEFAULT 'wardrobe',
   shopee_url TEXT,
   access_token TEXT,
   refresh_token TEXT,

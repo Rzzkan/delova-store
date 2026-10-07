@@ -1,21 +1,24 @@
 import type { Config } from "tailwindcss";
 
+const v = (name: string) => `rgb(var(--${name}) / <alpha-value>)`;
+
+// Warna mengikuti brand aktif (lihat :root & [data-brand] di globals.css)
 const config: Config = {
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        ink: "#2A1F1B",
-        cream: "#FAF4EA",
-        sand: "#EFE4D2",
-        blush: "#F2DCD3",
-        maroon: { DEFAULT: "#6B2330", dark: "#4E1722", light: "#8A3544" },
-        gold: { DEFAULT: "#B8893B", light: "#D9B876" },
+        ink: v("ink"),
+        cream: v("cream"),
+        sand: v("sand"),
+        blush: v("blush"),
+        brand: { DEFAULT: v("brand"), dark: v("brand-dark"), light: v("brand-light") },
+        accent: { DEFAULT: v("accent"), light: v("accent-light"), ink: v("accent-ink") },
         sage: "#7C8B6F",
       },
       fontFamily: {
-        display: ['"Cormorant Garamond"', "Georgia", "serif"],
-        sans: ['"DM Sans"', "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "Inter", "system-ui", "sans-serif"],
+        sans: ["Inter", "system-ui", "sans-serif"],
       },
     },
   },

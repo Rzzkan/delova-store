@@ -19,11 +19,11 @@ export function ReviewRow({ r }: { r: Review }) {
   }
   return (
     <tr className="border-t border-sand align-top text-sm">
-      <td className="py-3 pr-3 text-gold">{"★".repeat(r.rating)}</td>
+      <td className="py-3 pr-3 text-accent-ink">{"★".repeat(r.rating)}</td>
       <td className="max-w-lg py-3 pr-3"><p className="line-clamp-3">{r.comment}</p><p className="mt-1 text-xs text-ink/40">{r.buyer} · {r.productName ?? "—"} · {r.source}</p></td>
       <td className="pr-3"><input type="checkbox" checked={s.featured} onChange={(e) => set({ featured: e.target.checked })} aria-label="Unggulan" /></td>
       <td className="pr-3"><input type="checkbox" checked={s.hidden} onChange={(e) => set({ hidden: e.target.checked })} aria-label="Sembunyikan" /></td>
-      <td>{r.source === "manual" && <button className="text-xs text-maroon underline" onClick={async () => { await call({ op: "delete", id: r.id }); router.refresh(); }}>Hapus</button>}</td>
+      <td>{r.source === "manual" && <button className="text-xs text-brand underline" onClick={async () => { await call({ op: "delete", id: r.id }); router.refresh(); }}>Hapus</button>}</td>
     </tr>
   );
 }
@@ -41,7 +41,7 @@ export function AddReview({ products }: { products: { id: string; name: string }
   }
   return (
     <form onSubmit={submit} className="space-y-3 rounded-3xl border border-sand bg-white p-6">
-      <h3 className="text-2xl font-semibold">Tambah ulasan manual</h3>
+      <h3 className="text-xl font-semibold">Tambah ulasan manual</h3>
       <p className="text-xs text-ink/50">Untuk ulasan yang belum terambil otomatis (mis. salin dari Shopee/WhatsApp). Pastikan pembeli setuju ulasannya ditampilkan.</p>
       <div className="grid gap-3 md:grid-cols-3">
         <input name="buyer" required placeholder="Nama pembeli (otomatis disamarkan)" className="input" />
@@ -51,7 +51,7 @@ export function AddReview({ products }: { products: { id: string; name: string }
       <textarea name="comment" required minLength={10} rows={3} placeholder="Isi ulasan" className="input" />
       <input name="reply" placeholder="Balasan penjual (opsional)" className="input" />
       <ImageField label="Foto dari pembeli (opsional)" value={img} onChange={setImg} />
-      {err && <p role="alert" className="text-sm text-maroon">{err}</p>}
+      {err && <p role="alert" className="text-sm text-brand">{err}</p>}
       <button className="btn-primary">Tambah & jadikan unggulan</button>
     </form>
   );

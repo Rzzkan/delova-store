@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Shell } from "@/components/Shell";
 import { getDb } from "@/lib/db";
 import { idr } from "@/lib/format";
 import { waLink } from "@/lib/whatsapp";
@@ -34,9 +35,10 @@ export default async function OrderPage({ params }: { params: P }) {
   const o = await load((await params).token);
   if (!o) notFound();
   return (
+    <Shell>
     <div className="container-x max-w-3xl py-10">
       <p className="eyebrow">Pesanan #{o.id}</p>
-      <h1 className="mt-2 text-5xl font-semibold">Detail Pesanan</h1>
+      <h1 className="mt-2 text-4xl font-semibold">Detail Pesanan</h1>
       <p className="mt-2 text-sm text-ink/60">Atas nama {o.name} · {new Date(o.createdAt * 1000).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })}</p>
       <ul className="mt-8 divide-y divide-sand rounded-3xl border border-sand bg-white">
         {o.lines.map((l, i) => (
@@ -46,16 +48,17 @@ export default async function OrderPage({ params }: { params: P }) {
               {l.image && <img src={l.image} alt={l.name} className="h-full w-full object-cover" />}
             </Link>
             <div className="flex-1">
-              <Link href={`/produk/${l.slug}`} className="font-medium hover:text-maroon">{l.name}</Link>
+              <Link href={`/produk/${l.slug}`} className="font-medium hover:text-brand">{l.name}</Link>
               {l.variant && <p className="text-sm text-ink/60">Varian: {l.variant}</p>}
               <p className="mt-2 text-sm">{l.qty} × {idr(l.price)}</p>
-              <p className="font-medium text-maroon">{idr(l.price * l.qty)}</p>
+              <p className="font-medium text-brand">{idr(l.price * l.qty)}</p>
             </div>
           </li>
         ))}
       </ul>
-      <div className="mt-4 flex justify-between rounded-2xl bg-white p-5 text-lg"><span>Total (belum ongkir)</span><strong className="text-maroon">{idr(o.total)}</strong></div>
+      <div className="mt-4 flex justify-between rounded-2xl bg-white p-5 text-lg"><span>Total (belum ongkir)</span><strong className="text-brand">{idr(o.total)}</strong></div>
       <a className="btn-primary mt-6" href={waLink(`Halo Delova, saya mau menanyakan pesanan #${o.id}`)}>Tanya admin via WhatsApp</a>
     </div>
+    </Shell>
   );
 }

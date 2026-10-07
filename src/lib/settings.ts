@@ -1,5 +1,6 @@
 import { getDb } from "./db";
 import { CATEGORIES } from "./categories";
+import { BRAND_SLUGS } from "./brands";
 
 /** Semua teks & gambar beranda yang bisa diubah dari /admin/tampilan. Gambar = URL (upload → /api/media/…, atau link luar). */
 export type HomeSettings = {
@@ -8,6 +9,8 @@ export type HomeSettings = {
   categoryImages: Record<string, string>;
   story: { title: string; body: string; image: string; ctaLabel: string; ctaHref: string };
   reviews: { title: string; subtitle: string };
+  logos: Record<string, string>;
+  brandHeroes: Record<string, string>;
 };
 
 export const HOME_DEFAULTS: HomeSettings = {
@@ -36,6 +39,8 @@ export const HOME_DEFAULTS: HomeSettings = {
     ctaHref: "/produk",
   },
   reviews: { title: "Kata Pembeli Delova", subtitle: "Ulasan asli dari pembeli di Shopee" },
+  logos: {},
+  brandHeroes: {},
 };
 
 const KEY = "home";
@@ -49,6 +54,8 @@ function merge(stored: Partial<HomeSettings> | null): HomeSettings {
     categoryImages: { ...(s.categoryImages ?? {}) },
     story: { ...d.story, ...(s.story ?? {}) },
     reviews: { ...d.reviews, ...(s.reviews ?? {}) },
+    logos: { ...(s.logos ?? {}) },
+    brandHeroes: { ...(s.brandHeroes ?? {}) },
   };
 }
 
@@ -85,6 +92,8 @@ export async function saveHome(input: Partial<HomeSettings>): Promise<HomeSettin
     categoryImages: Object.fromEntries(CATEGORIES.map((c) => [c.slug, img(cur.categoryImages[c.slug])]).filter(([, v]) => v)),
     story: { title: str(cur.story.title, 160), body: str(cur.story.body, 900), image: img(cur.story.image), ctaLabel: str(cur.story.ctaLabel, 40), ctaHref: href(cur.story.ctaHref) },
     reviews: { title: str(cur.reviews.title, 80), subtitle: str(cur.reviews.subtitle, 140) },
+    logos: Object.fromEntries(BRAND_SLUGS.map((b) => [b, img(cur.logos[b])]).filter(([, v]) => v)),
+    brandHeroes: Object.fromEntries(BRAND_SLUGS.map((b) => [b, img(cur.brandHeroes[b])]).filter(([, v]) => v)),
   };
   if (!clean.announcements.length) clean.announcements = HOME_DEFAULTS.announcements;
   const db = await getDb();

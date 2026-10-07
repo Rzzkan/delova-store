@@ -19,6 +19,9 @@ async function init(): Promise<Client> {
   await c.executeMultiple(SCHEMA);
   // Migrasi untuk database lama: kolom token pada leads
   try { await c.execute("ALTER TABLE leads ADD COLUMN token TEXT"); } catch { /* sudah ada */ }
+  try { await c.execute("ALTER TABLE shops ADD COLUMN brand TEXT NOT NULL DEFAULT 'wardrobe'"); } catch { /* sudah ada */ }
+  await c.execute("UPDATE shops SET brand='kids' WHERE brand='wardrobe' AND (lower(name) LIKE '%kids%' OR lower(slug) LIKE '%kids%')");
+  await c.execute("UPDATE shops SET brand='scarf' WHERE brand='wardrobe' AND (lower(name) LIKE '%scarf%' OR lower(slug) LIKE '%scarf%')");
   await c.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_token ON leads(token)");
   if (isMock()) {
     const r = await c.execute("SELECT COUNT(*) AS n FROM products");

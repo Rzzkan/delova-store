@@ -1,6 +1,7 @@
 import type { Client, InStatement } from "@libsql/client";
 import { getDb } from "../db";
 import { detectCategory, defaultCategoryForShop } from "../categories";
+import { brandForShop } from "../brands";
 import { slugify } from "../format";
 import { maskBuyer } from "../reviews";
 import { isMock } from "./config";
@@ -38,8 +39,8 @@ export async function refreshShopProfile(shopId: number): Promise<void> {
   const name: string = info.shop_name || shop.name;
   const slug = slugify(name) || `shop-${shopId}`;
   await db.execute({
-    sql: "UPDATE shops SET name=?, slug=?, default_category=COALESCE(default_category, ?), shopee_url=COALESCE(shopee_url, ?) WHERE shop_id=?",
-    args: [name, slug, defaultCategoryForShop(name), `https://shopee.co.id/${slug.replace(/-/g, "")}`, shopId],
+    sql: "UPDATE shops SET name=?, slug=?, brand=?, default_category=COALESCE(default_category, ?), shopee_url=COALESCE(shopee_url, ?) WHERE shop_id=?",
+    args: [name, slug, brandForShop(name), defaultCategoryForShop(name), `https://shopee.co.id/${slug.replace(/-/g, "")}`, shopId],
   });
 }
 

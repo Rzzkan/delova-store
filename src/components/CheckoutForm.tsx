@@ -12,7 +12,7 @@ export function CheckoutForm() {
 
   if (!ready) return null;
   if (!items.length)
-    return (<div className="py-20 text-center"><p className="font-display text-3xl">Belum ada barang</p><Link href="/produk" className="btn-primary mt-6">Belanja dulu</Link></div>);
+    return (<div className="py-20 text-center"><p className="font-display text-2xl">Belum ada barang</p><Link href="/produk" className="btn-primary mt-6">Belanja dulu</Link></div>);
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -46,18 +46,18 @@ export function CheckoutForm() {
         <div><label className="mb-1 block text-sm font-medium" htmlFor="phone">No. WhatsApp</label><input id="phone" name="phone" required inputMode="tel" pattern="[0-9+ ]{9,16}" placeholder="08xxxxxxxxxx" className="input" autoComplete="tel" /></div>
         <div><label className="mb-1 block text-sm font-medium" htmlFor="address">Alamat lengkap</label><textarea id="address" name="address" required minLength={10} rows={3} className="input" autoComplete="street-address" /></div>
         <div><label className="mb-1 block text-sm font-medium" htmlFor="note">Catatan (opsional)</label><input id="note" name="note" className="input" /></div>
-        {err && <p role="alert" className="text-sm text-maroon">{err}</p>}
+        {err && <p role="alert" className="text-sm text-brand">{err}</p>}
         <button className="btn-primary w-full sm:w-auto" disabled={busy}>{busy ? "Memproses…" : "Kirim Pesanan ke WhatsApp"}</button>
         <p className="text-xs text-ink/50">Pesananmu dikirim ke admin Delova lewat WhatsApp untuk konfirmasi stok, ongkir, dan pembayaran.</p>
       </form>
       <aside className="h-fit rounded-3xl border border-sand bg-white p-6">
-        <h2 className="text-2xl font-semibold">Pesanan</h2>
+        <h2 className="text-xl font-semibold">Pesanan</h2>
         <ul className="mt-4 space-y-3 text-sm">
           {items.map((i) => (
             <li key={i.key} className="flex justify-between gap-3"><span>{i.name}{i.variantName ? ` (${i.variantName})` : ""} <span className="text-ink/50">×{i.qty}</span></span><span>{idr(i.price * i.qty)}</span></li>
           ))}
         </ul>
-        <div className="mt-4 flex justify-between border-t border-sand pt-4 font-medium"><span>Subtotal</span><span className="text-maroon">{idr(total)}</span></div>
+        <div className="mt-4 flex justify-between border-t border-sand pt-4 font-medium"><span>Subtotal</span><span className="text-brand">{idr(total)}</span></div>
       </aside>
     </div>
   );

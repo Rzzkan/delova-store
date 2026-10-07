@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { CartProvider } from "@/components/CartProvider";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { Pixels } from "@/components/Pixels";
 
 const site = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
@@ -21,14 +18,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fredoka:wght@500;600;700&family=Caveat:wght@700&display=swap" rel="stylesheet" />
       </head>
       <body>
         <CartProvider>
-          <AnnouncementBar />
-          <Header />
-          <main>{children}</main>
-          <Footer />
+          {children}
         </CartProvider>
         <Pixels />
       </body>
