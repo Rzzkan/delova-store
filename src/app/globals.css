@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+html { scroll-behavior: smooth; }
+body { @apply bg-cream font-sans text-ink antialiased; }
+h1, h2, h3, .font-display { font-family: "Cormorant Garamond", Georgia, serif; }
+
+.pattern-kawung {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23B8893B' stroke-opacity='.22' stroke-width='1'%3E%3Cellipse cx='24' cy='12' rx='6' ry='12'/%3E%3Cellipse cx='24' cy='36' rx='6' ry='12'/%3E%3Cellipse cx='12' cy='24' rx='12' ry='6'/%3E%3Cellipse cx='36' cy='24' rx='12' ry='6'/%3E%3C/g%3E%3C/svg%3E");
+}
+.pattern-kawung-light {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23FAF4EA' stroke-opacity='.14' stroke-width='1'%3E%3Cellipse cx='24' cy='12' rx='6' ry='12'/%3E%3Cellipse cx='24' cy='36' rx='6' ry='12'/%3E%3Cellipse cx='12' cy='24' rx='12' ry='6'/%3E%3Cellipse cx='36' cy='24' rx='12' ry='6'/%3E%3C/g%3E%3C/svg%3E");
+}
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium tracking-wide transition active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primary { @apply btn bg-maroon text-cream hover:bg-maroon-dark; }
+  .btn-outline { @apply btn border border-maroon text-maroon hover:bg-maroon hover:text-cream; }
+  .btn-shopee { @apply btn bg-[#EE4D2D] text-white hover:bg-[#d8431f]; }
+  .chip { @apply rounded-full border border-sand bg-white px-4 py-1.5 text-sm text-ink/80 transition hover:border-maroon hover:text-maroon; }
+  .chip-on { @apply border-maroon bg-maroon text-cream hover:text-cream; }
+  .container-x { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+  .eyebrow { @apply text-xs uppercase tracking-[.25em] text-gold; }
+  .input { @apply w-full rounded-xl border border-sand bg-white px-4 py-3 text-sm outline-none transition focus:border-maroon; }
+}
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee { animation: marquee 28s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .marquee { animation: none; } html { scroll-behavior: auto; } }
