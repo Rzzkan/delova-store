@@ -5,6 +5,7 @@ import { Shell } from "@/components/Shell";
 import { BRANDS, BRAND_SLUGS, isBrand } from "@/lib/brands";
 import { CATEGORIES, categoryLabel } from "@/lib/categories";
 import { listProducts } from "@/lib/products";
+import { BRAND_SEO, CATEGORY_SEO, breadcrumbLd, ldScript } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 type SP = Promise<{ [k: string]: string | string[] | undefined }>;
@@ -16,7 +17,17 @@ export async function generateMetadata({ searchParams }: { searchParams: SP }): 
   const sp = await searchParams;
   const k = one(sp.kategori);
   const b = one(sp.brand);
-  return { title: k ? categoryLabel(k) : b === "kids" ? "Delova Kids" : b === "scarf" ? "Delova Scarf" : b === "wardrobe" ? "Delova Wardrobe" : "Semua Produk" };
+  const brand = isBrand(b) ? b : undefined;
+  const clean = new URLSearchParams();
+  if (brand) clean.set("brand", brand);
+  if (k) clean.set("kategori", k);
+  const canonical = clean.toString() ? `/produk?${clean}` : "/produk";
+  const thin = !!(one(sp.q) || (one(sp.urut) && one(sp.urut) !== "terbaru") || Number(one(sp.hal)) > 1);
+  const cs = k ? CATEGORY_SEO[k] : undefined;
+  const bn = brand ? BRANDS[brand].name : "Delova";
+  const title = cs ? `${cs.h1} — ${bn}` : brand ? BRAND_SEO[brand].title : "Semua Produk — Delova Wardrobe, Kids, Scarf & Daily";
+  const description = cs ? `${cs.copy} Belanja di ${bn}, stok tersinkron dengan Shopee.` : brand ? BRAND_SEO[brand].description : "Katalog lengkap Delova: kebaya, batik, gamis, hijab, busana anak, dan fashion harian. Stok & harga tersinkron dengan toko resmi Shopee.";
+  return { title: { absolute: title }, description: description.slice(0, 160), alternates: { canonical }, robots: thin ? { index: false, follow: true } : undefined, openGraph: { title, description: description.slice(0, 160), url: canonical } };
 }
 
 export default async function Catalog({ searchParams }: { searchParams: SP }) {
@@ -45,6 +56,8 @@ export default async function Catalog({ searchParams }: { searchParams: SP }) {
         <p className="eyebrow">Katalog</p>
         <h1 className="mt-2 text-4xl font-semibold">{q ? `Hasil “${q}”` : kategori ? categoryLabel(kategori) : brand ? BRANDS[brand].name : "Semua Produk"}</h1>
         <p className="mt-2 text-sm text-ink/60">{total} produk</p>
+        {kategori && CATEGORY_SEO[kategori] && !q && <p className="mt-3 max-w-2xl text-sm text-ink/70">{CATEGORY_SEO[kategori].copy}</p>}
+        <script type="application/ld+json" dangerouslySetInnerHTML={ldScript(breadcrumbLd([{ name: "Beranda", url: "/" }, { name: "Produk", url: "/produk" }, ...(kategori ? [{ name: categoryLabel(kategori), url: `/produk?kategori=${kategori}` }] : [])]))} />
       </div>
 
       <div className="mb-8 space-y-4">

@@ -7,9 +7,13 @@ const site = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site),
-  title: { default: "Delova Wardrobe — Kebaya, Batik & Hijab Modern", template: "%s | Delova Wardrobe" },
+  title: { default: "Delova Wardrobe — Kebaya, Batik & Hijab Modern", template: "%s | Delova" },
   description: "Busana wastra Indonesia modern: kebaya, batik, gamis, hijab, dan Delova Kids. Stok & harga tersinkron dengan toko Shopee resmi.",
-  openGraph: { type: "website", siteName: "Delova Wardrobe", locale: "id_ID" },
+  openGraph: { type: "website", siteName: "Delova", locale: "id_ID" },
+  twitter: { card: "summary_large_image" },
+  alternates: { canonical: "/" },
+  verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } : undefined,
+  robots: { index: true, follow: true, googleBot: { "max-image-preview": "large", "max-snippet": -1 } },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

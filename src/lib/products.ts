@@ -13,6 +13,7 @@ export type Product = {
   stock: number;
   sold: number;
   rating: number | null;
+  reviewCount: number | null;
   images: string[];
   hasModel: boolean;
   category: string;
@@ -63,6 +64,7 @@ const toProduct = (r: Row): Product => ({
   stock: Number(r.stock),
   sold: Number(r.sold ?? 0),
   rating: r.rating == null ? null : Number(r.rating),
+  reviewCount: r.review_count == null ? null : Number(r.review_count),
   images: JSON.parse(r.images || "[]"),
   hasModel: !!r.has_model,
   category: r.category_override || r.category,

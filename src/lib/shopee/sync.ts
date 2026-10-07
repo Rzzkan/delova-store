@@ -111,15 +111,15 @@ async function buildItem(shop: ShopRow, item: J, extra: J | undefined): Promise<
 
   // UPSERT: kolom hasil sinkron diperbarui, kolom kurasi admin (hidden, featured, category_override, slug) dipertahankan.
   stmts.push({
-    sql: `INSERT INTO products (id, shop_id, item_id, slug, name, description, price, original_price, stock, sold, rating, images, status, has_model, category, shopee_url, shopee_created_at, shopee_updated_at, synced_at)
-          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    sql: `INSERT INTO products (id, shop_id, item_id, slug, name, description, price, original_price, stock, sold, rating, review_count, images, status, has_model, category, shopee_url, shopee_created_at, shopee_updated_at, synced_at)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
           ON CONFLICT(id) DO UPDATE SET name=excluded.name, description=excluded.description, price=excluded.price,
-            original_price=excluded.original_price, stock=excluded.stock, sold=excluded.sold, rating=excluded.rating,
+            original_price=excluded.original_price, stock=excluded.stock, sold=excluded.sold, rating=excluded.rating, review_count=excluded.review_count,
             images=excluded.images, status=excluded.status, has_model=excluded.has_model, category=excluded.category,
             shopee_url=excluded.shopee_url, shopee_updated_at=excluded.shopee_updated_at, synced_at=excluded.synced_at`,
     args: [
       id, shop.shop_id, itemId, `${slugify(name)}-${itemId}`, name, descriptionOf(item), price, original, stock,
-      Number(extra?.sale ?? 0), extra?.rating_star ? Number(extra.rating_star) : null, JSON.stringify(images),
+      Number(extra?.sale ?? 0), extra?.rating_star ? Number(extra.rating_star) : null, extra?.comment_count != null ? Number(extra.comment_count) : null, JSON.stringify(images),
       String(item.item_status ?? "NORMAL"), hasModel ? 1 : 0, category, url,
       item.create_time ?? null, item.update_time ?? null, nowSec(),
     ],
