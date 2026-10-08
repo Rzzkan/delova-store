@@ -10,7 +10,7 @@ const SOCIALS: Record<BrandSlug, [string, string][]> = {
   daily: [],
 };
 
-export function Footer({ brand, logo, shopeeUrls }: { brand: BrandSlug; logo: ReactNode; shopeeUrls: Record<BrandSlug, string> }) {
+export function Footer({ brand, logo, shopeeUrls, store }: { brand: BrandSlug; logo: ReactNode; shopeeUrls: Record<BrandSlug, string>; store?: { name: string; address: string } | null }) {
   const wa = waNumber();
   return (
     <footer className="relative mt-24 overflow-hidden bg-brand-dark text-cream">
@@ -38,6 +38,12 @@ export function Footer({ brand, logo, shopeeUrls }: { brand: BrandSlug; logo: Re
             {SOCIALS[brand].map(([l, u]) => (<li key={u}><a className="hover:text-accent-light" href={u} target="_blank" rel="noopener noreferrer">{l}</a></li>))}
             {wa && <li><a className="hover:text-accent-light" href={`https://wa.me/${wa}`} target="_blank" rel="noopener noreferrer">WhatsApp Admin</a></li>}
           </ul>
+          {store && (
+            <div className="mt-5 text-sm text-cream/80">
+              <Link className="font-medium hover:text-accent-light" href="/toko-offline">📍 {store.name}</Link>
+              {store.address && <p className="mt-1 line-clamp-3 text-xs text-cream/60">{store.address}</p>}
+            </div>
+          )}
         </div>
       </div>
       <div className="relative border-t border-cream/10 py-5 text-center text-xs text-cream/50">© {new Date().getFullYear()} Delova Wardrobe. Stok & harga disinkronkan dari Shopee.</div>
