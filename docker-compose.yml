@@ -1,0 +1,65 @@
+# Delova Store — untuk Hostinger Docker Manager (atau `docker compose up -d`)
+# Isi variabel di kolom "Environment" Hostinger (atau file .env). Panduan: docs/DEPLOY_HOSTINGER.md
+services:
+  app:
+    build:
+      context: https://github.com/Rzzkan/delova-store.git#main
+    image: delova-store:latest
+    restart: unless-stopped
+    expose:
+      - "3000"
+    volumes:
+      - delova_data:/app/data          # database SQLite + gambar unggahan admin
+    environment:
+      NEXT_PUBLIC_SITE_URL: https://${DOMAIN:?isi DOMAIN, mis. delova.id}
+      NEXT_PUBLIC_WA_NUMBER: ${WA_NUMBER:?isi WA_NUMBER, format 628xxxx}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?isi ADMIN_PASSWORD}
+      SESSION_SECRET: ${SESSION_SECRET:?isi SESSION_SECRET}
+      CRON_SECRET: ${CRON_SECRET:?isi CRON_SECRET}
+      TURSO_DATABASE_URL: ${TURSO_DATABASE_URL:-}
+      TURSO_AUTH_TOKEN: ${TURSO_AUTH_TOKEN:-}
+      SHOPEE_PARTNER_ID: ${SHOPEE_PARTNER_ID:-}
+      SHOPEE_PARTNER_KEY: ${SHOPEE_PARTNER_KEY:-}
+      SHOPEE_ENV: ${SHOPEE_ENV:-live}
+      SHOPEE_REDIRECT_URL: https://${DOMAIN}/api/shopee/callback
+      SHOPEE_PUSH_KEY: ${SHOPEE_PUSH_KEY:-}
+      SHOPEE_WEBHOOK_URL: https://${DOMAIN}/api/shopee/webhook
+      NEXT_PUBLIC_META_PIXEL_ID: ${META_PIXEL_ID:-}
+      NEXT_PUBLIC_TIKTOK_PIXEL_ID: ${TIKTOK_PIXEL_ID:-}
+      NEXT_PUBLIC_GA4_ID: ${GA4_ID:-}
+      NEXT_PUBLIC_GSC_VERIFICATION: ${GSC_VERIFICATION:-}
+
+  # HTTPS otomatis (Let's Encrypt). Pastikan DNS A record domain sudah mengarah ke IP VPS.
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    command: caddy reverse-proxy --from ${DOMAIN} --to app:3000
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+  # Pengganti Vercel Cron: sinkron Shopee tiap 6 jam
+  cron:
+    image: curlimages/curl:8.10.1
+    restart: unless-stopped
+    depends_on:
+      - app
+    environment:
+      CRON_SECRET: ${CRON_SECRET}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        while true; do
+          sleep 21600
+          curl -fsS -m 300 -H "Authorization: Bearer $$CRON_SECRET" http://app:3000/api/shopee/sync || echo "sync gagal"
+        done
+
+volumes:
+  delova_data:
+  caddy_data:
+  caddy_config:
