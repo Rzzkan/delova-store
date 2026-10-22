@@ -35,8 +35,10 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    command: caddy reverse-proxy --from ${DOMAIN:-GANTI_domainmu.com} --to app:3000
+    environment:
+      DOMAIN: ${DOMAIN:?isi DOMAIN di file .env}
     volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
 
