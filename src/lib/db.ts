@@ -25,7 +25,9 @@ async function init(): Promise<Client> {
   await c.execute("UPDATE shops SET brand='scarf' WHERE brand='wardrobe' AND (lower(name) LIKE '%scarf%' OR lower(slug) LIKE '%scarf%')");
   await c.execute("UPDATE shops SET brand='daily' WHERE brand='wardrobe' AND (lower(name) LIKE '%daily%' OR lower(slug) LIKE '%daily%')");
   await c.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_token ON leads(token)");
-  if (isMock()) {
+  // Jangan isi data contoh lagi bila sudah ada toko asli (mis. hasil impor Excel / sinkron Shopee).
+  const real = await c.execute("SELECT COUNT(*) AS n FROM shops WHERE is_mock = 0");
+  if (isMock() && Number(real.rows[0].n) === 0) {
     const r = await c.execute("SELECT COUNT(*) AS n FROM products");
     const daily = await c.execute("SELECT COUNT(*) AS n FROM shops WHERE brand = 'daily'");
     // seed ulang aman (INSERT OR IGNORE): melengkapi data contoh bila ada brand baru

@@ -16,7 +16,7 @@ export const discountPct = (price: number, original?: number | null) =>
 
 /** Shopee CDN mendukung suffix _tn untuk thumbnail kecil. */
 export function thumb(url: string): string {
-  if (url.includes("susercontent.com") && !url.endsWith("_tn")) return `${url}_tn`;
+  if ((url.includes("susercontent.com") || url.includes("cf.shopee.co.id/file/")) && !url.endsWith("_tn")) return `${url}_tn`;
   return url;
 }
 
