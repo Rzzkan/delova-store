@@ -162,7 +162,7 @@ export async function BrandHome({ brand }: { brand: BrandSlug }) {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {BRAND_SLUGS.map((s) => (
             <Link key={s} href={BRANDS[s].home} data-brand={s} className={`group flex flex-col items-center gap-5 rounded-3xl border-2 bg-cream p-8 text-center transition hover:-translate-y-1 hover:shadow-xl ${s === brand ? "border-brand" : "border-sand"}`}>
-              <Logo brand={s} imageUrl={home.logos[s]} size="lg" />
+              <Logo brand={s} imageUrl={home.logos[s]} scale={home.logoScale[s]} size="lg" />
               <p className="text-sm text-ink/70">{BLURB[s]}</p>
               <span className="btn-primary !py-2">Kunjungi</span>
             </Link>

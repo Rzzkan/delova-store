@@ -10,6 +10,7 @@ export type HomeSettings = {
   story: { title: string; body: string; image: string; ctaLabel: string; ctaHref: string };
   reviews: { title: string; subtitle: string };
   logos: Record<string, string>;
+  logoScale: Record<string, number>; // ukuran logo per brand, persen (60–250)
   brandHeroes: Record<string, string>;
   shopeeUrls: Record<string, string>;
 };
@@ -41,6 +42,7 @@ export const HOME_DEFAULTS: HomeSettings = {
   },
   reviews: { title: "Kata Pembeli Delova", subtitle: "Ulasan asli dari pembeli di Shopee" },
   logos: {},
+  logoScale: {},
   brandHeroes: {},
   shopeeUrls: {},
 };
@@ -57,6 +59,7 @@ function merge(stored: Partial<HomeSettings> | null): HomeSettings {
     story: { ...d.story, ...(s.story ?? {}) },
     reviews: { ...d.reviews, ...(s.reviews ?? {}) },
     logos: { ...(s.logos ?? {}) },
+    logoScale: { ...(s.logoScale ?? {}) },
     brandHeroes: { ...(s.brandHeroes ?? {}) },
     shopeeUrls: { ...(s.shopeeUrls ?? {}) },
   };
@@ -96,6 +99,7 @@ export async function saveHome(input: Partial<HomeSettings>): Promise<HomeSettin
     story: { title: str(cur.story.title, 160), body: str(cur.story.body, 900), image: img(cur.story.image), ctaLabel: str(cur.story.ctaLabel, 40), ctaHref: href(cur.story.ctaHref) },
     reviews: { title: str(cur.reviews.title, 80), subtitle: str(cur.reviews.subtitle, 140) },
     logos: Object.fromEntries(BRAND_SLUGS.map((b) => [b, img(cur.logos[b])]).filter(([, v]) => v)),
+    logoScale: Object.fromEntries(BRAND_SLUGS.map((b) => [b, Math.min(250, Math.max(60, Math.round(Number(cur.logoScale[b]) || 100)))]).filter(([, v]) => v !== 100)),
     brandHeroes: Object.fromEntries(BRAND_SLUGS.map((b) => [b, img(cur.brandHeroes[b])]).filter(([, v]) => v)),
     shopeeUrls: Object.fromEntries(BRAND_SLUGS.map((b) => [b, str(cur.shopeeUrls[b], 300).trim()]).filter(([, v]) => String(v).startsWith("https://"))),
   };

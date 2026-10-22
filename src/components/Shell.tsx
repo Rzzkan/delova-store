@@ -14,7 +14,7 @@ export async function Shell({ brand = "wardrobe", children }: { brand?: BrandSlu
   const b = BRANDS[brand];
   const messages = brand === "wardrobe" ? home.announcements : b.announcements;
   const shopeeUrls = Object.fromEntries(BRAND_SLUGS.map((x) => [x, home.shopeeUrls[x] || BRANDS[x].shopeeUrl])) as Record<BrandSlug, string>;
-  const logo = (size?: "md" | "lg", slug: BrandSlug = brand) => <Logo brand={slug} imageUrl={home.logos[slug]} size={size} />;
+  const logo = (size?: "md" | "lg", slug: BrandSlug = brand) => <Logo brand={slug} imageUrl={home.logos[slug]} scale={home.logoScale[slug]} size={size} />;
   return (
     <div data-brand={brand} className="min-h-screen bg-cream text-ink">
       <AnnouncementBar messages={messages} />

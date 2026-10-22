@@ -70,7 +70,20 @@ export function HomeEditor({ initial }: { initial: HomeSettings }) {
           <div key={b} className="rounded-3xl border border-sand bg-white p-5">
             <h3 className="mb-4 text-xl">{BRANDS[b].name}</h3>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              <ImageField label="Logo" hint="PNG transparan." value={s.logos[b] ?? ""} onChange={(v) => setS((p) => ({ ...p, logos: { ...p.logos, [b]: v } }))} />
+              <div className="space-y-3">
+                <ImageField trim label="Logo" hint="Ruang kosong di tepi otomatis dipangkas saat unggah. Sudah terlanjur unggah? Klik “Pangkas ruang kosong”." value={s.logos[b] ?? ""} onChange={(v) => setS((p) => ({ ...p, logos: { ...p.logos, [b]: v } }))} />
+                <div>
+                  <label htmlFor={`scale-${b}`} className="mb-1 flex justify-between text-sm font-medium"><span>Ukuran logo di header</span><span className="text-ink/60">{s.logoScale[b] ?? 100}%</span></label>
+                  <input id={`scale-${b}`} type="range" min={60} max={250} step={5} className="w-full" value={s.logoScale[b] ?? 100} onChange={(e) => setS((p) => ({ ...p, logoScale: { ...p.logoScale, [b]: Number(e.target.value) } }))} />
+                  {s.logos[b] && (
+                    <div className="mt-2 flex h-20 items-center rounded-xl border border-sand bg-white px-4" aria-hidden>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={s.logos[b]} alt="" style={{ height: 40 * ((s.logoScale[b] ?? 100) / 100), maxWidth: 220 * ((s.logoScale[b] ?? 100) / 100) }} className="w-auto object-contain" />
+                    </div>
+                  )}
+                  <p className="mt-1 text-xs text-ink/50">Pratinjau ukuran di header. Geser lalu simpan.</p>
+                </div>
+              </div>
               {b !== "wardrobe" && (
                 <ImageField label="Foto hero halaman brand" hint="Kosong = otomatis foto produk." value={s.brandHeroes[b] ?? ""} onChange={(v) => setS((p) => ({ ...p, brandHeroes: { ...p.brandHeroes, [b]: v } }))} />
               )}

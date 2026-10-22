@@ -6,8 +6,8 @@ const KIDS = ["#E84234", "#57AEA5", "#F1CC5E", "#44849F", "#86AC33", "#F96605"];
  * Wordmark brand, digambar dengan teks (tajam di semua ukuran).
  * Jika admin mengunggah file logo di /admin/tampilan, gambar itu dipakai menggantikan.
  */
-export function Logo({ brand, imageUrl, size = "md" }: { brand: BrandSlug; imageUrl?: string; size?: "md" | "lg" }) {
-  const sc = size === "lg" ? 1.5 : 1;
+export function Logo({ brand, imageUrl, size = "md", scale = 100 }: { brand: BrandSlug; imageUrl?: string; size?: "md" | "lg"; scale?: number }) {
+  const sc = (size === "lg" ? 1.5 : 1) * (scale / 100);
   if (imageUrl) {
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={imageUrl} alt={`Delova ${brand}`} style={{ height: 40 * sc, maxWidth: 220 * sc }} className="w-auto object-contain" />;
