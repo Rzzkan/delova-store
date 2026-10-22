@@ -28,31 +28,6 @@ export function SyncButton({ shopId, label = "Sinkron sekarang" }: { shopId?: nu
   );
 }
 
-export function ProductRow({ p }: { p: { id: string; name: string; shop: string; price: number; stock: number; category: string; hidden: boolean; featured: boolean } }) {
-  const [s, setS] = useState(p);
-  async function save(patch: Record<string, unknown>) {
-    const prev = s;
-    setS({ ...s, ...patch } as typeof s);
-    const r = await fetch("/api/admin/product", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id, ...patch }) });
-    if (!r.ok) setS(prev);
-  }
-  return (
-    <tr className="border-t border-sand align-middle text-sm">
-      <td className="max-w-xs py-2 pr-3"><span className="line-clamp-2">{s.name}</span><span className="text-xs text-ink/40">{s.shop}</span></td>
-      <td className="pr-3">Rp{s.price.toLocaleString("id-ID")}</td>
-      <td className={`pr-3 ${s.stock <= 0 ? "text-brand" : ""}`}>{s.stock}</td>
-      <td className="pr-3">
-        <select className="rounded-lg border border-sand bg-white px-2 py-1" value={s.category} onChange={(e) => save({ category_override: e.target.value })} aria-label="Kategori">
-          {CATEGORIES.map((c) => (<option key={c.slug} value={c.slug}>{c.label}</option>))}
-          <option value="lainnya">Lainnya</option>
-        </select>
-      </td>
-      <td className="pr-3"><input type="checkbox" checked={s.featured} onChange={(e) => save({ featured: e.target.checked })} aria-label="Unggulan" /></td>
-      <td><input type="checkbox" checked={s.hidden} onChange={(e) => save({ hidden: e.target.checked })} aria-label="Sembunyikan" /></td>
-    </tr>
-  );
-}
-
 export function ShopBrandSelect({ shopId, brand }: { shopId: number; brand: string }) {
   const [v, setV] = useState(brand);
   return (

@@ -5,19 +5,20 @@ import { getDb } from "@/lib/db";
 import { isMock } from "@/lib/shopee/config";
 import { listProducts, listShops } from "@/lib/products";
 import { timeAgo } from "@/lib/format";
-import { ProductRow, ShopBrandSelect, SyncButton } from "@/components/AdminControls";
+import { ShopBrandSelect, SyncButton } from "@/components/AdminControls";
+import { AdminProducts } from "@/components/AdminProducts";
+import { BRANDS } from "@/lib/brands";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Admin", robots: { index: false } };
 
-export default async function Admin({ searchParams }: { searchParams: Promise<{ ok?: string; err?: string; hal?: string }> }) {
+export default async function Admin({ searchParams }: { searchParams: Promise<{ ok?: string; err?: string }> }) {
   if (!(await isAdmin())) redirect("/admin/login");
   const sp = await searchParams;
-  const page = Math.max(1, Number(sp.hal) || 1);
   const db = await getDb();
   const [shops, { items, total }, logs, leads] = await Promise.all([
     listShops(),
-    listProducts({ includeHidden: true, limit: 50, page, sort: "terbaru" }),
+    listProducts({ includeHidden: true, limit: 5000, sort: "terbaru" }),
     db.execute("SELECT l.*, s.name AS shop_name FROM sync_logs l LEFT JOIN shops s ON s.shop_id = l.shop_id ORDER BY l.id DESC LIMIT 8"),
     db.execute("SELECT id, created_at, name, total, token FROM leads ORDER BY id DESC LIMIT 10"),
   ]);
@@ -96,16 +97,10 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
       <section>
         <h2 className="mb-1 text-2xl font-semibold">Produk ({total})</h2>
         <p className="mb-4 text-xs text-ink/50">Harga & stok hanya bisa diubah di Shopee. Di sini kamu mengatur tampilan: kategori, unggulan, sembunyikan.</p>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left"><thead className="text-xs uppercase tracking-wider text-ink/50"><tr><th className="py-2">Produk</th><th>Harga</th><th>Stok</th><th>Kategori</th><th>Unggulan</th><th>Sembunyi</th></tr></thead>
-            <tbody>{items.map((p) => (<ProductRow key={p.id} p={{ id: p.id, name: p.name, shop: p.shopName ?? "", price: p.price, stock: p.stock, category: p.category, hidden: p.hidden, featured: p.featured }} />))}</tbody></table>
-        </div>
-        {total > 50 && (
-          <div className="mt-4 flex gap-2 text-sm">
-            {page > 1 && <a className="chip" href={`/admin?hal=${page - 1}`}>← Sebelumnya</a>}
-            {page * 50 < total && <a className="chip" href={`/admin?hal=${page + 1}`}>Berikutnya →</a>}
-          </div>
-        )}
+        <AdminProducts
+          shops={shops.map((s) => ({ shopId: s.shopId, name: s.name, dot: BRANDS[s.brand].dot }))}
+          products={items.map((p) => ({ id: p.id, shopId: p.shopId, name: p.name, price: p.price, stock: p.stock, sold: p.sold, category: p.category, hidden: p.hidden, featured: p.featured }))}
+        />
       </section>
     </div>
     </Shell>
