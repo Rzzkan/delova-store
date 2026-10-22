@@ -1,3 +1,4 @@
+import { appUrl } from "@/lib/origin";
 import { NextResponse } from "next/server";
 import { isAdmin } from "@/lib/auth";
 import { exchangeCode } from "@/lib/shopee/client";
@@ -8,8 +9,8 @@ export const maxDuration = 60;
 /** Shopee redirect ke sini dengan ?code=...&shop_id=... setelah penjual menyetujui. */
 export async function GET(req: Request) {
   const u = new URL(req.url);
-  const back = (msg: string, ok = false) => NextResponse.redirect(new URL(`/admin?${ok ? "ok" : "err"}=${encodeURIComponent(msg)}`, req.url));
-  if (!(await isAdmin())) return NextResponse.redirect(new URL("/admin/login", req.url));
+  const back = (msg: string, ok = false) => NextResponse.redirect(appUrl(`/admin?${ok ? "ok" : "err"}=${encodeURIComponent(msg)}`, req));
+  if (!(await isAdmin())) return NextResponse.redirect(appUrl("/admin/login", req));
 
   const code = u.searchParams.get("code");
   const shopId = Number(u.searchParams.get("shop_id"));
