@@ -1,6 +1,8 @@
 import { idr } from "./format";
 
-export const waNumber = () => (process.env.NEXT_PUBLIC_WA_NUMBER || "").replace(/\D/g, "");
+// Kunci dinamis agar dibaca saat runtime (bukan ditanam saat build image Docker).
+const WA_KEY = "NEXT_PUBLIC_WA_NUMBER";
+export const waNumber = () => (process.env[WA_KEY] || process.env.NEXT_PUBLIC_WA_NUMBER || "").replace(/\D/g, "");
 export const siteUrl = () => (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
 
 export function waLink(text: string): string {

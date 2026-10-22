@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type W = { fbq?: (...a: any[]) => void; ttq?: { track: (...a: any[]) => void; page?: () => void }; gtag?: (...a: any[]) => void };
 
-export type TrackEvent = "ViewContent" | "AddToCart" | "InitiateCheckout" | "Lead" | "ShopeeClick";
+export type TrackEvent = "ViewContent" | "AddToCart" | "InitiateCheckout" | "Lead" | "ShopeeClick" | "WhatsAppClick";
 
 /** Kirim event ke Meta Pixel, TikTok Pixel, dan Google Analytics 4 (yang aktif saja). */
 export function track(event: TrackEvent, data: { content_ids?: string[]; content_name?: string; value?: number; num_items?: number } = {}) {
@@ -26,9 +26,10 @@ function send(event: TrackEvent, data: { content_ids?: string[]; content_name?: 
   try {
     // Meta
     if (event === "ShopeeClick") w.fbq?.("trackCustom", "ShopeeClick", common);
+    else if (event === "WhatsAppClick") w.fbq?.("track", "Contact", common);
     else w.fbq?.("track", event, { ...common, content_type: "product" });
     // TikTok
-    const tt = { ViewContent: "ViewContent", AddToCart: "AddToCart", InitiateCheckout: "InitiateCheckout", Lead: "SubmitForm", ShopeeClick: "ClickButton" }[event];
+    const tt = { ViewContent: "ViewContent", AddToCart: "AddToCart", InitiateCheckout: "InitiateCheckout", Lead: "SubmitForm", ShopeeClick: "ClickButton", WhatsAppClick: "Contact" }[event];
     w.ttq?.track(tt, { ...common, content_type: "product", contents: (data.content_ids ?? []).map((id) => ({ content_id: id, content_name: data.content_name })) });
     // GA4
     const items = (data.content_ids ?? []).map((id) => ({ item_id: id, item_name: data.content_name, price: data.value, quantity: 1 }));
@@ -37,6 +38,7 @@ function send(event: TrackEvent, data: { content_ids?: string[]; content_name?: 
       AddToCart: ["add_to_cart", { currency: "IDR", value: data.value, items }],
       InitiateCheckout: ["begin_checkout", { currency: "IDR", value: data.value }],
       Lead: ["generate_lead", { currency: "IDR", value: data.value }],
+      WhatsAppClick: ["click_whatsapp", { item_id: data.content_ids?.[0], item_name: data.content_name, value: data.value }],
       ShopeeClick: ["click_shopee", { item_id: data.content_ids?.[0], item_name: data.content_name }],
     }[event] as [string, Record<string, unknown>];
     w.gtag?.("event", ga[0], ga[1]);

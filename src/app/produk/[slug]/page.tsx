@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Shell } from "@/components/Shell";
+import { waNumber, siteUrl } from "@/lib/whatsapp";
 import { PurchasePanel } from "@/components/PurchasePanel";
 import { ProductGrid } from "@/components/ProductCard";
 import { categoryLabel } from "@/lib/categories";
@@ -53,7 +54,7 @@ export default async function ProductPage({ params }: { params: P }) {
         <Link href="/" className="hover:text-brand">Beranda</Link> / <Link href="/produk" className="hover:text-brand">Produk</Link> /{" "}
         <Link href={`/produk?kategori=${product.category}`} className="hover:text-brand">{categoryLabel(product.category)}</Link>
       </nav>
-      <PurchasePanel product={product} variants={variants} />
+      <PurchasePanel product={product} variants={variants} wa={waNumber()} site={siteUrl()} />
       <p className="mt-8 text-xs text-ink/40">Data disinkronkan dari Shopee {timeAgo(product.syncedAt)}.</p>
       {reviews.length > 0 && (
         <section className="mt-16">

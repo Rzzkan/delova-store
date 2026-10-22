@@ -6,7 +6,7 @@ import { discountPct, idr, thumb } from "@/lib/format";
 import { track } from "@/lib/track";
 import type { Product, Variant } from "@/lib/products";
 
-export function PurchasePanel({ product, variants }: { product: Product; variants: Variant[] }) {
+export function PurchasePanel({ product, variants, wa, site }: { product: Product; variants: Variant[]; wa: string; site: string }) {
   const { add } = useCart();
   const [vid, setVid] = useState<string | undefined>(undefined);
   const [qty, setQty] = useState(1);
@@ -40,6 +40,12 @@ export function PurchasePanel({ product, variants }: { product: Product; variant
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   }
+
+  const ready = !needVariant && stock > 0;
+  const waHref = wa
+    ? `https://wa.me/${wa}?text=${encodeURIComponent(
+        [`Halo Delova, saya mau order 🛍️`, ``, `*${product.name}*`, variant ? `Varian: ${variant.name}` : "", `${qty} × ${idr(price)} = ${idr(price * qty)}`, ``, `${site}/produk/${product.slug}`].filter((x, i) => x !== "" || i === 1 || i === 5).join("\n"))}`
+    : "";
 
   return (
     <div className="grid gap-10 lg:grid-cols-2">
@@ -102,14 +108,22 @@ export function PurchasePanel({ product, variants }: { product: Product; variant
         </div>
 
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
-          <button className="btn-primary" disabled={needVariant || stock <= 0} onClick={addToCart}>
-            {added ? "✓ Masuk keranjang" : needVariant ? "Pilih varian dulu" : "Tambah ke Keranjang"}
-          </button>
+          {waHref && ready ? (
+            <a className="btn bg-[#25D366] text-white hover:bg-[#1fb857]" href={waHref} target="_blank" rel="noopener noreferrer"
+              onClick={() => track("WhatsAppClick", { content_ids: [product.id], content_name: product.name, value: price * qty })}>
+              Beli via WhatsApp
+            </a>
+          ) : (
+            <button className="btn bg-[#25D366] text-white disabled:opacity-50" disabled>{needVariant ? "Pilih varian dulu" : stock <= 0 ? "Stok habis" : "WhatsApp belum diatur"}</button>
+          )}
           <a className="btn-shopee" href={product.shopeeUrl} target="_blank" rel="noopener noreferrer"
             onClick={() => track("ShopeeClick", { content_ids: [product.id], content_name: product.name, value: product.price })}>
             Beli di Shopee
           </a>
         </div>
+        <button className="btn-outline mt-3 !px-4 !py-1.5 text-sm" disabled={!ready} onClick={addToCart}>
+          {added ? "✓ Masuk keranjang" : "+ Keranjang"}
+        </button>
         {added && <p className="mt-3 text-sm text-sage">Berhasil ditambahkan. <Link href="/keranjang" className="underline">Lihat keranjang →</Link></p>}
 
         <ul className="mt-8 grid gap-2 text-sm text-ink/70">
