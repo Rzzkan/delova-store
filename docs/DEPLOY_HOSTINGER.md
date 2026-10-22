@@ -7,10 +7,12 @@
 
 ## Langkah di hPanel
 1. VPS → **Docker Manager** → **Compose** → **Compose from URL**.
-2. URL: `https://raw.githubusercontent.com/Rzzkan/delova-store/main/docker-compose.yml`
+2. Pastikan image sudah dibangun: GitHub → repo → tab **Actions** → workflow "Build & push Docker image" berstatus hijau.
+   Lalu GitHub → profil → **Packages** → `delova-store` → Package settings → **Change visibility → Public** (sekali saja).
+3. URL: `https://raw.githubusercontent.com/Rzzkan/delova-store/main/docker-compose.yml`
    (repo harus *public*; kalau private, pilih **Create from YAML**, tempel isi `docker-compose.yml`, dan ganti `build.context` dengan `https://<TOKEN>@github.com/Rzzkan/delova-store.git#main` memakai fine-grained token read-only).
-3. Nama project: `delova-store`.
-4. Di kolom **Environment**, isi:
+4. Nama project: `delova-store`.
+5. Di kolom **Environment**, isi:
 
 ```
 DOMAIN=delova.id
@@ -27,7 +29,7 @@ GA4_ID=
 GSC_VERIFICATION=
 ```
    Buat string acak: `openssl rand -hex 32`.
-5. **Deploy**. Build pertama ±3–6 menit. Lalu buka `https://delova.id` dan `/admin`.
+6. **Deploy**. Menarik image ±1–2 menit. Lalu buka `https://delova.id` dan `/admin`.
 
 ## Data & backup
 - Database + gambar unggahan ada di volume `delova_data` (SQLite). Backup:
@@ -35,7 +37,7 @@ GSC_VERIFICATION=
 - Alternatif: isi `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` agar data di cloud.
 
 ## Update versi
-Push ke GitHub → Docker Manager → project → **Rebuild/Redeploy** (build ulang dari `main`). Volume data tetap aman.
+Push ke GitHub → tunggu Actions hijau → Docker Manager → project → **Redeploy/Pull** (menarik image terbaru). Volume data tetap aman.
 
 ## Shopee Open Platform
 Redirect URL: `https://<DOMAIN>/api/shopee/callback`, Live Push: `https://<DOMAIN>/api/shopee/webhook`.

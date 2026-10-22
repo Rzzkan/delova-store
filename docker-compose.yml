@@ -2,9 +2,8 @@
 # Isi variabel di kolom "Environment" Hostinger (atau file .env). Panduan: docs/DEPLOY_HOSTINGER.md
 services:
   app:
-    build:
-      context: https://github.com/Rzzkan/delova-store.git#main
-    image: delova-store:latest
+    image: ghcr.io/rzzkan/delova-store:latest   # dibangun otomatis oleh GitHub Actions (.github/workflows/docker.yml)
+    pull_policy: always
     restart: unless-stopped
     expose:
       - "3000"
