@@ -99,7 +99,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
         <p className="mb-4 text-xs text-ink/50">Harga & stok hanya bisa diubah di Shopee. Di sini kamu mengatur tampilan: kategori, unggulan, sembunyikan.</p>
         <AdminProducts
           shops={shops.map((s) => ({ shopId: s.shopId, name: s.name, dot: BRANDS[s.brand].dot }))}
-          products={items.map((p) => ({ id: p.id, shopId: p.shopId, name: p.name, price: p.price, stock: p.stock, sold: p.sold, category: p.category, hidden: p.hidden, featured: p.featured }))}
+          products={items.map((p) => ({ id: p.id, shopId: p.shopId, name: p.name, price: p.price, stock: p.stock, sold: p.sold, category: p.category, hidden: p.hidden, featured: p.featured, discount: p.discountPct ?? 0 }))}
         />
       </section>
     </div>

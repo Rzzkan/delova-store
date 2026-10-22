@@ -10,6 +10,7 @@ export type Product = {
   description: string;
   price: number;
   originalPrice: number | null;
+  discountPct: number | null; // diskon buatan admin (harga coret dihitung dari harga jual)
   stock: number;
   sold: number;
   rating: number | null;
@@ -52,6 +53,13 @@ export type Shop = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Row = Record<string, any>;
 
+/** Harga coret dari diskon %: harga jual ÷ (1 − diskon), dibulatkan ke ribuan terdekat dan selalu di atas harga jual. */
+export function markup(price: number, pct: number): number {
+  const raw = price / (1 - pct / 100);
+  const r = Math.round(raw / 1000) * 1000;
+  return r > price ? r : Math.ceil(raw);
+}
+
 const toProduct = (r: Row): Product => ({
   id: r.id,
   shopId: Number(r.shop_id),
@@ -60,7 +68,8 @@ const toProduct = (r: Row): Product => ({
   name: r.name,
   description: r.description ?? "",
   price: Number(r.price),
-  originalPrice: r.original_price == null ? null : Number(r.original_price),
+  originalPrice: r.discount_pct ? markup(Number(r.price), Number(r.discount_pct)) : r.original_price == null ? null : Number(r.original_price),
+  discountPct: r.discount_pct ? Number(r.discount_pct) : null,
   stock: Number(r.stock),
   sold: Number(r.sold ?? 0),
   rating: r.rating == null ? null : Number(r.rating),
@@ -156,7 +165,8 @@ export async function getProduct(slug: string): Promise<{ product: Product; vari
   if (!r.rows.length) return null;
   const product = toProduct(r.rows[0] as Row);
   const v = await db.execute({ sql: "SELECT * FROM variants WHERE product_id = ? ORDER BY model_id", args: [product.id] });
-  return { product, variants: v.rows.map((x) => toVariant(x as Row)) };
+  const variants = v.rows.map((x) => toVariant(x as Row)).map((x) => (product.discountPct ? { ...x, originalPrice: markup(x.price, product.discountPct) } : x));
+  return { product, variants };
 }
 
 export async function getProductsByIds(ids: string[]): Promise<Product[]> {
