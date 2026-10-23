@@ -3,10 +3,11 @@ import "./globals.css";
 import { CartProvider } from "@/components/CartProvider";
 import { Pixels } from "@/components/Pixels";
 import { getTracking } from "@/lib/tracking";
+import { getSeoSettings } from "@/lib/seo-settings";
 
 const site = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   metadataBase: new URL(site),
   title: { default: "Delova Wardrobe — Kebaya, Batik & Hijab Modern", template: "%s | Delova" },
   description: "Busana wastra Indonesia modern: kebaya, batik, gamis, hijab, dan Delova Kids. Stok & harga tersinkron dengan toko Shopee resmi.",
@@ -16,6 +17,16 @@ export const metadata: Metadata = {
   verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } : undefined,
   robots: { index: true, follow: true, googleBot: { "max-image-preview": "large", "max-snippet": -1 } },
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await getSeoSettings();
+  const icon = s.favicon || "/site-icon";
+  return {
+    ...baseMetadata,
+    icons: { icon, shortcut: icon, apple: s.favicon || undefined },
+    robots: s.robotsMode === "block" ? { index: false, follow: false } : baseMetadata.robots,
+  };
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { verifyDomain } = await getTracking();

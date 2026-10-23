@@ -34,6 +34,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
           <a href="/admin/ulasan" className="btn-primary !py-2">Ulasan Unggulan</a>
           <a href="/admin/pelacakan" className="btn-primary !py-2">Pixel & Analytics</a>
           <a href="/admin/toko-offline" className="btn-primary !py-2">Toko Offline</a>
+          <a href="/admin/seo" className="btn-primary !py-2">Favicon & Robots.txt</a>
           <a href="/admin/impor" className="btn-primary !py-2">Impor Excel Shopee</a>
           <form action="/api/admin/logout" method="post"><button className="btn-outline !py-2">Keluar</button></form>
         </div>
