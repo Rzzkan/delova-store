@@ -33,6 +33,7 @@ export function SeoEditor({ initial }: { initial: SeoSettings }) {
 
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">Robots.txt</h2>
+        <p className="text-xs text-ink/50">Baris <code>Sitemap: …/sitemap.xml</code> selalu otomatis disertakan di semua mode.</p>
         <div className="space-y-2" role="radiogroup" aria-label="Mode robots.txt">
           {MODES.map(([v, label, help]) => (
             <label key={v} className={`flex cursor-pointer gap-3 rounded-xl border p-3 text-sm ${s.robotsMode === v ? "border-brand bg-blush/40" : "border-sand bg-white"}`}>

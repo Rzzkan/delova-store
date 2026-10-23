@@ -51,7 +51,7 @@ export async function saveSeoSettings(input: Partial<Record<keyof SeoSettings, u
 
 export function buildRobots(s: SeoSettings, site: string): string {
   const sitemap = `Sitemap: ${site}/sitemap.xml`;
-  if (s.robotsMode === "block") return `User-agent: *\nDisallow: /\n`;
+  if (s.robotsMode === "block") return `User-agent: *\nDisallow: /\n\n${sitemap}\n`;
   if (s.robotsMode === "custom" && s.custom) return /^sitemap:/im.test(s.custom) ? `${s.custom}\n` : `${s.custom}\n\n${sitemap}\n`;
   const lines = ["User-agent: *", "Allow: /", "Allow: /api/media/", ...[...BASE_DISALLOW, ...s.extraDisallow.split("\n").filter(Boolean)].map((p) => `Disallow: ${p}`)];
   if (s.blockAi) for (const b of AI_BOTS) lines.push("", `User-agent: ${b}`, "Disallow: /");
