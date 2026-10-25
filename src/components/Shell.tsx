@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { BRANDS, BRAND_SLUGS, type BrandSlug } from "@/lib/brands";
 import { getHome } from "@/lib/settings";
 import { getStore } from "@/lib/store";
+import { getSeoSettings } from "@/lib/seo-settings";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { Logo } from "./Logo";
@@ -10,7 +11,7 @@ import Link from "next/link";
 
 /** Membungkus halaman dengan tema brand (warna, font, logo). data-brand mengatur variabel CSS. */
 export async function Shell({ brand = "wardrobe", children }: { brand?: BrandSlug; children: ReactNode }) {
-  const [home, store] = await Promise.all([getHome(), getStore()]);
+  const [home, store, seo] = await Promise.all([getHome(), getStore(), getSeoSettings()]);
   const b = BRANDS[brand];
   const messages = brand === "wardrobe" ? home.announcements : b.announcements;
   const shopeeUrls = Object.fromEntries(BRAND_SLUGS.map((x) => [x, home.shopeeUrls[x] || BRANDS[x].shopeeUrl])) as Record<BrandSlug, string>;
@@ -32,7 +33,7 @@ export async function Shell({ brand = "wardrobe", children }: { brand?: BrandSlu
       </nav>
       <Header brand={brand} nav={b.nav} logo={logo()} />
       <main>{children}</main>
-      <Footer brand={brand} logo={logo("lg")} shopeeUrls={shopeeUrls} store={store.enabled ? { name: store.name, address: store.address } : null} />
+      <Footer legalName={seo.legalName} brand={brand} logo={logo("lg")} shopeeUrls={shopeeUrls} store={store.enabled ? { name: store.name, address: store.address } : null} />
     </div>
   );
 }

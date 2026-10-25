@@ -7,9 +7,11 @@ export type SeoSettings = {
   extraDisallow: string;                   // satu path per baris, mis. /produk?urut=
   blockAi: boolean;                        // tolak bot pelatih AI (GPTBot, CCBot, dll.)
   custom: string;                          // isi robots.txt penuh bila mode custom
+  legalName: string;                       // nama badan usaha, tampil di footer, /tentang, metadata & JSON-LD
 };
 
-export const SEO_DEFAULTS: SeoSettings = { favicon: "", robotsMode: "auto", extraDisallow: "", blockAi: false, custom: "" };
+export const LEGAL_NAME_DEFAULT = "PT Mode Kreasi Delova";
+export const SEO_DEFAULTS: SeoSettings = { favicon: "", robotsMode: "auto", extraDisallow: "", blockAi: false, custom: "", legalName: LEGAL_NAME_DEFAULT };
 export const BASE_DISALLOW = ["/admin", "/api", "/keranjang", "/checkout", "/pesanan"];
 export const AI_BOTS = ["GPTBot", "ChatGPT-User", "OAI-SearchBot", "CCBot", "Google-Extended", "anthropic-ai", "ClaudeBot", "PerplexityBot", "Bytespider"];
 
@@ -29,6 +31,7 @@ function normalize(s: Partial<Record<keyof SeoSettings, unknown>> | null): SeoSe
     robotsMode: mode,
     extraDisallow: paths(x.extraDisallow),
     blockAi: x.blockAi === true,
+    legalName: x.legalName === undefined ? LEGAL_NAME_DEFAULT : str(x.legalName, 120).replace(/[<>]/g, ""),
     // buang karakter kontrol, tetapi pertahankan baris baru
     custom: String(x.custom ?? "").replace(/[^\S\n]+$/gm, "").replace(/[\u0000-\u0008\u000B-\u001F\u007F]/g, "").slice(0, 5000).trim(),
   };

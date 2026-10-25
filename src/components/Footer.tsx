@@ -10,7 +10,7 @@ const SOCIALS: Record<BrandSlug, [string, string][]> = {
   daily: [],
 };
 
-export function Footer({ brand, logo, shopeeUrls, store }: { brand: BrandSlug; logo: ReactNode; shopeeUrls: Record<BrandSlug, string>; store?: { name: string; address: string } | null }) {
+export function Footer({ legalName, brand, logo, shopeeUrls, store }: { legalName: string; brand: BrandSlug; logo: ReactNode; shopeeUrls: Record<BrandSlug, string>; store?: { name: string; address: string } | null }) {
   const wa = waNumber();
   return (
     <footer className="relative mt-24 overflow-hidden bg-brand-dark text-cream">
@@ -46,7 +46,10 @@ export function Footer({ brand, logo, shopeeUrls, store }: { brand: BrandSlug; l
           )}
         </div>
       </div>
-      <div className="relative border-t border-cream/10 py-5 text-center text-xs text-cream/50">© {new Date().getFullYear()} Delova Wardrobe. Stok & harga disinkronkan dari Shopee.</div>
+      <div className="relative border-t border-cream/10 px-4 py-5 text-center text-xs text-cream/50">
+        <p>© {new Date().getFullYear()} <strong className="font-semibold text-cream/70">{legalName}</strong> — pemilik brand Delova Wardrobe, Delova Kids, Delova Scarf & Delova Daily.</p>
+        <p className="mt-1">Stok & harga disinkronkan dari Shopee. <Link className="underline hover:text-accent-light" href="/tentang">Tentang Kami</Link></p>
+      </div>
     </footer>
   );
 }

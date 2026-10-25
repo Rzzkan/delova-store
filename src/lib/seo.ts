@@ -44,12 +44,15 @@ export const CATEGORY_SEO: Record<string, { h1: string; copy: string }> = {
   inner: { h1: "Inner & Tank Top", copy: "Inner dan tank top nyaman untuk dipadukan dengan blouse dan cardigan." },
 };
 
-export function organizationLd() {
+export function organizationLd(legalName = "PT Mode Kreasi Delova") {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Delova",
+    legalName,
+    alternateName: ["Delova Wardrobe", "Delova Kids", "Delova Scarf", "Delova Daily"],
     url: siteUrl(),
+    brand: BRAND_SLUGS.map((b) => ({ "@type": "Brand", name: BRANDS[b].name })),
     sameAs: [
       ...BRAND_SLUGS.map((b) => BRANDS[b].shopeeUrl),
       "https://www.instagram.com/delovawardrobe",

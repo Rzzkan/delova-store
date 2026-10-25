@@ -23,6 +23,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const icon = s.favicon || "/site-icon";
   return {
     ...baseMetadata,
+    applicationName: "Delova",
+    authors: [{ name: s.legalName, url: site }],
+    creator: s.legalName,
+    publisher: s.legalName,
+    other: { copyright: s.legalName, "company-name": s.legalName },
     icons: { icon, shortcut: icon, apple: s.favicon || undefined },
     robots: s.robotsMode === "block" ? { index: false, follow: false } : baseMetadata.robots,
   };

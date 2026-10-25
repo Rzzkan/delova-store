@@ -27,6 +27,15 @@ export function SeoEditor({ initial }: { initial: SeoSettings }) {
   return (
     <form onSubmit={save} className="space-y-8">
       <section className="space-y-3">
+        <h2 className="text-xl font-semibold">Identitas perusahaan</h2>
+        <div>
+          <label htmlFor="legal" className="mb-1 block text-sm font-medium">Nama legal badan usaha</label>
+          <input id="legal" className="input" value={s.legalName} onChange={(e) => set("legalName", e.target.value)} placeholder="PT Mode Kreasi Delova" />
+          <p className="mt-1 text-xs text-ink/50">Tampil di footer semua halaman, halaman /tentang, metadata (author/publisher), dan data terstruktur Google. Harus persis sama dengan nama di dokumen legal (dipakai verifikasi Shopee/TikTok Open Platform).</p>
+        </div>
+      </section>
+
+      <section className="space-y-3">
         <h2 className="text-xl font-semibold">Favicon</h2>
         <ImageField label="Ikon situs" hint="Gambar persegi (1:1), minimal 192×192 — ideal 512×512 PNG/WebP. Muncul di tab browser, hasil pencarian Google, dan layar utama ponsel. Kosong = ikon “D” bawaan." value={s.favicon} onChange={(v) => set("favicon", v)} />
       </section>

@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { BRANDS, BRAND_SLUGS, type BrandSlug } from "@/lib/brands";
+import { getSeoSettings } from "@/lib/seo-settings";
 import { BRAND_SEO, ldScript, organizationLd, websiteLd, breadcrumbLd } from "@/lib/seo";
 
 /** Teks pengantar brand (dibaca Google) + structured data. Ditaruh di bawah konten halaman brand. */
-export function SeoBlock({ brand, home }: { brand: BrandSlug; home?: boolean }) {
+export async function SeoBlock({ brand, home }: { brand: BrandSlug; home?: boolean }) {
   const s = BRAND_SEO[brand];
+  const { legalName } = await getSeoSettings();
   const path = brand === "wardrobe" ? "/" : `/${brand}`;
   const ld: unknown[] = [breadcrumbLd([{ name: "Beranda", url: "/" }, ...(brand === "wardrobe" ? [] : [{ name: BRANDS[brand].name, url: path }])])];
-  if (home) ld.push(organizationLd(), websiteLd());
+  if (home) ld.push(organizationLd(legalName), websiteLd());
   return (
     <section className="container-x py-12 border-t border-ink/10">
       {ld.map((d, i) => (<script key={i} type="application/ld+json" dangerouslySetInnerHTML={ldScript(d)} />))}

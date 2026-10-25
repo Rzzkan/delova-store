@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Shell } from "@/components/Shell";
 import { getStore } from "@/lib/store";
+import { getSeoSettings } from "@/lib/seo-settings";
 import { abs, breadcrumbLd, ldScript, organizationLd } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function TokoOffline() {
   const s = await getStore();
+  const { legalName } = await getSeoSettings();
   if (!s.enabled) notFound();
   const wa = s.phone.replace(/\D/g, "").replace(/^0/, "62");
   const lines = s.hours.split("\n").map((l) => l.trim()).filter(Boolean);
@@ -28,14 +30,14 @@ export default async function TokoOffline() {
     ...(s.address ? { address: { "@type": "PostalAddress", streetAddress: s.address, addressCountry: "ID" } } : {}),
     ...(s.mapsUrl ? { hasMap: s.mapsUrl } : {}),
     ...(lines.length ? { openingHours: lines } : {}),
-    parentOrganization: { "@type": "Organization", name: "Delova", url: abs("/") },
+    parentOrganization: { "@type": "Organization", name: "Delova", legalName, url: abs("/") },
   };
   return (
     <Shell>
       <div className="container-x max-w-4xl py-12">
         <script type="application/ld+json" dangerouslySetInnerHTML={ldScript(ld)} />
         <script type="application/ld+json" dangerouslySetInnerHTML={ldScript(breadcrumbLd([{ name: "Beranda", url: "/" }, { name: "Toko Offline", url: "/toko-offline" }]))} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={ldScript(organizationLd())} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={ldScript(organizationLd(legalName))} />
         <p className="eyebrow">Toko Offline</p>
         <h1 className="mt-2 text-4xl font-semibold">{s.name}</h1>
         {s.note && <p className="mt-3 max-w-2xl text-ink/70">{s.note}</p>}
