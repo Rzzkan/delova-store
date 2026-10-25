@@ -61,8 +61,7 @@ export const BRANDS: Record<BrandSlug, Brand> = {
       subtitle: "Segi empat, pashmina, dan bergo dengan bahan lembut, warna yang mudah dipadukan, dan motif wastra pilihan.",
       cta1Label: "Belanja Delova Scarf", cta1Href: "/produk?brand=scarf", cta2Label: "Lihat Terlaris", cta2Href: "/produk?brand=scarf&urut=terlaris",
     },
-    dot: "#7C8B6F",
-    provisional: true,
+    dot: "#D98E91",
   },
   daily: {
     slug: "daily", name: "Delova Daily", short: "Daily", home: "/daily", catalog: "/produk?brand=daily",

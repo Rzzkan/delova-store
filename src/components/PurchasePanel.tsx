@@ -42,6 +42,8 @@ export function PurchasePanel({ product, variants, wa, site, updated, stale }: {
   }
 
   const ready = !needVariant && stock > 0;
+  const scarf = product.brand === "scarf";
+  const totalStock = variants.length ? variants.reduce((n, v) => n + v.stock, 0) : product.stock;
   const waHref = wa
     ? `https://wa.me/${wa}?text=${encodeURIComponent(
         [`Halo Delova, saya mau order 🛍️`, ``, `*${product.name}*`, variant ? `Varian: ${variant.name}` : "", `${qty} × ${idr(price)} = ${idr(price * qty)}`, ``, `${site}/produk/${product.slug}`].filter((x, i) => x !== "" || i === 1 || i === 5).join("\n"))}`
@@ -70,6 +72,7 @@ export function PurchasePanel({ product, variants, wa, site, updated, stale }: {
       </div>
 
       <div className="lg:py-4">
+        {scarf && totalStock > 0 && <span className="mb-3 inline-block rounded bg-brand px-2 py-0.5 text-xs text-cream">Ada Stok</span>}
         <h1 className="text-3xl font-semibold leading-tight text-ink md:text-4xl">{product.name}</h1>
         <p className="mt-3 text-sm text-ink/60">
           {product.rating ? `★ ${product.rating.toFixed(1)} · ` : ""}{product.sold.toLocaleString("id-ID")} terjual
@@ -97,7 +100,7 @@ export function PurchasePanel({ product, variants, wa, site, updated, stale }: {
         )}
 
         <div className="mt-6 flex items-center gap-4">
-          <div className="flex items-center rounded-full border border-sand bg-white">
+          <div className="qty flex items-center rounded-full border border-sand bg-white">
             <button type="button" className="h-10 w-10 text-lg" onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Kurangi">−</button>
             <span className="w-8 text-center text-sm" aria-live="polite">{qty}</span>
             <button type="button" className="h-10 w-10 text-lg" onClick={() => setQty((q) => Math.min(Math.max(stock, 1), q + 1))} aria-label="Tambah">+</button>
@@ -112,6 +115,20 @@ export function PurchasePanel({ product, variants, wa, site, updated, stale }: {
           Stok diperbarui {updated}{stale ? " — konfirmasi ke admin sebelum membayar" : ""}
         </p>
 
+        {scarf ? (
+          <div className="mt-6 grid gap-3">
+            <button className="btn-outline w-full" disabled={!ready} onClick={addToCart}>{added ? "✓ Masuk keranjang" : needVariant ? "Pilih varian dulu" : "Tambah ke Keranjang"}</button>
+            {waHref && ready ? (
+              <a className="btn-primary w-full" href={waHref} target="_blank" rel="noopener noreferrer"
+                onClick={() => track("WhatsAppClick", { content_ids: [product.id], content_name: product.name, value: price * qty })}>Beli via WhatsApp</a>
+            ) : (
+              <button className="btn-primary w-full" disabled>{needVariant ? "Pilih varian dulu" : stock <= 0 ? "Stok habis" : "WhatsApp belum diatur"}</button>
+            )}
+            <a className="btn w-full border border-[#EE4D2D] bg-white text-[#EE4D2D] hover:bg-[#EE4D2D] hover:text-white" href={product.shopeeUrl} target="_blank" rel="noopener noreferrer"
+              onClick={() => track("ShopeeClick", { content_ids: [product.id], content_name: product.name, value: product.price })}>Beli di Shopee</a>
+          </div>
+        ) : (
+        <>
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           {waHref && ready ? (
             <a className="btn bg-[#25D366] text-white hover:bg-[#1fb857]" href={waHref} target="_blank" rel="noopener noreferrer"
@@ -129,6 +146,8 @@ export function PurchasePanel({ product, variants, wa, site, updated, stale }: {
         <button className="btn-outline mt-3 !px-4 !py-1.5 text-sm" disabled={!ready} onClick={addToCart}>
           {added ? "✓ Masuk keranjang" : "+ Keranjang"}
         </button>
+        </>
+        )}
         {added && <p className="mt-3 text-sm text-sage">Berhasil ditambahkan. <Link href="/keranjang" className="underline">Lihat keranjang →</Link></p>}
 
         <ul className="mt-8 grid gap-2 text-sm text-ink/70">
