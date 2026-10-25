@@ -4,6 +4,8 @@ import { getDb } from "./db";
 export type TrackingSettings = { metaPixelId: string; tiktokPixelId: string; ga4Id: string; verifyDomain: string };
 
 const KEY = "tracking";
+/** Measurement ID GA4 Delova — dipakai bila admin & env kosong. Admin (/admin/pelacakan) tetap bisa menggantinya. */
+const DEFAULT_GA4 = "G-Z96V60SRLB";
 const RE = {
   metaPixelId: /^\d{8,20}$/,                 // 15–16 digit angka
   tiktokPixelId: /^[A-Z0-9]{10,30}$/,        // mis. C1A2B3D4E5F6G7H8I9J0
@@ -48,7 +50,7 @@ export async function getTracking(): Promise<TrackingSettings> {
   return {
     metaPixelId: s.metaPixelId || env.metaPixelId,
     tiktokPixelId: s.tiktokPixelId || env.tiktokPixelId,
-    ga4Id: s.ga4Id || env.ga4Id,
+    ga4Id: s.ga4Id || env.ga4Id || DEFAULT_GA4,
     verifyDomain: s.verifyDomain,
   };
 }
