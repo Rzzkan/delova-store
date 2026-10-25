@@ -6,6 +6,11 @@ services:
     restart: unless-stopped
     expose:
       - "3000"
+    networks:
+      default:
+        # Alamat unik: nama "app" juga dipakai proyek lain di VPS yang sama (mis. warehouse) dan
+        # membuat Docker menjawab bergantian. Caddy & cron memakai "delova-app".
+        aliases: [delova-app]
     volumes:
       - delova_data:/app/data
     environment:
@@ -49,7 +54,7 @@ services:
       - app
     environment:
       CRON_SECRET: ${CRON_SECRET:-GANTI_string_acak_lain}
-    entrypoint: ["/bin/sh", "-c", "while true; do sleep 21600; curl -fsS -m 300 -H \"Authorization: Bearer $$CRON_SECRET\" http://app:3000/api/shopee/sync || echo sync-gagal; done"]
+    entrypoint: ["/bin/sh", "-c", "while true; do sleep 21600; curl -fsS -m 300 -H \"Authorization: Bearer $$CRON_SECRET\" http://delova-app:3000/api/shopee/sync || echo sync-gagal; done"]
 
 volumes:
   delova_data:
