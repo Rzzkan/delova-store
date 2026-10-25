@@ -6,7 +6,7 @@ import { discountPct, idr, thumb } from "@/lib/format";
 import { track } from "@/lib/track";
 import type { Product, Variant } from "@/lib/products";
 
-export function PurchasePanel({ product, variants, wa, site }: { product: Product; variants: Variant[]; wa: string; site: string }) {
+export function PurchasePanel({ product, variants, wa, site, updated, stale }: { product: Product; variants: Variant[]; wa: string; site: string; updated: string; stale: boolean }) {
   const { add } = useCart();
   const [vid, setVid] = useState<string | undefined>(undefined);
   const [qty, setQty] = useState(1);
@@ -107,7 +107,12 @@ export function PurchasePanel({ product, variants, wa, site }: { product: Produc
           </p>
         </div>
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-2">
+        <p className={`mt-3 flex items-center gap-2 text-xs ${stale ? "text-accent-ink" : "text-ink/60"}`}>
+          <span className={`h-1.5 w-1.5 rounded-full ${stale ? "bg-accent" : "bg-sage"}`} aria-hidden />
+          Stok diperbarui {updated}{stale ? " — konfirmasi ke admin sebelum membayar" : ""}
+        </p>
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
           {waHref && ready ? (
             <a className="btn bg-[#25D366] text-white hover:bg-[#1fb857]" href={waHref} target="_blank" rel="noopener noreferrer"
               onClick={() => track("WhatsAppClick", { content_ids: [product.id], content_name: product.name, value: price * qty })}>

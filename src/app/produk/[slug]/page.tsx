@@ -54,8 +54,7 @@ export default async function ProductPage({ params }: { params: P }) {
         <Link href="/" className="hover:text-brand">Beranda</Link> / <Link href="/produk" className="hover:text-brand">Produk</Link> /{" "}
         <Link href={`/produk?kategori=${product.category}`} className="hover:text-brand">{categoryLabel(product.category)}</Link>
       </nav>
-      <PurchasePanel product={product} variants={variants} wa={waNumber()} site={siteUrl()} />
-      <p className="mt-8 text-xs text-ink/40">Data disinkronkan dari Shopee {timeAgo(product.syncedAt)}.</p>
+      <PurchasePanel product={product} variants={variants} wa={waNumber()} site={siteUrl()} updated={timeAgo(product.syncedAt)} stale={Date.now() / 1000 - product.syncedAt > 86400} />
       {reviews.length > 0 && (
         <section className="mt-16">
           <h2 className="mb-6 text-2xl font-semibold">Ulasan Pembeli</h2>
