@@ -19,6 +19,10 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-GANTI_password_admin}
       SESSION_SECRET: ${SESSION_SECRET:-GANTI_string_acak_panjang}
       CRON_SECRET: ${CRON_SECRET:-GANTI_string_acak_lain}
+      # CMS blog/panduan/koleksi di /cms — isi agar akun pertama dibuat otomatis (jangan biarkan kosong di internet)
+      CMS_ADMIN_EMAIL: ${CMS_ADMIN_EMAIL:-}
+      CMS_ADMIN_PASSWORD: ${CMS_ADMIN_PASSWORD:-}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:-}
       TURSO_DATABASE_URL: ${TURSO_DATABASE_URL:-}
       TURSO_AUTH_TOKEN: ${TURSO_AUTH_TOKEN:-}
       SHOPEE_PARTNER_ID: ${SHOPEE_PARTNER_ID:-}

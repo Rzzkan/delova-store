@@ -21,7 +21,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SP }): 
   const clean = new URLSearchParams();
   if (brand) clean.set("brand", brand);
   if (k) clean.set("kategori", k);
-  const canonical = clean.toString() ? `/produk?${clean}` : "/produk";
+  const canonical = k && !brand && CATEGORY_SEO[k] && k !== "lainnya" ? `/koleksi/${k}` : clean.toString() ? `/produk?${clean}` : "/produk";
   const thin = !!(one(sp.q) || (one(sp.urut) && one(sp.urut) !== "terbaru") || Number(one(sp.hal)) > 1);
   const cs = k ? CATEGORY_SEO[k] : undefined;
   const bn = brand ? BRANDS[brand].name : "Delova";

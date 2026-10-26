@@ -8,6 +8,8 @@ import { categoryCounts, listProducts } from "@/lib/products";
 import { thumb } from "@/lib/format";
 import { getHome } from "@/lib/settings";
 import { trustFor } from "@/lib/trust";
+import { listPosts } from "@/lib/cms";
+import { PostCard } from "./PostCard";
 import { homeReviews, ratingSummary } from "@/lib/reviews";
 
 /** "Gaya *ceria* si kecil" → kata di antara tanda * diberi warna aksen. */
@@ -37,6 +39,7 @@ export async function BrandHome({ brand }: { brand: BrandSlug }) {
     categoryCounts(brand),
   ]);
   const trust = trustFor(home, brand);
+  const { items: posts } = await listPosts({ brand, limit: 3 });
   const shopeeUrl = home.shopeeUrls[brand] || b.shopeeUrl;
   const hero = brand === "wardrobe" ? home.hero : b.hero;
   const heroImg = (brand === "wardrobe" ? home.hero.image : home.brandHeroes[brand]) || featured.items[0]?.images[0] || best.items[0]?.images[0];
@@ -138,6 +141,17 @@ export async function BrandHome({ brand }: { brand: BrandSlug }) {
         <section className="container-x mt-24">
           <div className="mb-8 text-center"><p className="eyebrow">Paling dicari</p><h2 className="mt-2 text-3xl md:text-4xl">Terlaris Minggu Ini</h2></div>
           <ProductGrid items={best.items} />
+        </section>
+      )}
+
+      {/* BLOG & PANDUAN (dari CMS) */}
+      {posts.length > 0 && (
+        <section className="container-x mt-24">
+          <div className="mb-8 flex items-end justify-between">
+            <div><p className="eyebrow">Inspirasi</p><h2 className="mt-2 text-3xl md:text-4xl">Panduan & Cerita</h2></div>
+            <Link href="/blog" className="text-sm font-medium text-brand underline underline-offset-4">Lihat semua</Link>
+          </div>
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">{posts.map((p) => (<PostCard key={p.slug} p={p} />))}</div>
         </section>
       )}
 

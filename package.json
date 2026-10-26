@@ -11,10 +11,16 @@
   },
   "dependencies": {
     "@libsql/client": "^0.15.0",
+    "@payloadcms/db-sqlite": "3.91.0",
+    "@payloadcms/next": "3.91.0",
+    "@payloadcms/richtext-lexical": "3.91.0",
     "fflate": "^0.8.3",
-    "next": "^15.5.0",
+    "graphql": "16.14.2",
+    "next": "15.4.11",
+    "payload": "3.91.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "sharp": "0.35.5"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

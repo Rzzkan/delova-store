@@ -12,7 +12,7 @@ export type SeoSettings = {
 
 export const LEGAL_NAME_DEFAULT = "PT Mode Kreasi Delova";
 export const SEO_DEFAULTS: SeoSettings = { favicon: "", robotsMode: "auto", extraDisallow: "", blockAi: false, custom: "", legalName: LEGAL_NAME_DEFAULT };
-export const BASE_DISALLOW = ["/admin", "/api", "/keranjang", "/checkout", "/pesanan"];
+export const BASE_DISALLOW = ["/admin", "/api", "/cms/", "/cms-api/", "/keranjang", "/checkout", "/pesanan"];
 export const AI_BOTS = ["GPTBot", "ChatGPT-User", "OAI-SearchBot", "CCBot", "Google-Extended", "anthropic-ai", "ClaudeBot", "PerplexityBot", "Bytespider"];
 
 const KEY = "seo";
@@ -56,7 +56,7 @@ export function buildRobots(s: SeoSettings, site: string): string {
   const sitemap = `Sitemap: ${site}/sitemap.xml`;
   if (s.robotsMode === "block") return `User-agent: *\nDisallow: /\n\n${sitemap}\n`;
   if (s.robotsMode === "custom" && s.custom) return /^sitemap:/im.test(s.custom) ? `${s.custom}\n` : `${s.custom}\n\n${sitemap}\n`;
-  const lines = ["User-agent: *", "Allow: /", "Allow: /api/media/", ...[...BASE_DISALLOW, ...s.extraDisallow.split("\n").filter(Boolean)].map((p) => `Disallow: ${p}`)];
+  const lines = ["User-agent: *", "Allow: /", "Allow: /api/media/", "Allow: /cms-api/media/file/", ...[...BASE_DISALLOW, ...s.extraDisallow.split("\n").filter(Boolean)].map((p) => `Disallow: ${p}`)];
   if (s.blockAi) for (const b of AI_BOTS) lines.push("", `User-agent: ${b}`, "Disallow: /");
   lines.push("", sitemap);
   return lines.join("\n") + "\n";

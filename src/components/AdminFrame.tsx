@@ -34,6 +34,7 @@ const GROUPS: { title: string; items: { href: string; label: string; icon: strin
     { href: "/admin/tampilan", label: "Tampilan Beranda", icon: "brush" },
     { href: "/admin/ulasan", label: "Ulasan Unggulan", icon: "star" },
     { href: "/admin/toko-offline", label: "Toko Offline", icon: "store" },
+    { href: "/cms", label: "Blog, Panduan & Koleksi", icon: "ext" },
   ] },
   { title: "Pengaturan", items: [
     { href: "/admin/pelacakan", label: "Pixel & Analytics", icon: "chart" },

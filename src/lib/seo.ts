@@ -110,3 +110,35 @@ export function productLd(p: Product) {
 }
 
 export const ldScript = (data: unknown) => ({ __html: JSON.stringify(data).replace(/</g, "\\u003c") });
+
+export function faqLd(faq: { q: string; a: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+  };
+}
+
+export function itemListLd(name: string, items: { name: string; url: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name,
+    mainEntity: { "@type": "ItemList", itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, url: abs(it.url) })) },
+  };
+}
+
+export function articleLd(a: { title: string; description: string; url: string; image?: string; published?: string | null; modified: string; legalName: string }) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: a.title.slice(0, 110),
+    description: a.description,
+    mainEntityOfPage: abs(a.url),
+    image: a.image ? [a.image] : undefined,
+    datePublished: a.published ?? a.modified,
+    dateModified: a.modified,
+    author: { "@type": "Organization", name: a.legalName, url: siteUrl() },
+    publisher: { "@type": "Organization", name: a.legalName, url: siteUrl() },
+  };
+}

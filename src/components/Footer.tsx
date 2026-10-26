@@ -24,6 +24,8 @@ export function Footer({ legalName, brand, logo, shopeeUrls, store }: { legalNam
           <p className="eyebrow !text-accent">Belanja</p>
           <ul className="mt-4 space-y-2 text-sm text-cream/80">
             {BRANDS[brand].nav.map((n) => (<li key={n.href}><Link className="hover:text-accent-light" href={n.href}>{n.label}</Link></li>))}
+            <li><Link className="hover:text-accent-light" href="/koleksi">Koleksi</Link></li>
+            <li><Link className="hover:text-accent-light" href="/blog">Blog &amp; Panduan</Link></li>
           </ul>
         </div>
         <div>
