@@ -2,16 +2,13 @@
 
 CMS ini dipakai untuk **artikel blog/panduan** dan **halaman koleksi** (URL bersih untuk SEO). Panel toko lama tetap di `/admin`; CMS ada di **`/cms`**.
 
+## Login
+CMS **tidak punya password sendiri**. Masuk ke `/admin` dengan `ADMIN_PASSWORD`, lalu buka menu **CMS Blog & Koleksi** (atau langsung `/cms`) — sesi yang sama dipakai. Membuka `/cms` saat belum login akan diarahkan ke halaman masuk `/admin`, lalu kembali ke CMS. Tombol *Keluar* di CMS sama dengan keluar dari panel toko.
+
 ## Pertama kali (VPS)
-1. Tambahkan ke `~/delova/.env`:
-   ```
-   CMS_ADMIN_EMAIL=emailmu@gmail.com
-   CMS_ADMIN_PASSWORD=password-yang-kuat
-   ```
-   (opsional `PAYLOAD_SECRET=` string acak panjang; bila kosong memakai `SESSION_SECRET`)
+1. Tidak perlu env tambahan. (Opsional: `PAYLOAD_SECRET=` string acak panjang; bila kosong memakai `SESSION_SECRET`.)
 2. `cd ~/delova && docker compose pull && docker compose up -d`
-3. Buka `https://delova.id/cms` dan masuk. Akun pertama dibuat otomatis dari env di atas, jadi orang lain tidak bisa mendaftar lebih dulu.
-4. Tabel CMS dibuat otomatis saat server start (migrasi di `src/migrations`). Data ada di volume `delova_data` (`cms.db`, foto di `cms-media/`) — ikut tercadangkan bersama database toko.
+3. Tabel CMS dan satu akun bersama dibuat otomatis saat server start (migrasi di `src/migrations`). Tidak ada layar "daftar pengguna pertama" yang bisa dipakai orang lain. Data ada di volume `delova_data` (`cms.db`, foto di `cms-media/`).
 
 ## Isi menu CMS
 - **Halaman Koleksi** → tampil di `/koleksi/<slug>`. Pilih toko, kategori, dan/atau kata kunci nama produk; produk diambil otomatis dari Shopee-sync. Isi judul (H1), ringkasan, teks pengantar, teks SEO di bawah produk, FAQ, dan judul/deskripsi Google.

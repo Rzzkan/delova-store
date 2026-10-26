@@ -18,6 +18,7 @@ const ICONS: Record<string, string> = {
   x: "M6 6l12 12M18 6 6 18",
   sun: "M12 4V2m0 20v-2M4 12H2m20 0h-2M6 6 4.600 4.600M19.400 19.400 18 18M6 18l-1.400 1.400M19.400 4.600 18 6M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z",
   moon: "M20 14.500A8 8 0 0 1 9.500 4a8 8 0 1 0 10.500 10.500Z",
+  doc: "M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6",
   ext: "M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5",
 };
 export const Icon = ({ n, size = 20 }: { n: string; size?: number }) => (
@@ -34,7 +35,7 @@ const GROUPS: { title: string; items: { href: string; label: string; icon: strin
     { href: "/admin/tampilan", label: "Tampilan Beranda", icon: "brush" },
     { href: "/admin/ulasan", label: "Ulasan Unggulan", icon: "star" },
     { href: "/admin/toko-offline", label: "Toko Offline", icon: "store" },
-    { href: "/cms", label: "Blog, Panduan & Koleksi", icon: "ext" },
+    { href: "/cms", label: "CMS Blog & Koleksi", icon: "doc" },
   ] },
   { title: "Pengaturan", items: [
     { href: "/admin/pelacakan", label: "Pixel & Analytics", icon: "chart" },
@@ -43,6 +44,12 @@ const GROUPS: { title: string; items: { href: string; label: string; icon: strin
 ];
 
 type Theme = "light" | "dark";
+
+/** Tautan menu; /cms berada di layout root lain sehingga memakai <a> biasa. */
+function NavLink({ href, children, ...rest }: React.ComponentProps<"a">) {
+  const h = String(href);
+  return h.startsWith("/cms") ? <a href={h} {...rest}>{children}</a> : <Link href={h} {...rest}>{children}</Link>;
+}
 
 export function AdminFrame({ children, initialTheme }: { children: ReactNode; initialTheme?: Theme }) {
   const path = usePathname();
@@ -74,10 +81,10 @@ export function AdminFrame({ children, initialTheme }: { children: ReactNode; in
               <ul className="space-y-1">
                 {g.items.map((i) => (
                   <li key={i.href}>
-                    <Link href={i.href} onClick={() => setOpen(false)} aria-current={active(i.href) ? "page" : undefined}
+                    <NavLink href={i.href} onClick={() => setOpen(false)} aria-current={active(i.href) ? "page" : undefined}
                       className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${active(i.href) ? "bg-blush text-brand" : "text-ink/70 hover:bg-cream hover:text-ink"}`}>
                       <Icon n={i.icon} />{i.label}
-                    </Link>
+                    </NavLink>
                   </li>
                 ))}
               </ul>

@@ -1,0 +1,56 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap");
+
+/* ───── Tema CMS mengikuti panel toko (gaya TailAdmin): Outfit, indigo #465FFF, kartu berbingkai tipis ───── */
+:root {
+  --font-body: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --style-radius-s: 6px;
+  --style-radius-m: 8px;
+  --style-radius-l: 14px;
+  --nav-width: 280px;
+  --delova-primary: #465fff;
+  --delova-primary-dark: #3641f5;
+  --delova-primary-soft: #ecf3ff;
+}
+html, body { font-family: var(--font-body); }
+html[data-theme="light"] body { background: #f9fafb; }
+html[data-theme="light"] { --theme-bg: #f9fafb; --theme-input-bg: #ffffff; --theme-elevation-100: #e4e7ec; --theme-elevation-50: #f2f4f7; }
+html[data-theme="dark"] { --delova-primary-soft: rgba(70, 95, 255, 0.16); }
+h1, h2, h3, h4 { font-family: var(--font-body); font-weight: 600; letter-spacing: 0; }
+
+/* tombol & tautan utama */
+.btn--style-primary { --bg-color: var(--delova-primary); --color: #fff; --hover-bg: var(--delova-primary-dark); --hover-color: #fff; border-radius: 8px; font-weight: 500; }
+.btn--style-secondary { --bg-color: transparent; border-radius: 8px; font-weight: 500; }
+.pill--style-light-gray, .pill--style-white { border-radius: 999px; }
+a:not(.btn):not(.nav__link):hover { color: var(--delova-primary); }
+.field-type:focus-within label, .field-label { font-weight: 500; }
+input:focus, textarea:focus, .rs__control--is-focused { border-color: var(--delova-primary) !important; box-shadow: 0 0 0 3px rgba(70, 95, 255, 0.14) !important; }
+.checkbox-input__input input:checked + span, .radio-input__styled-radio::before { background: var(--delova-primary); }
+
+/* sidebar */
+.nav { background: var(--theme-elevation-0); border-right: 1px solid var(--theme-elevation-100); }
+.nav__wrap { padding: 8px 16px; }
+.nav__link { font-size: 15px; line-height: 22px; padding: 10px 12px; margin: 2px 0; border-radius: 10px; font-weight: 500; color: var(--theme-elevation-700); }
+.nav__link:hover { background: var(--theme-elevation-50); color: var(--theme-elevation-900); }
+.nav__link.active, .nav__link[aria-current="page"] { background: var(--delova-primary-soft); color: var(--delova-primary); font-weight: 500; padding-left: 12px; }
+.nav__link.active::before { display: none; }
+.nav-group__toggle, .nav-group__label { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--theme-elevation-500); }
+.nav__controls { display: none; } /* tombol akun/keluar milik Payload: masuk & keluar mengikuti panel toko */
+.nav__header { padding: 20px 20px 8px; }
+
+.delova-nav-top { display: flex; flex-direction: column; gap: 2px; padding: 4px 0 14px; margin-bottom: 8px; border-bottom: 1px solid var(--theme-elevation-100); }
+.delova-nav-back { display: block; width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px; font: inherit; font-size: 15px; font-weight: 500; color: var(--theme-elevation-700); background: none; border: 0; cursor: pointer; text-decoration: none; }
+.delova-nav-back:hover { background: var(--theme-elevation-50); color: var(--theme-elevation-900); }
+.delova-nav-out { color: #d92d20; }
+
+/* kartu daftar, tabel, kolom isi */
+.table table { border-radius: 14px; overflow: hidden; }
+.table th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--theme-elevation-500); font-weight: 500; }
+.card, .collection-list .table, .doc-controls, .render-fields .field-type.group-field, .array-field__row, .query-inspector { border-radius: 14px; }
+.card { border: 1px solid var(--theme-elevation-100); background: var(--theme-elevation-0); box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05); }
+.card:hover { border-color: var(--delova-primary); }
+.app-header { border-bottom: 1px solid var(--theme-elevation-100); }
+.gutter--left, .gutter--right { padding-inline: 32px; }
+
+/* ikon "D" di breadcrumb atas */
+.step-nav__home { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; }
+.step-nav__home > span { width: 28px !important; height: 28px !important; border-radius: 8px !important; font-size: 14px !important; }

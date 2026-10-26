@@ -1,20 +1,9 @@
 import { cookies } from "next/headers";
 import crypto from "node:crypto";
+import { COOKIE_NAME, expectedSession, safeEq } from "./admin-session";
 
-const COOKIE = "delova_admin";
-
-function expected(): string | null {
-  const pw = process.env.ADMIN_PASSWORD;
-  if (!pw) return null;
-  const secret = process.env.SESSION_SECRET || "dev-secret-change-me";
-  return crypto.createHmac("sha256", secret).update(`admin:${pw}`).digest("hex");
-}
-
-const safeEq = (a: string, b: string) => {
-  const A = Buffer.from(a);
-  const B = Buffer.from(b);
-  return A.length === B.length && crypto.timingSafeEqual(A, B);
-};
+const COOKIE = COOKIE_NAME;
+const expected = expectedSession;
 
 export const adminEnabled = () => !!process.env.ADMIN_PASSWORD;
 
@@ -43,4 +32,4 @@ export function sessionCookie() {
     maxAge: 60 * 60 * 24 * 7,
   };
 }
-export const COOKIE_NAME = COOKIE;
+export { COOKIE_NAME };

@@ -23,6 +23,10 @@ export default buildConfig({
   admin: {
     user: Users.slug,
     meta: { titleSuffix: " — Delova CMS" },
+    components: {
+      graphics: { Logo: "/components/cms/Logo#Logo", Icon: "/components/cms/Icon#Icon" },
+      beforeNavLinks: ["/components/cms/BackToAdmin#BackToAdmin"],
+    },
     importMap: { baseDir: path.resolve(process.cwd(), "src"), importMapFile: path.resolve(process.cwd(), "src/app/(payload)/cms/importMap.js") },
   },
   i18n: { supportedLanguages: { id, en }, fallbackLanguage: "id" },
@@ -42,11 +46,8 @@ export default buildConfig({
   sharp,
   typescript: { outputFile: path.resolve(process.cwd(), "src/payload-types.ts") },
   async onInit(payload) {
-    // Akun pertama dibuat otomatis bila CMS_ADMIN_EMAIL & CMS_ADMIN_PASSWORD diisi — mencegah orang lain mendaftar lebih dulu.
-    const email = process.env.CMS_ADMIN_EMAIL;
-    const password = process.env.CMS_ADMIN_PASSWORD;
-    if (!email || !password) return;
+  // Pastikan akun bersama ada sejak awal, supaya layar "buat pengguna pertama" tidak pernah bisa dipakai orang lain.
     const { totalDocs } = await payload.count({ collection: "users" });
-    if (totalDocs === 0) await payload.create({ collection: "users", data: { email, password } });
+    if (totalDocs === 0) await payload.create({ collection: "users", data: { email: process.env.CMS_ADMIN_EMAIL || "admin@delova.id" } as never });
   },
 });
