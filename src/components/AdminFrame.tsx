@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { THEME_COOKIE } from "@/lib/admin-theme";
 
 const ICONS: Record<string, string> = {
   grid: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",
@@ -15,6 +16,8 @@ const ICONS: Record<string, string> = {
   out: "M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 16l-4-4 4-4M6 12h10",
   menu: "M4 7h16M4 12h16M4 17h16",
   x: "M6 6l12 12M18 6 6 18",
+  sun: "M12 4V2m0 20v-2M4 12H2m20 0h-2M6 6 4.600 4.600M19.400 19.400 18 18M6 18l-1.400 1.400M19.400 4.600 18 6M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z",
+  moon: "M20 14.500A8 8 0 0 1 9.500 4a8 8 0 1 0 10.500 10.500Z",
   ext: "M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5",
 };
 export const Icon = ({ n, size = 20 }: { n: string; size?: number }) => (
@@ -38,13 +41,25 @@ const GROUPS: { title: string; items: { href: string; label: string; icon: strin
   ] },
 ];
 
-export function AdminFrame({ children }: { children: ReactNode }) {
+type Theme = "light" | "dark";
+
+export function AdminFrame({ children, initialTheme }: { children: ReactNode; initialTheme?: Theme }) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
+  const [theme, setTheme] = useState<Theme>(initialTheme ?? "light");
+  // Belum pernah memilih → ikuti pengaturan perangkat.
+  useEffect(() => {
+    if (!initialTheme && window.matchMedia?.("(prefers-color-scheme: dark)").matches) setTheme("dark");
+  }, [initialTheme]);
+  function toggle() {
+    const next: Theme = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    document.cookie = `${THEME_COOKIE}=${next}; path=/admin; max-age=31536000; samesite=lax`;
+  }
   const active = (h: string) => (h === "/admin" ? path === "/admin" : path.startsWith(h));
   const title = GROUPS.flatMap((g) => g.items).find((i) => active(i.href))?.label ?? "Admin";
   return (
-    <div data-admin className="min-h-screen bg-cream text-ink">
+    <div data-admin data-theme={theme} className="min-h-screen bg-cream text-ink">
       {open && <button aria-label="Tutup menu" className="fixed inset-0 z-40 bg-ink/40 lg:hidden" onClick={() => setOpen(false)} />}
       <aside className={`fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col border-r border-sand bg-white transition-transform lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex h-[72px] items-center gap-3 border-b border-sand px-6">
@@ -81,6 +96,9 @@ export function AdminFrame({ children }: { children: ReactNode }) {
           <p className="text-lg font-semibold">{title}</p>
           <div className="ml-auto flex items-center gap-2">
             <a href="/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg border border-sand px-3.5 py-2 text-sm font-medium text-ink/70 transition hover:bg-cream"><Icon n="ext" size={16} /><span className="hidden sm:inline">Lihat situs</span></a>
+            <button onClick={toggle} className="flex h-10 w-10 items-center justify-center rounded-lg border border-sand text-ink/70 transition hover:bg-cream" aria-label={theme === "dark" ? "Ganti ke mode terang" : "Ganti ke mode gelap"} title={theme === "dark" ? "Mode terang" : "Mode gelap"}>
+              <Icon n={theme === "dark" ? "sun" : "moon"} size={18} />
+            </button>
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-blush text-sm font-semibold text-brand" aria-label="Admin">A</span>
           </div>
         </header>

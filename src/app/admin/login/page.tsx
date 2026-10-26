@@ -1,11 +1,14 @@
+import { cookies } from "next/headers";
 import { adminEnabled } from "@/lib/auth";
+import { THEME_COOKIE } from "@/lib/admin-theme";
 
 export const metadata = { title: "Masuk Admin", robots: { index: false } };
 
 export default async function Login({ searchParams }: { searchParams: Promise<{ err?: string }> }) {
   const { err } = await searchParams;
+  const theme = (await cookies()).get(THEME_COOKIE)?.value === "dark" ? "dark" : "light";
   return (
-    <div data-admin className="flex min-h-screen items-center justify-center bg-cream px-4 py-12 text-ink">
+    <div data-admin data-theme={theme} className="flex min-h-screen items-center justify-center bg-cream px-4 py-12 text-ink">
       <form action="/api/admin/login" method="post" className="w-full max-w-md space-y-5 rounded-2xl border border-sand bg-white p-8 shadow-sm">
         <div className="flex items-center gap-3">
           <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand text-xl font-bold text-white">D</span>
