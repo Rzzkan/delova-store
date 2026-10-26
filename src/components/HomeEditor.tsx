@@ -3,6 +3,7 @@ import { useState } from "react";
 import { CATEGORIES } from "@/lib/categories";
 import { BRANDS, BRAND_SLUGS } from "@/lib/brands";
 import type { HomeSettings } from "@/lib/settings";
+import { trustFor, TRUST_MAX, type TrustItem } from "@/lib/trust";
 import { ImageField } from "./ImageField";
 
 const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (<label className="block space-y-1"><span className="text-sm font-medium">{label}</span>{children}</label>);
@@ -91,6 +92,40 @@ export function HomeEditor({ initial }: { initial: HomeSettings }) {
             </div>
           </div>
         ))}
+      </section>
+
+      <section className="space-y-6 rounded-2xl border border-sand bg-white p-5 md:p-6"><h2 className="text-lg font-semibold">Strip Keunggulan per Toko</h2>
+        <p className="text-sm text-ink/60">Empat kotak teks di bawah banner utama (mis. “Sinkron Shopee”). Atur terpisah untuk tiap toko, maksimal {TRUST_MAX} kotak. Hapus semua kotak untuk menyembunyikan strip.</p>
+        {BRAND_SLUGS.map((b) => {
+          const list = trustFor(s, b);
+          const custom = Array.isArray(s.trust[b]);
+          const setList = (l: TrustItem[]) => setS((p) => ({ ...p, trust: { ...p.trust, [b]: l } }));
+          return (
+            <div key={b} className="rounded-3xl border border-sand bg-white p-5">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                <h3 className="text-xl">{BRANDS[b].name}</h3>
+                <span className="text-xs text-ink/50">{!custom ? "Memakai teks bawaan" : list.length ? `${list.length} kotak` : "Disembunyikan"}</span>
+              </div>
+              <div className="space-y-3">
+                {list.map((t, i) => (
+                  <div key={i} className="grid gap-2 md:grid-cols-[1fr_2fr_auto]">
+                    <input className="input" aria-label={`Judul kotak ${i + 1}`} placeholder="Judul" maxLength={40} value={t.title} onChange={(e) => setList(list.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))} />
+                    <input className="input" aria-label={`Keterangan kotak ${i + 1}`} placeholder="Keterangan singkat" maxLength={90} value={t.desc} onChange={(e) => setList(list.map((x, j) => (j === i ? { ...x, desc: e.target.value } : x)))} />
+                    <div className="flex gap-1">
+                      <button type="button" className="btn-outline !px-3 !py-2" disabled={i === 0} aria-label="Naikkan" onClick={() => { const n = [...list]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; setList(n); }}>↑</button>
+                      <button type="button" className="btn-outline !px-3 !py-2" disabled={i === list.length - 1} aria-label="Turunkan" onClick={() => { const n = [...list]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; setList(n); }}>↓</button>
+                      <button type="button" className="btn-outline !px-3 !py-2" aria-label="Hapus kotak" onClick={() => setList(list.filter((_, j) => j !== i))}>✕</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button type="button" className="btn-outline !py-2" disabled={list.length >= TRUST_MAX} onClick={() => setList([...list, { title: "", desc: "" }])}>+ Tambah kotak</button>
+                {custom && <button type="button" className="btn-outline !py-2" onClick={() => setS((p) => { const t = { ...p.trust }; delete t[b]; return { ...p, trust: t }; })}>Kembalikan bawaan</button>}
+              </div>
+            </div>
+          );
+        })}
       </section>
 
       <section className="space-y-4 rounded-2xl border border-sand bg-white p-5 md:p-6"><h2 className="text-lg font-semibold">Bar Pengumuman & Judul Ulasan</h2>

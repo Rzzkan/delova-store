@@ -7,6 +7,7 @@ import { BRANDS, BRAND_SLUGS, type BrandSlug } from "@/lib/brands";
 import { categoryCounts, listProducts } from "@/lib/products";
 import { thumb } from "@/lib/format";
 import { getHome } from "@/lib/settings";
+import { trustFor } from "@/lib/trust";
 import { homeReviews, ratingSummary } from "@/lib/reviews";
 
 /** "Gaya *ceria* si kecil" → kata di antara tanda * diberi warna aksen. */
@@ -21,12 +22,7 @@ const BLURB: Record<BrandSlug, string> = {
   daily: "Blouse, cardigan, skirt & inner untuk sehari-hari",
 };
 
-const TRUST = [
-  ["Sinkron Shopee", "Stok & harga selalu sama dengan toko resmi"],
-  ["Dua Cara Beli", "Checkout WhatsApp atau langsung di Shopee"],
-  ["Kirim Nusantara", "Dikemas rapi, dikirim ke seluruh Indonesia"],
-  ["Admin Ramah", "Tanya ukuran & bahan via WhatsApp"],
-];
+const TRUST_COLS: Record<number, string> = { 1: "md:grid-cols-1", 2: "md:grid-cols-2", 3: "md:grid-cols-3", 4: "md:grid-cols-4", 5: "md:grid-cols-5", 6: "md:grid-cols-6" };
 
 /** Beranda satu brand. Wardrobe memakai teks/foto dari /admin/tampilan; Kids & Scarf punya salinan sendiri (brands.ts). */
 export async function BrandHome({ brand }: { brand: BrandSlug }) {
@@ -40,6 +36,7 @@ export async function BrandHome({ brand }: { brand: BrandSlug }) {
     listProducts({ brand, limit: 4, sort: "terlaris" }),
     categoryCounts(brand),
   ]);
+  const trust = trustFor(home, brand);
   const shopeeUrl = home.shopeeUrls[brand] || b.shopeeUrl;
   const hero = brand === "wardrobe" ? home.hero : b.hero;
   const heroImg = (brand === "wardrobe" ? home.hero.image : home.brandHeroes[brand]) || featured.items[0]?.images[0] || best.items[0]?.images[0];
@@ -76,14 +73,16 @@ export async function BrandHome({ brand }: { brand: BrandSlug }) {
         <p className="bg-accent-light/60 py-2 text-center text-xs text-ink/70">Tampilan {b.name} masih sementara — unggah logo di admin & kirim warna brand untuk disesuaikan.</p>
       )}
 
-      {/* TRUST */}
-      <section className="border-y border-sand bg-white/70">
-        <div className="container-x grid grid-cols-2 gap-6 py-6 md:grid-cols-4">
-          {TRUST.map(([t, d]) => (
-            <div key={t}><p className="text-sm font-semibold text-brand">{t}</p><p className="mt-0.5 text-xs text-ink/60">{d}</p></div>
-          ))}
-        </div>
-      </section>
+      {/* KEUNGGULAN (diatur dari /admin/tampilan, per toko) */}
+      {trust.length > 0 && (
+        <section className="border-y border-sand bg-white/70">
+          <div className={`container-x grid grid-cols-2 gap-6 py-6 ${TRUST_COLS[trust.length] ?? "md:grid-cols-4"}`}>
+            {trust.map((t, i) => (
+              <div key={i}>{t.title && <p className="text-sm font-semibold text-brand">{t.title}</p>}{t.desc && <p className="mt-0.5 text-xs text-ink/60">{t.desc}</p>}</div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* KATEGORI */}
       {cats.length > 1 && (

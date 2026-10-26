@@ -1,6 +1,7 @@
 import { getDb } from "./db";
 import { CATEGORIES } from "./categories";
 import { BRAND_SLUGS } from "./brands";
+import { TRUST_MAX, type TrustItem } from "./trust";
 
 /** Semua teks & gambar beranda yang bisa diubah dari /admin/tampilan. Gambar = URL (upload → /api/media/…, atau link luar). */
 export type HomeSettings = {
@@ -13,7 +14,10 @@ export type HomeSettings = {
   logoScale: Record<string, number>; // ukuran logo per brand, persen (60–250)
   brandHeroes: Record<string, string>;
   shopeeUrls: Record<string, string>;
+  /** Strip keunggulan di bawah hero per brand. Kunci tak ada = pakai bawaan; array kosong = disembunyikan. */
+  trust: Record<string, TrustItem[]>;
 };
+
 
 export const HOME_DEFAULTS: HomeSettings = {
   announcements: [
@@ -45,6 +49,7 @@ export const HOME_DEFAULTS: HomeSettings = {
   logoScale: {},
   brandHeroes: {},
   shopeeUrls: {},
+  trust: {},
 };
 
 const KEY = "home";
@@ -62,8 +67,10 @@ function merge(stored: Partial<HomeSettings> | null): HomeSettings {
     logoScale: { ...(s.logoScale ?? {}) },
     brandHeroes: { ...(s.brandHeroes ?? {}) },
     shopeeUrls: { ...(s.shopeeUrls ?? {}) },
+    trust: { ...(s.trust ?? {}) },
   };
 }
+
 
 export async function getHome(): Promise<HomeSettings> {
   try {
@@ -102,6 +109,15 @@ export async function saveHome(input: Partial<HomeSettings>): Promise<HomeSettin
     logoScale: Object.fromEntries(BRAND_SLUGS.map((b) => [b, Math.min(250, Math.max(60, Math.round(Number(cur.logoScale[b]) || 100)))]).filter(([, v]) => v !== 100)),
     brandHeroes: Object.fromEntries(BRAND_SLUGS.map((b) => [b, img(cur.brandHeroes[b])]).filter(([, v]) => v)),
     shopeeUrls: Object.fromEntries(BRAND_SLUGS.map((b) => [b, str(cur.shopeeUrls[b], 300).trim()]).filter(([, v]) => String(v).startsWith("https://"))),
+    trust: Object.fromEntries(
+      BRAND_SLUGS.filter((b) => Array.isArray(cur.trust[b])).map((b) => [
+        b,
+        cur.trust[b]
+          .map((t) => ({ title: str(t?.title, 40).trim(), desc: str(t?.desc, 90).trim() }))
+          .filter((t) => t.title || t.desc)
+          .slice(0, TRUST_MAX),
+      ]),
+    ),
   };
   if (!clean.announcements.length) clean.announcements = HOME_DEFAULTS.announcements;
   const db = await getDb();
