@@ -93,6 +93,34 @@ h1 em, h2 em { font-style: normal; }
 [data-brand="scarf"] .pc-price.is-sale .pc-now { color: rgb(var(--sale)); }
 [data-brand="scarf"] .pc-badge { border-radius: 4px; background: rgb(var(--sale)); color: #fff; }
 [data-brand="scarf"] .pc-sold { color: rgb(var(--ink) / .55); }
+/* ───── Admin: gaya TailAdmin (sidebar putih, kartu berbingkai tipis, biru-indigo #465FFF, font Outfit) ───── */
+[data-admin] {
+  color-scheme: light;
+  --ink: 29 41 57; --cream: 249 250 251; --sand: 228 231 236; --blush: 236 243 255;
+  --brand: 70 95 255; --brand-dark: 54 65 245; --brand-light: 156 185 255;
+  --accent: 70 95 255; --accent-light: 194 214 255; --accent-ink: 54 65 245;
+  --font-display: "Outfit", "Inter", system-ui, sans-serif; --display-tracking: 0; --display-weight: 600;
+  font-family: "Outfit", "Inter", system-ui, sans-serif;
+}
+[data-admin] .font-sans { font-family: inherit; }
+[data-admin] .rounded-3xl { border-radius: 16px; }
+[data-admin] .rounded-2xl { border-radius: 14px; }
+[data-admin] .btn, [data-admin] .chip, [data-admin] .input { border-radius: 8px; }
+[data-admin] .btn { font-weight: 500; letter-spacing: 0; padding: .6rem 1.1rem; box-shadow: 0 1px 2px rgb(16 24 40 / .05); }
+[data-admin] .btn-primary { background: rgb(var(--brand)); color: #fff; }
+[data-admin] .btn-primary:hover { background: rgb(var(--brand-dark)); }
+[data-admin] .btn-outline { background: #fff; border: 1px solid rgb(var(--sand)); color: rgb(var(--ink) / .8); }
+[data-admin] .btn-outline:hover { background: rgb(var(--cream)); color: rgb(var(--ink)); }
+[data-admin] .chip { background: #fff; padding: .4rem .9rem; }
+[data-admin] .chip-on { background: rgb(var(--blush)); border-color: rgb(var(--brand)); color: rgb(var(--brand)); }
+[data-admin] .chip-on:hover { color: rgb(var(--brand)); }
+[data-admin] .input { background: #fff; border-color: rgb(var(--sand)); padding: .6rem .9rem; }
+[data-admin] .input:focus, [data-admin] input:focus, [data-admin] select:focus, [data-admin] textarea:focus { border-color: rgb(var(--brand)); box-shadow: 0 0 0 3px rgb(var(--brand) / .15); outline: none; }
+[data-admin] p.bg-blush.text-brand, [data-admin] [role="alert"].bg-blush { background: #FEF3F2; color: #D92D20; }
+[data-admin] .bg-sage\/20 { background: #ECFDF3; color: #027A48; }
+[data-admin] thead { background: rgb(var(--cream)); }
+[data-admin] thead th { padding: .65rem .75rem; font-weight: 500; }
+[data-admin] tbody tr:hover { background: rgb(var(--cream) / .6); }
 @layer components {
   .btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wide transition active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50; }
   .btn-primary { @apply btn bg-brand text-cream hover:bg-brand-dark; }

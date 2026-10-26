@@ -24,7 +24,7 @@ export function HomeEditor({ initial }: { initial: HomeSettings }) {
 
   return (
     <div className="space-y-12">
-      <section className="space-y-4"><h2 className="text-2xl font-semibold">Hero (bagian paling atas)</h2>
+      <section className="space-y-4 rounded-2xl border border-sand bg-white p-5 md:p-6"><h2 className="text-lg font-semibold">Hero (bagian paling atas)</h2>
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-4">
             <Field label="Teks kecil di atas judul"><input className="input" value={s.hero.eyebrow} onChange={(e) => hero("eyebrow", e.target.value)} /></Field>
@@ -41,7 +41,7 @@ export function HomeEditor({ initial }: { initial: HomeSettings }) {
         </div>
       </section>
 
-      <section className="space-y-4"><h2 className="text-2xl font-semibold">Foto Kategori</h2>
+      <section className="space-y-4 rounded-2xl border border-sand bg-white p-5 md:p-6"><h2 className="text-lg font-semibold">Foto Kategori</h2>
         <p className="text-sm text-ink/60">Kosong = otomatis memakai foto produk terlaris di kategori itu. Rasio ideal 3:4.</p>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {CATEGORIES.filter((c) => BRANDS.wardrobe.categories.includes(c.slug)).map((c) => (
@@ -50,7 +50,7 @@ export function HomeEditor({ initial }: { initial: HomeSettings }) {
         </div>
       </section>
 
-      <section className="space-y-4"><h2 className="text-2xl font-semibold">Banner Cerita Brand</h2>
+      <section className="space-y-4 rounded-2xl border border-sand bg-white p-5 md:p-6"><h2 className="text-lg font-semibold">Banner Cerita Brand</h2>
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-4">
             <Field label="Judul"><textarea className="input" rows={2} value={s.story.title} onChange={(e) => story("title", e.target.value)} /></Field>
@@ -64,7 +64,7 @@ export function HomeEditor({ initial }: { initial: HomeSettings }) {
         </div>
       </section>
 
-      <section className="space-y-6"><h2 className="text-2xl font-semibold">Logo, Foto & Link Toko per Brand</h2>
+      <section className="space-y-6 rounded-2xl border border-sand bg-white p-5 md:p-6"><h2 className="text-lg font-semibold">Logo, Foto & Link Toko per Brand</h2>
         <p className="text-sm text-ink/60">Unggah logo tiap toko (PNG dengan latar transparan paling bagus, lebar ≥ 400px). Logo menggantikan wordmark bawaan di header, footer, dan kartu brand. Kosongkan untuk kembali ke bawaan.</p>
         {BRAND_SLUGS.map((b) => (
           <div key={b} className="rounded-3xl border border-sand bg-white p-5">
@@ -93,7 +93,7 @@ export function HomeEditor({ initial }: { initial: HomeSettings }) {
         ))}
       </section>
 
-      <section className="space-y-4"><h2 className="text-2xl font-semibold">Bar Pengumuman & Judul Ulasan</h2>
+      <section className="space-y-4 rounded-2xl border border-sand bg-white p-5 md:p-6"><h2 className="text-lg font-semibold">Bar Pengumuman & Judul Ulasan</h2>
         <Field label="Pengumuman berjalan Wardrobe (satu baris = satu pesan, maks 8)"><textarea className="input" rows={4} value={s.announcements.join("\n")} onChange={(e) => setS((p) => ({ ...p, announcements: e.target.value.split("\n") }))} /></Field>
         <div className="grid gap-3 md:grid-cols-2">
           <Field label="Judul bagian ulasan"><input className="input" value={s.reviews.title} onChange={(e) => setS((p) => ({ ...p, reviews: { ...p.reviews, title: e.target.value } }))} /></Field>
@@ -101,7 +101,7 @@ export function HomeEditor({ initial }: { initial: HomeSettings }) {
         </div>
       </section>
 
-      <div className="sticky bottom-4 flex items-center gap-4 rounded-full border border-sand bg-white/95 p-3 pl-6 shadow-xl backdrop-blur">
+      <div className="sticky bottom-4 flex items-center gap-4 rounded-xl border border-sand bg-white/95 p-3 pl-6 shadow-lg backdrop-blur">
         <button className="btn-primary" onClick={save} disabled={busy}>{busy ? "Menyimpan…" : "Simpan perubahan"}</button>
         <span className="text-sm text-ink/60" role="status">{msg}</span>
       </div>

@@ -40,7 +40,7 @@ export function AddReview({ products }: { products: { id: string; name: string }
     (e.target as HTMLFormElement).reset(); setImg(""); router.refresh();
   }
   return (
-    <form onSubmit={submit} className="space-y-3 rounded-3xl border border-sand bg-white p-6">
+    <form onSubmit={submit} className="space-y-3">
       <h3 className="text-xl font-semibold">Tambah ulasan manual</h3>
       <p className="text-xs text-ink/50">Untuk ulasan yang belum terambil otomatis (mis. salin dari Shopee/WhatsApp). Pastikan pembeli setuju ulasannya ditampilkan.</p>
       <div className="grid gap-3 md:grid-cols-3">
