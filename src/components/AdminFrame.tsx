@@ -62,7 +62,7 @@ export function AdminFrame({ children, initialTheme }: { children: ReactNode; in
   function toggle() {
     const next: Theme = theme === "dark" ? "light" : "dark";
     setTheme(next);
-    document.cookie = `${THEME_COOKIE}=${next}; path=/admin; max-age=31536000; samesite=lax`;
+    document.cookie = `${THEME_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
   }
   const active = (h: string) => (h === "/admin" ? path === "/admin" : path.startsWith(h));
   const title = GROUPS.flatMap((g) => g.items).find((i) => active(i.href))?.label ?? "Admin";

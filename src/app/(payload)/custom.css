@@ -54,3 +54,26 @@ input:focus, textarea:focus, .rs__control--is-focused { border-color: var(--delo
 /* ikon "D" di breadcrumb atas */
 .step-nav__home { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; }
 .step-nav__home > span { width: 28px !important; height: 28px !important; border-radius: 8px !important; font-size: 14px !important; }
+
+/* mode gelap: palet sama dengan panel toko (#101828 / #1D2939 / #344054) */
+html[data-theme="dark"] {
+  --theme-bg: #101828;
+  --theme-input-bg: #1d2939;
+  --theme-elevation-0: #101828;
+  --theme-elevation-50: #162033;
+  --theme-elevation-100: #1d2939;
+  --theme-elevation-150: #243246;
+  --theme-elevation-200: #344054;
+  --theme-elevation-300: #475467;
+  --theme-elevation-400: #667085;
+  --theme-elevation-500: #98a2b3;
+  --theme-elevation-600: #b0b8c6;
+  --theme-elevation-700: #d0d5dd;
+  --theme-elevation-800: #e4e7ec;
+  --theme-elevation-900: #f2f4f7;
+  --theme-elevation-1000: #ffffff;
+}
+html[data-theme="dark"] body { background: #101828; }
+html[data-theme="dark"] .nav, html[data-theme="dark"] .app-header { background: #101828; border-color: #1d2939; }
+html[data-theme="dark"] .card { background: #1d2939; border-color: #344054; box-shadow: none; }
+html[data-theme="dark"] .delova-nav-out { color: #f97066; }

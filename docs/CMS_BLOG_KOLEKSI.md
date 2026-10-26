@@ -2,7 +2,9 @@
 
 CMS ini dipakai untuk **artikel blog/panduan** dan **halaman koleksi** (URL bersih untuk SEO). Panel toko lama tetap di `/admin`; CMS ada di **`/cms`**.
 
-## Login
+## Login ## Login tema
+Pilihan terang/gelap dipakai bersama oleh `/admin` dan `/cms` (cookie `payload-theme`); tombol ganti tema ada di header panel toko dan di menu atas sidebar CMS.
+
 CMS **tidak punya password sendiri**. Masuk ke `/admin` dengan `ADMIN_PASSWORD`, lalu buka menu **CMS Blog & Koleksi** (atau langsung `/cms`) — sesi yang sama dipakai. Membuka `/cms` saat belum login akan diarahkan ke halaman masuk `/admin`, lalu kembali ke CMS. Tombol *Keluar* di CMS sama dengan keluar dari panel toko.
 
 ## Pertama kali (VPS)
