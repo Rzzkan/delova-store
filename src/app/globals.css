@@ -22,12 +22,13 @@
 }
 [data-brand="scarf"] {
   /* Palet terinspirasi lozy.id: rose dusty #DFADAE, latar pink lembut #FCEFEF, harga merah #F94C43 */
-  --ink: 94 86 86; --cream: 252 239 239; --sand: 240 214 214; --blush: 244 223 223;
+  --ink: 38 32 33; --cream: 255 255 255; --sand: 240 214 214; --blush: 244 223 223;
   --brand: 196 121 124; --brand-dark: 168 96 100; --brand-light: 223 173 174;
   --accent: 223 173 174; --accent-light: 244 223 223; --accent-ink: 168 96 100;
   --sale: 249 76 67;
-  --font-display: "Nunito", "Inter", system-ui, sans-serif; --display-tracking: 0.01em; --display-weight: 800;
-  font-family: "Nunito", "Inter", system-ui, sans-serif;
+  /* font tegas seperti logo DELOVA (Inter ExtraBold), tata letak ala hijabchic.co.id */
+  --font-display: "Inter", system-ui, sans-serif; --display-tracking: -0.02em; --display-weight: 800;
+  font-family: "Inter", system-ui, sans-serif;
 }
 [data-brand="daily"] {
   --ink: 24 24 24; --cream: 255 255 255; --sand: 230 229 226; --blush: 244 243 240;
@@ -60,39 +61,46 @@ h1 em, h2 em { font-style: normal; }
 .pattern-kawung-light {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-opacity='.10' stroke-width='1'%3E%3Cellipse cx='24' cy='12' rx='6' ry='12'/%3E%3Cellipse cx='24' cy='36' rx='6' ry='12'/%3E%3Cellipse cx='12' cy='24' rx='12' ry='6'/%3E%3Cellipse cx='36' cy='24' rx='12' ry='6'/%3E%3C/g%3E%3C/svg%3E");
 }
-/* ───── Scarf: warna ala lozy.id, bentuk tombol & kartu ala elita.co.id ───── */
+/* ───── Scarf: warna rose ala lozy.id, tata letak minimalis ala hijabchic.co.id, font Inter tegas seperti logo ───── */
 [data-brand="scarf"] .font-sans { font-family: inherit; }
-[data-brand="scarf"] .rounded-3xl, [data-brand="scarf"] .rounded-2xl { border-radius: 10px; }
-[data-brand="scarf"] .rounded-xl { border-radius: 8px; }
-[data-brand="scarf"] .btn, [data-brand="scarf"] .chip, [data-brand="scarf"] .input { border-radius: 8px; }
-[data-brand="scarf"] .btn { font-weight: 600; letter-spacing: .02em; padding-top: .7rem; padding-bottom: .7rem; }
-[data-brand="scarf"] .btn-outline { background: #fff; }
-[data-brand="scarf"] .btn-outline:hover { background: rgb(var(--brand)); }
-[data-brand="scarf"] .chip { background: #fff; border-color: rgb(var(--sand)); border-radius: 6px; }
-[data-brand="scarf"] .chip-on { background: rgb(var(--brand)); border-color: rgb(var(--brand)); color: #fff; }
-[data-brand="scarf"] h2 { text-transform: uppercase; letter-spacing: .14em; font-size: 1.1rem; }
-[data-brand="scarf"] .qty { border-radius: 8px; }
-/* bar pengumuman & header seperti lozy */
-[data-brand="scarf"] [role="note"] { background: rgb(var(--blush)); color: rgb(var(--ink) / .85); text-transform: uppercase; letter-spacing: .14em; font-weight: 700; }
-[data-brand="scarf"] [role="note"] .text-accent-light { color: rgb(var(--brand-light)); }
-[data-brand="scarf"] header { background: rgb(var(--brand-light)); border-bottom-color: transparent; backdrop-filter: none; }
-[data-brand="scarf"] header .container-x > nav a { color: #fff; text-transform: uppercase; letter-spacing: .14em; font-size: .72rem; font-weight: 700; }
-[data-brand="scarf"] header .container-x > nav a:hover { color: rgb(var(--ink)); }
-[data-brand="scarf"] header > .container-x > a, [data-brand="scarf"] header summary { color: #fff; }
-[data-brand="scarf"] header .text-brand-light, [data-brand="scarf"] header .text-accent { color: #fff; }
-/* kartu produk (elita): putih, bingkai tipis, gambar penuh di atas, teks di tengah */
-[data-brand="scarf"] .pc-grid { gap: 1rem; }
-[data-brand="scarf"] .product-card { background: #fff; border: 1px solid rgb(var(--sand)); border-radius: 8px; overflow: hidden; transition: box-shadow .2s, transform .2s; }
-[data-brand="scarf"] .product-card:hover { box-shadow: 0 6px 18px rgb(var(--brand) / .18); }
+[data-brand="scarf"] .rounded-3xl, [data-brand="scarf"] .rounded-2xl, [data-brand="scarf"] .rounded-xl,
+[data-brand="scarf"] [class*="rounded-["] { border-radius: 2px; }
+[data-brand="scarf"] .btn, [data-brand="scarf"] .chip, [data-brand="scarf"] .input, [data-brand="scarf"] .qty { border-radius: 2px; }
+[data-brand="scarf"] .btn { font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: .75rem; padding: .85rem 1.6rem; }
+[data-brand="scarf"] .btn-outline { background: #fff; border-color: rgb(var(--ink)); color: rgb(var(--ink)); }
+[data-brand="scarf"] .btn-outline:hover { background: rgb(var(--ink)); color: #fff; }
+[data-brand="scarf"] .chip { background: #fff; border-color: rgb(var(--sand)); }
+[data-brand="scarf"] .chip-on { background: rgb(var(--ink)); border-color: rgb(var(--ink)); color: #fff; }
+[data-brand="scarf"] h1 { text-transform: uppercase; letter-spacing: -.01em; line-height: 1.05; }
+[data-brand="scarf"] h2 { text-transform: uppercase; letter-spacing: .12em; font-size: 1.05rem; }
+[data-brand="scarf"] .eyebrow { font-weight: 700; letter-spacing: .22em; }
+/* hero: putih polos, tanpa pola & tanpa cincin; foto persegi penuh */
+[data-brand="scarf"] .pattern-kawung { background-image: none; background-color: #fff; }
+[data-brand="scarf"] .hero-ring { display: none; }
+[data-brand="scarf"] .pattern-kawung-light { background-image: none; }
+[data-brand="scarf"] .hero-media { border-radius: 0; box-shadow: none; }
+/* bar pengumuman & header putih supaya logo terlihat */
+[data-brand="scarf"] [role="note"] { background: #fff; color: rgb(var(--ink)); border-bottom: 1px solid rgb(var(--sand)); text-transform: uppercase; letter-spacing: .14em; font-weight: 700; }
+[data-brand="scarf"] [role="note"] .text-accent-light { color: rgb(var(--brand)); }
+[data-brand="scarf"] header { background: #fff; border-bottom: 1px solid rgb(var(--sand)); backdrop-filter: none; }
+[data-brand="scarf"] header .container-x > nav a { color: rgb(var(--ink)); text-transform: uppercase; letter-spacing: .14em; font-size: .72rem; font-weight: 700; }
+[data-brand="scarf"] header .container-x > nav a:hover { color: rgb(var(--brand)); }
+[data-brand="scarf"] header .text-brand-light { color: rgb(var(--brand)); }
+[data-brand="scarf"] header .text-accent { color: rgb(var(--ink) / .6); }
+[data-brand="scarf"] header .input { border-radius: 2px !important; background: rgb(var(--blush) / .5); }
+/* kartu produk (hijabchic): tanpa bingkai, foto penuh, teks rata kiri */
+[data-brand="scarf"] .pc-grid { gap: 1.25rem 1rem; }
+[data-brand="scarf"] .product-card { background: transparent; border: 0; border-radius: 0; overflow: visible; }
+[data-brand="scarf"] .product-card:hover { box-shadow: none; }
 [data-brand="scarf"] .pc-img { border-radius: 0; }
-[data-brand="scarf"] .pc-body { margin-top: 0; padding: .8rem .75rem 1rem; text-align: center; }
+[data-brand="scarf"] .pc-body { margin-top: .6rem; padding: 0; text-align: left; }
 [data-brand="scarf"] .pc-cat { display: none; }
-[data-brand="scarf"] .pc-title { font-size: .875rem; color: rgb(var(--ink)); }
-[data-brand="scarf"] .pc-price { justify-content: center; }
-[data-brand="scarf"] .pc-now { color: rgb(var(--ink) / .75); font-weight: 600; }
+[data-brand="scarf"] .pc-title { font-size: .8rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: rgb(var(--ink)); }
+[data-brand="scarf"] .pc-price { justify-content: flex-start; }
+[data-brand="scarf"] .pc-now { color: rgb(var(--ink)); font-weight: 700; }
 [data-brand="scarf"] .pc-price.is-sale .pc-now { color: rgb(var(--sale)); }
-[data-brand="scarf"] .pc-badge { border-radius: 4px; background: rgb(var(--sale)); color: #fff; }
-[data-brand="scarf"] .pc-sold { color: rgb(var(--ink) / .55); }
+[data-brand="scarf"] .pc-badge { border-radius: 0; background: rgb(var(--ink)); color: #fff; letter-spacing: .08em; }
+[data-brand="scarf"] .pc-sold { color: rgb(var(--ink) / .5); }
 /* ───── Admin: gaya TailAdmin (sidebar putih, kartu berbingkai tipis, biru-indigo #465FFF, font Outfit) ───── */
 [data-admin] {
   color-scheme: light;

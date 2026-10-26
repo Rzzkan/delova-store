@@ -64,7 +64,7 @@ export async function BrandHome({ brand }: { brand: BrandSlug }) {
           </div>
           <div className="relative mx-auto w-full max-w-md">
             <div className="hero-ring absolute -inset-3 rounded-[2.5rem] border-2 border-accent/60" aria-hidden />
-            <div className="aspect-[4/5] overflow-hidden rounded-[2rem] bg-sand shadow-2xl shadow-brand/10">
+            <div className="hero-media aspect-[4/5] overflow-hidden rounded-[2rem] bg-sand shadow-2xl shadow-brand/10">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {heroImg && <img src={heroImg} alt={`Koleksi unggulan ${b.name}`} className="h-full w-full object-cover" />}
             </div>
