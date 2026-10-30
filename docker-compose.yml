@@ -24,6 +24,9 @@ services:
       CMS_ADMIN_PASSWORD: ${CMS_ADMIN_PASSWORD:-}
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:-}
       MCP_TOKEN: ${MCP_TOKEN:-}
+      # API publik /api/v1 — format "nama=kunci,nama2=kunci2" (kunci min. 32 karakter)
+      API_KEYS: ${API_KEYS:-}
+      API_RATE_LIMIT: ${API_RATE_LIMIT:-60}
       TURSO_DATABASE_URL: ${TURSO_DATABASE_URL:-}
       TURSO_AUTH_TOKEN: ${TURSO_AUTH_TOKEN:-}
       SHOPEE_PARTNER_ID: ${SHOPEE_PARTNER_ID:-}
