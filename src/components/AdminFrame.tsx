@@ -20,6 +20,7 @@ const ICONS: Record<string, string> = {
   moon: "M20 14.500A8 8 0 0 1 9.500 4a8 8 0 1 0 10.500 10.500Z",
   doc: "M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6",
   ext: "M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5",
+  bot: "M12 3v3M8 6h8a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V9a3 3 0 0 1 3-3ZM9 12h.01M15 12h.01M9 16h6",
 };
 export const Icon = ({ n, size = 20 }: { n: string; size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d={ICONS[n]} /></svg>
@@ -36,6 +37,7 @@ const GROUPS: { title: string; items: { href: string; label: string; icon: strin
     { href: "/admin/ulasan", label: "Ulasan Unggulan", icon: "star" },
     { href: "/admin/toko-offline", label: "Toko Offline", icon: "store" },
     { href: "/cms", label: "CMS Blog & Koleksi", icon: "doc" },
+    { href: "/admin/mcp", label: "Koneksi Claude (MCP)", icon: "bot" },
   ] },
   { title: "Pengaturan", items: [
     { href: "/admin/pelacakan", label: "Pixel & Analytics", icon: "chart" },
