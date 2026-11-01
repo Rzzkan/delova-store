@@ -33,3 +33,10 @@ Nama, deskripsi, foto, harga & harga coret, stok, varian (ukuran/warna) beserta 
 
 ## 6. Ulasan
 Sinkron memanggil `product.get_comment` per toko (maks. 250 ulasan terbaru; hanya bintang 4–5 dengan komentar ≥10 huruf; ulasan yang disembunyikan Shopee dilewati). Jika API ini ditolak atau berbeda perilakunya pada akunmu, sinkron produk tetap berhasil dan pesan error muncul di *Riwayat Sinkron* di admin — gunakan **Tambah ulasan manual** di `/admin/ulasan` sebagai cadangan. Pastikan pembeli setuju ulasannya ditampilkan; nama selalu disamarkan.
+
+## Harga diskon Shopee
+Sinkronisasi membaca **Diskon Toko yang sedang berjalan** (`/api/v2/discount/get_discount_list` status `ongoing` + `get_discount`), lalu:
+harga jual = harga promo, harga coret = harga normal (per varian juga). Diskon yang sudah berakhir tidak dipakai.
+- Butuh izin API **Discount/Marketing** pada aplikasi Shopee Open Platform. Bila belum ada, sinkron produk tetap berjalan dan Riwayat Sinkron mencatat "Diskon gagal dibaca: …".
+- Harga diperbarui tiap sinkron (± 5 menit cache per toko saat Live Push); setelah promo berakhir, harga normal kembali pada sinkron berikutnya.
+- Flash Sale Shopee (modul terpisah) belum dibaca. Kolom **Diskon %** di admin tetap menimpa harga coret bila diisi.

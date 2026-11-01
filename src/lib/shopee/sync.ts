@@ -63,9 +63,57 @@ function descriptionOf(item: J): string {
   return (txt.length ? txt.join("\n\n") : String(item.description ?? "")).slice(0, 8000);
 }
 
+
+// ---- Harga diskon Shopee (Diskon Toko / Discount Promotion yang sedang berjalan) ----
+type PromoPrice = { orig: number; promo: number };
+type ItemPromo = { item?: PromoPrice; models: Map<number, PromoPrice> };
+export type PromoMap = Map<number, ItemPromo>;
+const num = (v: unknown) => Math.round(Number(v) || 0);
+const promoCache = new Map<number, { t: number; map: PromoMap }>();
+
+/** Diskon yang sedang berlaku (v2.discount). Harga promo ada di sini, bukan di get_item_base_info. */
+export async function loadPromos(shop: ShopRow): Promise<PromoMap> {
+  const hit = promoCache.get(shop.shop_id);
+  if (hit && Date.now() - hit.t < 5 * 60_000) return hit.map;
+  const map: PromoMap = new Map();
+  const now = nowSec();
+  const ids: number[] = [];
+  for (let page = 1; page <= 20; page++) {
+    const r = await shopGet(shop, "/api/v2/discount/get_discount_list", { discount_status: "ongoing", page_no: page, page_size: 100 });
+    for (const d of (r.discount_list ?? []) as J[]) {
+      const end = Number(d.end_time) || 0;
+      if ((!end || end > now) && Number(d.start_time || 0) <= now) ids.push(Number(d.discount_id));
+    }
+    if (!r.more) break;
+  }
+  for (const id of ids) {
+    for (let page = 1; page <= 50; page++) {
+      const r = await shopGet(shop, "/api/v2/discount/get_discount", { discount_id: id, page_no: page, page_size: 100 });
+      for (const it of (r.item_list ?? []) as J[]) {
+        const itemId = Number(it.item_id);
+        const e: ItemPromo = map.get(itemId) ?? { models: new Map() };
+        const o = num(it.item_original_price), pr = num(it.item_promotion_price);
+        if (pr > 0 && o > pr) e.item = { orig: o, promo: pr };
+        for (const m of (it.model_list ?? []) as J[]) {
+          const mo = num(m.model_original_price), mp = num(m.model_promotion_price);
+          if (mp > 0 && mo > mp) {
+            const prev = e.models.get(Number(m.model_id));
+            if (!prev || mp < prev.promo) e.models.set(Number(m.model_id), { orig: mo, promo: mp }); // bila ada beberapa promo, ambil termurah
+          }
+        }
+        map.set(itemId, e);
+      }
+      if (!r.more) break;
+    }
+    await sleep(120);
+  }
+  promoCache.set(shop.shop_id, { t: Date.now(), map });
+  return map;
+}
+
 type Built = { product: InStatement[]; variantCount: number };
 
-async function buildItem(shop: ShopRow, item: J, extra: J | undefined): Promise<Built> {
+async function buildItem(shop: ShopRow, item: J, extra: J | undefined, promo?: ItemPromo): Promise<Built> {
   const itemId = Number(item.item_id);
   const id = `${shop.shop_id}-${itemId}`;
   const images: string[] = (item.image?.image_url_list ?? []).slice(0, 9);
@@ -75,6 +123,7 @@ async function buildItem(shop: ShopRow, item: J, extra: J | undefined): Promise<
   let price = Math.round(Number(item.price_info?.[0]?.current_price ?? 0));
   let original: number | null = item.price_info?.[0]?.original_price ? Math.round(Number(item.price_info[0].original_price)) : null;
   let stock = Number(item.stock_info_v2?.summary_info?.total_available_stock ?? 0);
+  if (!hasModel && promo?.item && promo.item.promo < promo.item.orig) { original = Math.max(original ?? 0, promo.item.orig, price); price = promo.item.promo; }
 
   const variants: { modelId: number; name: string; sku: string | null; price: number; original: number | null; stock: number; image: string | null }[] = [];
   if (hasModel) {
@@ -85,12 +134,16 @@ async function buildItem(shop: ShopRow, item: J, extra: J | undefined): Promise<
       const name =
         mod.model_name || idx.map((i, t) => tiers[t]?.option_list?.[i]?.option).filter(Boolean).join(" / ") || `Varian ${mod.model_id}`;
       const p = mod.price_info?.[0];
+      let vPrice = Math.round(Number(p?.current_price ?? 0));
+      let vOrig: number | null = p?.original_price ? Math.round(Number(p.original_price)) : null;
+      const mp = promo?.models.get(Number(mod.model_id)) ?? (promo?.item && !promo.models.size ? { orig: promo.item.orig, promo: promo.item.promo } : undefined);
+      if (mp && (vPrice === 0 || mp.promo < vPrice || mp.promo < mp.orig)) { vOrig = Math.max(vOrig ?? 0, mp.orig, vPrice) || mp.orig; vPrice = mp.promo; }
       variants.push({
         modelId: Number(mod.model_id),
         name,
         sku: mod.model_sku || null,
-        price: Math.round(Number(p?.current_price ?? 0)),
-        original: p?.original_price ? Math.round(Number(p.original_price)) : null,
+        price: vPrice,
+        original: vOrig,
         stock: Number(mod.stock_info_v2?.summary_info?.total_available_stock ?? 0),
         image: tiers[0]?.option_list?.[idx[0]]?.image?.image_url ?? null,
       });
@@ -134,7 +187,7 @@ async function buildItem(shop: ShopRow, item: J, extra: J | undefined): Promise<
   return { product: stmts, variantCount: variants.length };
 }
 
-async function fetchAndStore(db: Client, shop: ShopRow, itemIds: number[]): Promise<number> {
+async function fetchAndStore(db: Client, shop: ShopRow, itemIds: number[], promos?: PromoMap): Promise<number> {
   let n = 0;
   for (const ids of chunk(itemIds, 50)) {
     const list = ids.join(",");
@@ -147,7 +200,7 @@ async function fetchAndStore(db: Client, shop: ShopRow, itemIds: number[]): Prom
       /* data penjualan/rating opsional — jangan gagalkan sinkron */
     }
     for (const item of base.item_list ?? []) {
-      const built = await buildItem(shop, item, extraMap.get(Number(item.item_id)));
+      const built = await buildItem(shop, item, extraMap.get(Number(item.item_id)), promos?.get(Number(item.item_id)));
       await db.batch(built.product, "write");
       n++;
       if (item.has_model) await sleep(120); // sopan terhadap rate limit
@@ -210,7 +263,15 @@ export async function syncShop(shopId: number): Promise<SyncResult> {
     if ((shop.name.startsWith("Shop ") || !shop.default_category) && shop.access_token) await refreshShopProfile(shopId);
     const fresh = (await loadShop(db, shopId)) ?? shop;
     const ids = await listItemIds(fresh);
-    const upserted = await fetchAndStore(db, fresh, ids);
+    let promoNote = "";
+    let promos: PromoMap | undefined;
+    try {
+      promos = await loadPromos(fresh);
+      promoNote = `${promos.size} produk diskon`;
+    } catch (e) {
+      promoNote = `Diskon gagal dibaca: ${(e instanceof Error ? e.message : String(e)).slice(0, 160)}`;
+    }
+    const upserted = await fetchAndStore(db, fresh, ids, promos);
 
     // Hapus produk yang sudah tidak aktif/dihapus di Shopee
     let removed = 0;
@@ -231,9 +292,9 @@ export async function syncShop(shopId: number): Promise<SyncResult> {
     let note: string | null = null;
     try {
       const nr = await syncReviews(db, fresh);
-      note = `${nr} ulasan`;
+      note = `${nr} ulasan · ${promoNote}`;
     } catch (e) {
-      note = `Ulasan gagal: ${(e instanceof Error ? e.message : String(e)).slice(0, 200)}`;
+      note = `Ulasan gagal: ${(e instanceof Error ? e.message : String(e)).slice(0, 150)} · ${promoNote}`;
     }
     await db.execute({ sql: "UPDATE shops SET last_sync_at = ? WHERE shop_id = ?", args: [nowSec(), shopId] });
     await db.execute({
@@ -256,7 +317,9 @@ export async function syncItem(shopId: number, itemId: number): Promise<void> {
   const db = await getDb();
   const shop = await loadShop(db, shopId);
   if (!shop?.access_token) return;
-  await fetchAndStore(db, shop, [itemId]);
+  let promos: PromoMap | undefined;
+  try { promos = await loadPromos(shop); } catch { /* diskon opsional */ }
+  await fetchAndStore(db, shop, [itemId], promos);
 }
 
 export async function syncAll(): Promise<{ mock: boolean; results: SyncResult[] }> {
