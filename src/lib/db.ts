@@ -3,6 +3,7 @@ import { mkdirSync } from "node:fs";
 import { SCHEMA } from "./schema";
 import { isMock } from "./shopee/config";
 import { seedMock } from "./seed";
+import { BRANDS, BRAND_SLUGS } from "./brands";
 
 function resolveUrl(): string {
   if (process.env.TURSO_DATABASE_URL) return process.env.TURSO_DATABASE_URL;
@@ -25,6 +26,16 @@ async function init(): Promise<Client> {
   await c.execute("UPDATE shops SET brand='kids' WHERE brand='wardrobe' AND (lower(name) LIKE '%kids%' OR lower(slug) LIKE '%kids%')");
   await c.execute("UPDATE shops SET brand='scarf' WHERE brand='wardrobe' AND (lower(name) LIKE '%scarf%' OR lower(slug) LIKE '%scarf%')");
   await c.execute("UPDATE shops SET brand='daily' WHERE brand='wardrobe' AND (lower(name) LIKE '%daily%' OR lower(slug) LIKE '%daily%')");
+  // Nama toko harus sesuai brand: toko bermerek X yang namanya menyebut brand lain diberi nama resmi brand X
+  // (mis. toko Daily yang tercatat "Delova Scarf"). Hanya bila belum ada toko lain dengan nama itu.
+  for (const b of BRAND_SLUGS) {
+    const others = BRAND_SLUGS.filter((o) => o !== b).map((o) => `lower(name) LIKE '%${o}%'`).join(" OR ");
+    const nm = BRANDS[b].name;
+    await c.execute({
+      sql: `UPDATE shops SET name = ?, slug = ? WHERE brand = ? AND (${others}) AND NOT EXISTS (SELECT 1 FROM shops s2 WHERE s2.name = ?)`,
+      args: [nm, nm.toLowerCase().replace(/\s+/g, ""), b, nm],
+    });
+  }
   await c.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_token ON leads(token)");
   // Jangan isi data contoh lagi bila sudah ada toko asli (mis. hasil impor Excel / sinkron Shopee).
   const real = await c.execute("SELECT COUNT(*) AS n FROM shops WHERE is_mock = 0");

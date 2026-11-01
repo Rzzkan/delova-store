@@ -41,7 +41,7 @@ export async function refreshShopProfile(shopId: number): Promise<void> {
   const slug = slugify(name) || `shop-${shopId}`;
   await db.execute({
     sql: "UPDATE shops SET name=?, slug=?, brand=?, default_category=COALESCE(default_category, ?), shopee_url=COALESCE(shopee_url, ?) WHERE shop_id=?",
-    args: [name, slug, brandForShop(name), defaultCategoryForShop(name), `https://shopee.co.id/${slug.replace(/-/g, "")}`, shopId],
+    args: [name, slug, shop.brand && shop.brand !== "wardrobe" ? shop.brand : brandForShop(name), shop.brand && shop.brand !== "wardrobe" ? defaultCategoryForShop(shop.brand) : defaultCategoryForShop(name), `https://shopee.co.id/${slug.replace(/-/g, "")}`, shopId],
   });
 }
 
