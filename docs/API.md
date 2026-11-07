@@ -97,6 +97,17 @@ Node: `const r = await fetch(url, { headers: { "X-API-Key": KEY } }); const { da
 ```
 `/products` menambah: `brand`, `shop{id,name}`, `category`, `price`, `original_price`, `discount_pct`, `sold`, `rating`, `review_count`, `image`, `url`, `shopee_url`, `created_at`, `variant_count`. Detail produk menambah `description`, `images[]`, `variants[]` (dengan harga & gambar). Harga dalam Rupiah (bilangan bulat), waktu ISO-8601 UTC.
 
+### Harga & harga coret
+| Field | Arti |
+|---|---|
+| `price` | Harga jual **saat ini** (sudah harga diskon bila sedang promo), Rupiah |
+| `original_price` | Harga coret/normal; `null` bila tidak ada diskon |
+| `discount_pct` | Persen diskon efektif = `round((1 - price/original_price) × 100)`; `null` bila tidak ada diskon |
+| `on_sale` | `true` bila `original_price` terisi |
+| `discount_source` | `"shopee"` (Diskon Toko Shopee yang sedang berjalan) atau `"admin"` (kolom Diskon % di panel delova.id) |
+
+Berlaku di level produk dan per varian (`variants[]`). `original_price` selalu lebih besar dari `price` atau `null`. Bila admin mengisi Diskon %, nilainya menimpa harga coret dari Shopee, sama seperti tampilan di toko.
+
 ### Kesegaran data
 Stok disalin dari Shopee oleh sinkronisasi terjadwal (bukan realtime). Gunakan `synced_at` (per produk) / `meta.last_sync_at` untuk menilai usia data. Anggap stok sebagai perkiraan; Shopee tetap sumber kebenaran saat pesanan masuk.
 

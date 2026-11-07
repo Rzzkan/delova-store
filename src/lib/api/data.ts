@@ -5,6 +5,8 @@ import { siteUrl } from "@/lib/seo";
 import { thumb } from "@/lib/format";
 import { ApiError, isoSec } from "./guard";
 
+function absUrl(u: string) { return u.startsWith("/") ? `${siteUrl()}${u}` : u; }
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Row = Record<string, any>;
 
@@ -39,15 +41,29 @@ function filters(sp: URLSearchParams) {
   return { w, a };
 }
 
+
+/** Harga jual, harga coret, dan persen diskon yang konsisten. Coret hanya ada bila > harga jual.
+ *  discount_source: "admin" (kolom Diskon % di admin) atau "shopee" (harga normal/diskon dari Shopee). */
+function priceOut(price: number, originalDb: unknown, adminPct: number | null) {
+  const orig = adminPct ? markup(price, adminPct) : originalDb == null ? null : Number(originalDb);
+  const original = orig && orig > price ? orig : null;
+  return {
+    price,
+    original_price: original,
+    discount_pct: original ? Math.round((1 - price / original) * 100) : null,
+    on_sale: !!original,
+    discount_source: original ? (adminPct ? "admin" : "shopee") : null,
+  };
+}
+
 const variantOut = (v: Row, pct: number | null) => ({
   id: v.id,
   sku: v.sku ?? null,
   name: v.name,
-  price: Number(v.price),
-  original_price: pct ? markup(Number(v.price), pct) : v.original_price == null ? null : Number(v.original_price),
+  ...priceOut(Number(v.price), v.original_price, pct),
   stock: Number(v.stock),
   in_stock: Number(v.stock) > 0,
-  image: v.image ?? null,
+  image: v.image ? absUrl(v.image) : null,
 });
 
 async function variantsOf(ids: string[]): Promise<Map<string, Row[]>> {
@@ -69,22 +85,20 @@ const productOut = (p: Row, vars?: Row[]) => {
     brand: isBrand(p.brand) ? p.brand : "wardrobe",
     shop: { id: Number(p.shop_id), name: p.shop_name ?? null },
     category: p.category_override || p.category,
-    price,
-    original_price: pct ? markup(price, pct) : p.original_price == null ? null : Number(p.original_price),
-    discount_pct: pct,
+    ...priceOut(price, p.original_price, pct),
     stock: Number(p.stock),
     in_stock: Number(p.stock) > 0,
     sold: Number(p.sold ?? 0),
     rating: p.rating == null ? null : Number(p.rating),
     review_count: p.review_count == null ? null : Number(p.review_count),
-    image: (JSON.parse(p.images || "[]") as string[])[0] ?? null,
+    image: ((JSON.parse(p.images || "[]") as string[])[0] ?? null) && absUrl((JSON.parse(p.images || "[]") as string[])[0]),
     url: `${siteUrl()}/produk/${p.slug}`,
     shopee_url: p.shopee_url,
     created_at: isoSec(p.shopee_created_at),
     synced_at: isoSec(Number(p.synced_at)),
   };
   if (!vars) return { ...base, variant_count: Number(p.variant_count ?? 0) };
-  return { ...base, description: p.description ?? "", images: JSON.parse(p.images || "[]") as string[], variants: vars.map((v) => variantOut(v, pct)) };
+  return { ...base, description: p.description ?? "", images: (JSON.parse(p.images || "[]") as string[]).map(absUrl), variants: vars.map((v) => variantOut(v, pct)) };
 };
 
 const ORDER: Record<string, string> = { terbaru: "p.shopee_created_at DESC", terlaris: "p.sold DESC", termurah: "p.price ASC", termahal: "p.price DESC", nama: "p.name ASC" };
@@ -158,7 +172,6 @@ export async function apiShops() {
 }
 
 // ---------- Foto produk ----------
-const absUrl = (u: string) => (u.startsWith("/") ? `${siteUrl()}${u}` : u);
 const photo = (url: string, position?: number) => ({ ...(position == null ? {} : { position }), url: absUrl(url), thumbnail_url: absUrl(thumb(url)) });
 
 /** Semua foto satu produk + foto per varian. */

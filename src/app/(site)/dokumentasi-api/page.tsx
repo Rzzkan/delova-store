@@ -83,7 +83,8 @@ X-API-Key: <kunci>`}</Code>
     "brand": "wardrobe",
     "shop": { "id": 198876985, "name": "delovawardrobe" },
     "category": "outer",
-    "price": 72000, "original_price": null, "discount_pct": null,
+    "price": 72000, "original_price": 99000, "discount_pct": 27,
+    "on_sale": true, "discount_source": "shopee",
     "stock": 4, "in_stock": true, "sold": 120,
     "rating": 4.9, "review_count": 58,
     "image": "https://cf.shopee.co.id/file/...",
@@ -162,7 +163,7 @@ X-API-Key: <kunci>`}</Code>
         <H2 id="data">Konvensi data</H2>
         <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-ink/75">
           <li>Harga: bilangan bulat dalam Rupiah. Waktu: ISO-8601 UTC.</li>
-          <li><C>original_price</C> adalah harga coret; <C>null</C> bila tidak ada diskon.</li>
+          <li><C>price</C> = harga jual saat ini (sudah harga diskon bila promo). <C>original_price</C> = harga coret, <C>null</C> bila tidak ada diskon. <C>discount_pct</C> = persen diskon efektif, <C>on_sale</C> = ada diskon, <C>discount_source</C> = <C>shopee</C> atau <C>admin</C>. Berlaku juga per varian.</li>
           <li>Hanya produk berstatus normal dan tidak disembunyikan yang ditampilkan. Tidak ada data pelanggan atau pesanan.</li>
           <li><b>Kesegaran stok:</b> stok disalin dari Shopee oleh sinkronisasi terjadwal, bukan realtime. Gunakan <C>synced_at</C> dan <C>meta.last_sync_at</C> untuk menilai usia data, dan anggap stok sebagai perkiraan.</li>
         </ul>
