@@ -4,7 +4,7 @@ import { siteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: { absolute: "Dokumentasi API — Delova Store" },
-  description: "Dokumentasi API publik Delova Store v1: data produk dan stok terbaru, autentikasi kunci API, batas penggunaan, contoh kode.",
+  description: "Dokumentasi API publik Delova Store v1: data produk, stok, foto produk, testimoni, autentikasi kunci API, batas penggunaan, contoh kode.",
   alternates: { canonical: "/dokumentasi-api" },
   robots: { index: false, follow: true }, // dokumentasi untuk mitra; tidak perlu muncul di pencarian toko
 };
@@ -37,7 +37,7 @@ export default function ApiDocs() {
       <div className="container-x max-w-4xl py-12">
         <p className="eyebrow">Developer</p>
         <h1 className="mt-2 text-4xl font-semibold">Dokumentasi Delova Store API <span className="text-ink/40">v1</span></h1>
-        <P>API <b>read-only</b> untuk mengambil data produk dan <b>stok terbaru</b> dari delova.id. Format JSON, hanya <C>GET</C>/<C>HEAD</C>. Untuk mendapatkan kunci API, hubungi admin Delova.</P>
+        <P>API <b>read-only</b> untuk mengambil data produk, <b>stok terbaru</b>, foto produk, dan testimoni dari delova.id. Format JSON, hanya <C>GET</C>/<C>HEAD</C>. Untuk mendapatkan kunci API, hubungi admin Delova.</P>
         <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
           <div className="rounded-xl border border-sand bg-white p-3"><dt className="text-xs text-ink/50">Base URL</dt><dd className="mt-0.5 break-all font-mono text-xs">{base}</dd></div>
           <div className="rounded-xl border border-sand bg-white p-3"><dt className="text-xs text-ink/50">Spesifikasi OpenAPI</dt><dd className="mt-0.5 break-all font-mono text-xs"><a className="text-brand underline" href="/api/v1/openapi.json">{base}/openapi.json</a></dd></div>
@@ -118,6 +118,43 @@ X-API-Key: <kunci>`}</Code>
   "meta": { "page": 1, "limit": 100, "total": 153, "total_pages": 2, "last_sync_at": "2026-10-22T17:54:38.000Z" }
 }`}</Code>
 
+        <H3>GET /products/{"{ref}"}/photos — foto satu produk</H3>
+        <P>Semua foto produk plus foto per varian. Tiap foto: <C>url</C> (penuh) dan <C>thumbnail_url</C> (kecil, untuk grid).</P>
+        <Code>{`{
+  "data": {
+    "product": { "id": "198876985-13199766027", "slug": "…", "name": "…", "url": "${siteUrl()}/produk/…" },
+    "photos": [ { "position": 1, "url": "https://cf.shopee.co.id/file/…", "thumbnail_url": "https://cf.shopee.co.id/file/…_tn" } ],
+    "variants": [ { "id": "…", "sku": "07LVPRMNVY", "name": "Navy / All Size", "image": { "url": "…", "thumbnail_url": "…" } } ]
+  }
+}`}</Code>
+
+        <H3>GET /photos — foto banyak produk</H3>
+        <P>Filter sama seperti <C>/products</C> (<C>brand</C>, <C>category</C>, <C>shop_id</C>, <C>q</C>, <C>in_stock</C>) ditambah <C>ids</C> (id/slug dipisah koma, maks. 100). <C>limit</C> 1–100, default 50. Setiap item memuat <C>photo_count</C> dan <C>photos[]</C>.</P>
+
+        <H3>GET /reviews — testimoni pembeli</H3>
+        <Table head={["Parameter", "Keterangan"]} rows={[
+          [<C key="a">product</C>, "id atau slug produk"],
+          [<><C>brand</C> · <C>shop_id</C></>, "filter brand / toko"],
+          [<C key="b">min_rating</C>, "bintang minimal, 1–5"],
+          [<><C>has_images</C> · <C>featured</C></>, "true/false: hanya yang berfoto / unggulan"],
+          [<C key="c">sort</C>, "terbaru (default), rating, terpanjang, unggulan"],
+          [<><C>page</C> · <C>limit</C></>, "limit 1–100, default 20"],
+        ]} />
+        <Code>{`{
+  "data": [{
+    "id": "198876985-8101…", "brand": "wardrobe",
+    "product": { "id": "198876985-13199766027", "slug": "…", "name": "…", "url": "${siteUrl()}/produk/…" },
+    "buyer": "r***a", "rating": 5,
+    "comment": "Bahannya adem banget dan jahitannya rapi.",
+    "images": [ { "url": "https://…", "thumbnail_url": "https://…_tn" } ],
+    "reply": "Terima kasih kak 🤍", "featured": true, "source": "shopee",
+    "created_at": "2026-10-21T08:12:00.000Z"
+  }],
+  "meta": { "page": 1, "limit": 20, "total": 48, "total_pages": 3,
+            "average_rating": 4.9, "rating_counts": { "1": 0, "2": 0, "3": 0, "4": 4, "5": 44 } }
+}`}</Code>
+        <P><C>meta.average_rating</C> dan <C>rating_counts</C> dihitung untuk filter yang sedang dipakai. Hanya ulasan bintang 4–5 yang berkomentar dan tidak disembunyikan yang tersedia. Nama pembeli sudah disamarkan dan tidak ada data kontak.</P>
+
         <H3>GET /shops — daftar toko</H3>
         <Code>{`{ "data": [{ "id": 198876985, "name": "delovawardrobe", "brand": "wardrobe",
   "shopee_url": "https://shopee.co.id/delovawardrobe", "product_count": 153, "last_sync_at": "2026-10-22T17:54:38.000Z" }] }`}</Code>
@@ -149,6 +186,12 @@ curl -H "Authorization: Bearer $DELOVA_KEY" "${base}/stock?brand=scarf&in_stock=
 
 # Stok berdasarkan SKU
 curl -H "X-API-Key: $DELOVA_KEY" "${base}/stock?skus=07LVPRMNVY,07LVPRBLK"
+
+# Foto semua produk Kids (thumbnail untuk grid)
+curl -H "X-API-Key: $DELOVA_KEY" "${base}/photos?brand=kids&limit=20"
+
+# Testimoni bintang 5 yang berfoto
+curl -H "X-API-Key: $DELOVA_KEY" "${base}/reviews?min_rating=5&has_images=true&limit=10"
 
 # Cari batik, termurah dulu
 curl -H "X-API-Key: $DELOVA_KEY" "${base}/products?q=batik&sort=termurah&limit=10"`}</Code>

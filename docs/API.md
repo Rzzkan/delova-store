@@ -1,6 +1,6 @@
 # Delova Store API v1
 
-API **read-only** untuk mengambil data produk dan **stok terbaru** dari delova.id.
+API **read-only** untuk mengambil data produk, **stok terbaru**, foto produk, dan testimoni dari delova.id.
 Base URL: `https://delova.id/api/v1` · Spesifikasi OpenAPI: `https://delova.id/api/v1/openapi.json` (publik, tanpa kunci).
 
 ## 1. Mengaktifkan di VPS
@@ -30,6 +30,9 @@ Kunci di query string (`?api_key=`) **ditolak** (400) agar tidak bocor di log/ri
 | GET | `/products` | Daftar produk (filter, urut, paginasi) |
 | GET | `/products/{slug-atau-id}` | Detail produk lengkap + varian (SKU, harga, stok) |
 | GET | `/stock` | Stok ringan per produk & varian (untuk sinkronisasi berkala) |
+| GET | `/products/{slug-atau-id}/photos` | Semua foto produk (+ thumbnail) dan foto per varian |
+| GET | `/photos` | Foto banyak produk sekaligus (filter sama seperti `/products`, plus `ids`) |
+| GET | `/reviews` | Testimoni pembeli (filter, urut, paginasi, ringkasan rating) |
 | GET | `/shops` | Daftar toko, jumlah produk, waktu sinkron terakhir |
 
 ### Filter bersama (`/products`, `/stock`)
@@ -41,6 +44,22 @@ Kunci di query string (`?api_key=`) **ditolak** (400) agar tidak bocor di log/ri
 ### `/stock`
 `ids` = id/slug produk dipisah koma (maks 100) · `skus` = SKU varian dipisah koma (maks 100) · `page` · `limit` (1–200, default 100)
 
+### `/photos` dan `/products/{ref}/photos`
+Tiap foto: `{ position, url, thumbnail_url }` (URL absolut; `thumbnail_url` = versi kecil untuk grid). `/photos` menerima filter `brand`, `category`, `shop_id`, `q`, `in_stock`, `ids` (maks 100), `page`, `limit` (1–100, default 50). Detail per produk juga memuat `variants[].image`.
+
+### `/reviews`
+`product` (id/slug) · `brand` · `shop_id` · `min_rating` (1–5) · `has_images` (true/false) · `featured` (true/false) · `sort` (`terbaru` default, `rating`, `terpanjang`, `unggulan`) · `page` · `limit` (1–100, default 20).
+`meta` memuat `average_rating` dan `rating_counts` ({"1":0,…,"5":n}) **untuk filter yang sedang dipakai**, cocok untuk widget bintang.
+```jsonc
+{ "data": [ { "id": "198876985-8101…", "brand": "wardrobe",
+              "product": { "id": "198876985-13199766027", "slug": "…", "name": "…", "url": "https://delova.id/produk/…" },
+              "buyer": "r***a", "rating": 5, "comment": "Bahannya adem banget…",
+              "images": [ { "url": "https://…", "thumbnail_url": "https://…_tn" } ],
+              "reply": "Terima kasih kak 🤍", "featured": true, "source": "shopee", "created_at": "2026-10-21T08:12:00.000Z" } ],
+  "meta": { "page": 1, "limit": 20, "total": 48, "total_pages": 3, "average_rating": 4.9, "rating_counts": { "1": 0, "2": 0, "3": 0, "4": 4, "5": 44 } } }
+```
+Catatan data testimoni: yang tersedia hanya ulasan **bintang 4–5 yang berkomentar** (disaring saat sinkron) dan bukan yang disembunyikan di admin. Nama pembeli sudah disamarkan (`b***o`); tidak ada data kontak. Foto dari Shopee hanya bisa dipakai selama ada di CDN Shopee.
+
 ## 4. Contoh
 ```bash
 # Stok semua produk yang masih tersedia, brand Scarf
@@ -51,6 +70,12 @@ curl -H "X-API-Key: $DELOVA_KEY" "https://delova.id/api/v1/stock?skus=07LVPRMNVY
 
 # Detail produk
 curl -H "X-API-Key: $DELOVA_KEY" "https://delova.id/api/v1/products/<slug>"
+
+# Semua foto satu produk
+curl -H "X-API-Key: $DELOVA_KEY" "https://delova.id/api/v1/products/<slug>/photos"
+
+# Testimoni bintang 5 yang ada fotonya, brand Scarf
+curl -H "X-API-Key: $DELOVA_KEY" "https://delova.id/api/v1/reviews?brand=scarf&min_rating=5&has_images=true&limit=10"
 ```
 Python:
 ```python

@@ -2,6 +2,7 @@ import { getDb } from "@/lib/db";
 import { isBrand, BRAND_SLUGS } from "@/lib/brands";
 import { markup } from "@/lib/products";
 import { siteUrl } from "@/lib/seo";
+import { thumb } from "@/lib/format";
 import { ApiError, isoSec } from "./guard";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -154,4 +155,104 @@ export async function apiShops() {
   const db = await getDb();
   const r = await db.execute("SELECT s.shop_id, s.name, s.brand, s.shopee_url, s.last_sync_at, (SELECT COUNT(*) FROM products p WHERE p.shop_id = s.shop_id AND p.status = 'NORMAL' AND p.hidden = 0) AS n FROM shops s ORDER BY s.shop_id");
   return { data: (r.rows as Row[]).map((s) => ({ id: Number(s.shop_id), name: s.name, brand: isBrand(s.brand) ? s.brand : "wardrobe", shopee_url: s.shopee_url ?? null, product_count: Number(s.n), last_sync_at: isoSec(s.last_sync_at == null ? null : Number(s.last_sync_at)) })) };
+}
+
+// ---------- Foto produk ----------
+const absUrl = (u: string) => (u.startsWith("/") ? `${siteUrl()}${u}` : u);
+const photo = (url: string, position?: number) => ({ ...(position == null ? {} : { position }), url: absUrl(url), thumbnail_url: absUrl(thumb(url)) });
+
+/** Semua foto satu produk + foto per varian. */
+export async function apiProductPhotos(ref: string) {
+  const db = await getDb();
+  const r = await db.execute({ sql: `SELECT p.id, p.slug, p.name, p.images ${BASE} AND (p.slug = ? OR p.id = ?) LIMIT 1`, args: [ref.slice(0, 200), ref.slice(0, 200)] });
+  if (!r.rows.length) throw new ApiError(404, "not_found", "Produk tidak ditemukan.");
+  const p = r.rows[0] as Row;
+  const vars = (await variantsOf([p.id])).get(p.id) ?? [];
+  const imgs = JSON.parse(p.images || "[]") as string[];
+  return {
+    data: {
+      product: { id: p.id, slug: p.slug, name: p.name, url: `${siteUrl()}/produk/${p.slug}` },
+      photos: imgs.map((u, i) => photo(u, i + 1)),
+      variants: vars.map((v) => ({ id: v.id, sku: v.sku ?? null, name: v.name, image: v.image ? photo(v.image) : null })),
+    },
+    meta: { last_sync_at: await lastSync() },
+  };
+}
+
+/** Daftar foto banyak produk sekaligus (mis. untuk katalog/marketplace lain). */
+export async function apiPhotos(sp: URLSearchParams) {
+  const db = await getDb();
+  const { w, a } = filters(sp);
+  const ids = (sp.get("ids") ?? "").split(",").map((x) => x.trim()).filter(Boolean);
+  if (ids.length > 100) throw new ApiError(400, "invalid_param", "Maksimal 100 nilai pada ids.");
+  if (ids.length) { w.push(`(p.id IN (${ids.map(() => "?").join(",")}) OR p.slug IN (${ids.map(() => "?").join(",")}))`); a.push(...ids, ...ids); }
+  const limit = int(sp.get("limit"), 50, 1, 100, "limit");
+  const page = int(sp.get("page"), 1, 1, 10000, "page");
+  const where = w.length ? ` AND ${w.join(" AND ")}` : "";
+  const [rows, cnt] = await Promise.all([
+    db.execute({ sql: `SELECT p.id, p.slug, p.name, p.images ${BASE}${where} ORDER BY p.id LIMIT ? OFFSET ?`, args: [...a, limit, (page - 1) * limit] }),
+    db.execute({ sql: `SELECT COUNT(*) AS n ${BASE}${where}`, args: a }),
+  ]);
+  const total = Number(cnt.rows[0].n);
+  return {
+    data: (rows.rows as Row[]).map((p) => {
+      const imgs = JSON.parse(p.images || "[]") as string[];
+      return { id: p.id, slug: p.slug, name: p.name, url: `${siteUrl()}/produk/${p.slug}`, photo_count: imgs.length, photos: imgs.map((u, i) => photo(u, i + 1)) };
+    }),
+    meta: { page, limit, total, total_pages: Math.ceil(total / limit), last_sync_at: await lastSync() },
+  };
+}
+
+// ---------- Testimoni / ulasan ----------
+const RSORT: Record<string, string> = { terbaru: "r.created_at DESC", rating: "r.rating DESC, r.created_at DESC", terpanjang: "length(r.comment) DESC", unggulan: "r.featured DESC, r.created_at DESC" };
+
+export async function apiReviews(sp: URLSearchParams) {
+  const db = await getDb();
+  const w: string[] = ["r.hidden = 0", "(p.id IS NULL OR (p.hidden = 0 AND p.status = 'NORMAL'))"];
+  const a: (string | number)[] = [];
+  const brand = sp.get("brand");
+  if (brand) {
+    if (!isBrand(brand)) throw new ApiError(400, "invalid_param", `brand harus salah satu: ${BRAND_SLUGS.join(", ")}.`);
+    w.push("s.brand = ?"); a.push(brand);
+  }
+  const shop = sp.get("shop_id");
+  if (shop) { w.push("r.shop_id = ?"); a.push(int(shop, 0, 1, Number.MAX_SAFE_INTEGER, "shop_id")); }
+  const prod = sp.get("product");
+  if (prod) { w.push("(r.product_id = ? OR p.slug = ?)"); a.push(prod.slice(0, 200), prod.slice(0, 200)); }
+  const min = sp.get("min_rating");
+  if (min) { w.push("r.rating >= ?"); a.push(int(min, 1, 1, 5, "min_rating")); }
+  for (const [k, col] of [["has_images", "r.images <> '[]'"], ["featured", "r.featured = 1"]] as const) {
+    const v = sp.get(k);
+    if (v === "1" || v === "true") w.push(col);
+    else if (v === "0" || v === "false") w.push(`NOT (${col})`);
+    else if (v) throw new ApiError(400, "invalid_param", `${k} harus true/false.`);
+  }
+  const sortKey = sp.get("sort") ?? "terbaru";
+  if (!RSORT[sortKey]) throw new ApiError(400, "invalid_param", `sort harus salah satu: ${Object.keys(RSORT).join(", ")}.`);
+  const limit = int(sp.get("limit"), 20, 1, 100, "limit");
+  const page = int(sp.get("page"), 1, 1, 10000, "page");
+  const FROM = `FROM reviews r LEFT JOIN products p ON p.id = r.product_id LEFT JOIN shops s ON s.shop_id = r.shop_id WHERE ${w.join(" AND ")}`;
+  const [rows, dist] = await Promise.all([
+    db.execute({ sql: `SELECT r.*, p.name AS product_name, p.slug AS product_slug, s.brand AS brand ${FROM} ORDER BY ${RSORT[sortKey]}, r.id LIMIT ? OFFSET ?`, args: [...a, limit, (page - 1) * limit] }),
+    db.execute({ sql: `SELECT r.rating AS rating, COUNT(*) AS n ${FROM} GROUP BY r.rating`, args: a }),
+  ]);
+  const counts: Record<string, number> = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 };
+  let total = 0, sum = 0;
+  for (const d of dist.rows as Row[]) { counts[String(d.rating)] = Number(d.n); total += Number(d.n); sum += Number(d.rating) * Number(d.n); }
+  return {
+    data: (rows.rows as Row[]).map((r) => ({
+      id: r.id,
+      brand: isBrand(r.brand) ? r.brand : null,
+      product: r.product_id ? { id: r.product_id, slug: r.product_slug ?? null, name: r.product_name ?? null, url: r.product_slug ? `${siteUrl()}/produk/${r.product_slug}` : null } : null,
+      buyer: r.buyer, // sudah disamarkan (mis. "b***o")
+      rating: Number(r.rating),
+      comment: r.comment,
+      images: (JSON.parse(r.images || "[]") as string[]).map((u) => photo(u)),
+      reply: r.reply ?? null,
+      featured: !!r.featured,
+      source: r.source,
+      created_at: isoSec(r.created_at == null ? null : Number(r.created_at)),
+    })),
+    meta: { page, limit, total, total_pages: Math.ceil(total / limit), average_rating: total ? Math.round((sum / total) * 100) / 100 : null, rating_counts: counts },
+  };
 }
