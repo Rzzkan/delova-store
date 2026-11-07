@@ -25,10 +25,15 @@ Lalu buka `/admin/mcp` untuk menyalin URL konektor.
 | `blog_delete` | Hapus (wajib `confirm: true`) |
 | `koleksi_list/get/save/delete` | Halaman `/koleksi/<slug>` |
 | `media_list` | Foto yang sudah diunggah di CMS |
+| `shops_list`, `product_list`, `product_get` | **Baca** toko, daftar produk (harga, harga coret, diskon, stok), detail + varian |
+| `stock_get` | **Baca** stok terbaru per produk / varian / SKU |
+| `product_photos`, `photos_list` | **Baca** foto produk (URL + thumbnail) |
+| `reviews_list` | **Baca** testimoni + rata-rata bintang |
+| `orders_list` | **Baca** pesanan WhatsApp (HP disamarkan, tanpa alamat) |
 | `web_content_get/update` | Bar pengumuman, hero & cerita beranda, judul ulasan, strip keunggulan per toko, link Shopee, toko offline |
 
 ## Batasan
 - Token ada di URL: perlakukan sebagai password. Cabut dengan mengganti `MCP_TOKEN` lalu `docker compose up -d`.
 - Tidak ada unggah gambar lewat chat (unggah di `/cms`, lalu pilih via `media_list`).
-- Produk/harga/stok tetap dari Shopee; robots, tracking, favicon tidak bisa diubah lewat MCP.
+- Produk/harga/stok/testimoni/pesanan hanya bisa **dibaca** (sumbernya Shopee; segar sesuai sinkron terakhir, lihat `synced_at`); robots, tracking, favicon tidak bisa diubah lewat MCP.
 - Teks hero hanya untuk Wardrobe (toko lain memakai teks bawaan kode).

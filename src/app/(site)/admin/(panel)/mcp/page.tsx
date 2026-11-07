@@ -11,6 +11,11 @@ const TOOLS: [string, string][] = [
   ["blog_delete", "Hapus artikel (butuh konfirmasi)"],
   ["koleksi_list · koleksi_get · koleksi_save · koleksi_delete", "Kelola halaman koleksi /koleksi/<slug>"],
   ["media_list", "Pilih foto yang sudah ada sebagai foto utama"],
+  ["shops_list · product_list · product_get", "Baca toko, daftar produk (harga, harga coret, diskon, stok), dan detail + varian + foto"],
+  ["stock_get", "Cek stok terbaru per produk / SKU / brand"],
+  ["product_photos · photos_list", "Ambil foto produk (URL penuh + thumbnail)"],
+  ["reviews_list", "Testimoni pembeli dengan rata-rata bintang"],
+  ["orders_list", "Pesanan yang masuk lewat WhatsApp (HP disamarkan, tanpa alamat)"],
   ["web_content_get · web_content_update", "Bar pengumuman, hero & cerita beranda, judul ulasan, strip keunggulan per toko, link Shopee, info toko offline"],
 ];
 
@@ -43,7 +48,7 @@ docker compose up -d`}</pre>
             <ul className="divide-y divide-sand text-sm">
               {TOOLS.map(([n, d]) => (<li key={n} className="flex flex-col gap-0.5 py-2.5 sm:flex-row sm:gap-4"><code className="shrink-0 text-xs text-brand sm:w-72">{n}</code><span className="text-ink/75">{d}</span></li>))}
             </ul>
-            <p className="mt-3 text-xs text-ink/60">Artikel baru selalu berstatus <b>draft</b> sampai kamu meminta Claude menerbitkannya. Harga, stok, dan produk tetap berasal dari Shopee, tidak diubah lewat konektor ini.</p>
+            <p className="mt-3 text-xs text-ink/60">Artikel baru selalu berstatus <b>draft</b> sampai kamu meminta Claude menerbitkannya. Data produk, harga, dan stok hanya bisa dibaca (berasal dari Shopee, diperbarui lewat sinkronisasi), tidak diubah lewat konektor ini.</p>
           </Card>
           <Card title="Keamanan">
             <ul className="list-disc space-y-1 pl-5 text-sm text-ink/75">

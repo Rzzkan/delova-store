@@ -9,6 +9,8 @@ import { abs, siteUrl } from "@/lib/seo";
 import { getHome, saveHome, type HomeSettings } from "@/lib/settings";
 import { getStore, saveStore, type StoreInfo } from "@/lib/store";
 import { trustFor, TRUST_MAX } from "@/lib/trust";
+import { getDb } from "@/lib/db";
+import { apiProduct, apiProductPhotos, apiPhotos, apiProducts, apiReviews, apiShops, apiStock } from "@/lib/api/data";
 
 export type ToolDef = {
   name: string;
@@ -199,6 +201,98 @@ async function webUpdate(a: Record<string, any>) {
 }
 
 /* ───────────── Daftar tool ───────────── */
+
+/* ───────────── data toko (baca saja): produk, stok, foto, testimoni, toko, pesanan ───────────── */
+const qs = (a: Record<string, any>, keys: string[]) => {
+  const sp = new URLSearchParams();
+  for (const k of keys) if (a[k] !== undefined && a[k] !== null && a[k] !== "") sp.set(k, Array.isArray(a[k]) ? a[k].join(",") : String(a[k]));
+  return sp;
+};
+const FILTER_PROPS = {
+  brand: { type: "string", enum: BRAND_SLUGS },
+  category: { type: "string", description: "Slug kategori, mis. kebaya, blouse, hijab" },
+  shop_id: { type: "integer" },
+  q: { type: "string", description: "Cari di nama produk" },
+  in_stock: { type: "boolean", description: "true = hanya stok > 0, false = hanya stok habis" },
+};
+const PAGE_PROPS = { page: { type: "integer", minimum: 1 }, limit: { type: "integer", minimum: 1 } };
+const RO = { readOnlyHint: true };
+const maskPhone = (p: string) => (p && p.length > 6 ? `${p.slice(0, 4)}****${p.slice(-3)}` : "****");
+
+const DATA_TOOLS: ToolDef[] = [
+  {
+    name: "shops_list",
+    description: "Daftar toko Shopee yang terhubung (id, nama, brand, jumlah produk aktif, waktu sinkron terakhir).",
+    inputSchema: { type: "object", properties: {} },
+    annotations: RO,
+    handler: async () => apiShops(),
+  },
+  {
+    name: "product_list",
+    description: "Daftar produk di delova.id (harga jual, harga coret, persen diskon, stok, terjual, rating, foto utama, link). Harga & stok berasal dari Shopee (disinkronkan berkala) dan tidak bisa diubah di sini. limit maks 100.",
+    inputSchema: { type: "object", properties: { ...FILTER_PROPS, sort: { type: "string", enum: ["terbaru", "terlaris", "termurah", "termahal", "nama"] }, ...PAGE_PROPS } },
+    annotations: RO,
+    handler: async (a) => apiProducts(qs(a, ["brand", "category", "shop_id", "q", "in_stock", "sort", "page", "limit"])),
+  },
+  {
+    name: "product_get",
+    description: "Detail satu produk: deskripsi, semua foto, dan varian (SKU, harga, harga coret, stok per varian). ref = slug atau id produk.",
+    inputSchema: { type: "object", properties: { ref: { type: "string" } }, required: ["ref"] },
+    annotations: RO,
+    handler: async (a) => apiProduct(str(a.ref, 200, "ref")),
+  },
+  {
+    name: "stock_get",
+    description: "Stok terbaru per produk dan per varian. Bisa difilter dengan ids (id/slug produk) atau skus (SKU varian), maks 100 nilai; limit maks 200. Data = hasil sinkron Shopee terakhir (lihat synced_at / last_sync_at).",
+    inputSchema: { type: "object", properties: { ids: { type: "array", items: { type: "string" } }, skus: { type: "array", items: { type: "string" } }, ...FILTER_PROPS, ...PAGE_PROPS } },
+    annotations: RO,
+    handler: async (a) => apiStock(qs(a, ["ids", "skus", "brand", "category", "shop_id", "q", "in_stock", "page", "limit"])),
+  },
+  {
+    name: "product_photos",
+    description: "Semua foto satu produk (url + thumbnail) dan foto per varian. ref = slug atau id produk.",
+    inputSchema: { type: "object", properties: { ref: { type: "string" } }, required: ["ref"] },
+    annotations: RO,
+    handler: async (a) => apiProductPhotos(str(a.ref, 200, "ref")),
+  },
+  {
+    name: "photos_list",
+    description: "Foto banyak produk sekaligus (filter brand/kategori/toko/nama, atau ids). limit maks 100.",
+    inputSchema: { type: "object", properties: { ids: { type: "array", items: { type: "string" } }, ...FILTER_PROPS, ...PAGE_PROPS } },
+    annotations: RO,
+    handler: async (a) => apiPhotos(qs(a, ["ids", "brand", "category", "shop_id", "q", "in_stock", "page", "limit"])),
+  },
+  {
+    name: "reviews_list",
+    description: "Testimoni pembeli (hanya bintang 4–5 yang berkomentar & tidak disembunyikan; nama pembeli sudah disamarkan). meta berisi average_rating dan rating_counts untuk filter yang dipakai. limit maks 100.",
+    inputSchema: { type: "object", properties: { product: { type: "string", description: "id atau slug produk" }, brand: { type: "string", enum: BRAND_SLUGS }, shop_id: { type: "integer" }, min_rating: { type: "integer", minimum: 1, maximum: 5 }, has_images: { type: "boolean" }, featured: { type: "boolean" }, sort: { type: "string", enum: ["terbaru", "rating", "terpanjang", "unggulan"] }, ...PAGE_PROPS } },
+    annotations: RO,
+    handler: async (a) => apiReviews(qs(a, ["product", "brand", "shop_id", "min_rating", "has_images", "featured", "sort", "page", "limit"])),
+  },
+  {
+    name: "orders_list",
+    description: "Pesanan yang masuk lewat tombol WhatsApp di delova.id (terbaru dulu): waktu, nama pembeli, nomor HP (disamarkan), item, total, catatan. Alamat tidak ditampilkan. limit maks 100.",
+    inputSchema: { type: "object", properties: { limit: { type: "integer", minimum: 1, default: 20 }, days: { type: "integer", minimum: 1, maximum: 365, description: "Hanya N hari terakhir" } } },
+    annotations: RO,
+    handler: async (a) => {
+      const db = await getDb();
+      const limit = Math.min(100, Math.max(1, Number(a.limit) || 20));
+      const since = a.days ? Math.floor(Date.now() / 1000) - Math.min(365, Math.max(1, Number(a.days))) * 86400 : 0;
+      const r = await db.execute({ sql: "SELECT id, created_at, name, phone, items, total, note FROM leads WHERE COALESCE(created_at,0) >= ? ORDER BY id DESC LIMIT ?", args: [since, limit] });
+      const tot = await db.execute({ sql: "SELECT COUNT(*) AS n, COALESCE(SUM(total),0) AS s FROM leads WHERE COALESCE(created_at,0) >= ?", args: [since] });
+      return {
+        total_orders: Number(tot.rows[0].n),
+        total_value: Number(tot.rows[0].s),
+        items: r.rows.map((x: any) => {
+          let items: unknown = x.items;
+          try { items = JSON.parse(String(x.items)); } catch { /* biarkan teks */ }
+          return { id: Number(x.id), created_at: x.created_at ? new Date(Number(x.created_at) * 1000).toISOString() : null, name: x.name, phone: maskPhone(String(x.phone ?? "")), items, total: Number(x.total ?? 0), note: x.note || null };
+        }),
+      };
+    },
+  },
+];
+
 export const TOOLS: ToolDef[] = [
   {
     name: "blog_list",
@@ -360,4 +454,5 @@ export const TOOLS: ToolDef[] = [
     inputSchema: { type: "object", properties: { section: { type: "string", enum: ["announcements", "hero", "story", "reviews", "trust", "shopee_url", "toko_offline"] }, brand: { type: "string", enum: BRAND_SLUGS }, value: {} }, required: ["section", "value"] },
     handler: webUpdate,
   },
+  ...DATA_TOOLS,
 ];

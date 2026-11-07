@@ -8,7 +8,7 @@ const INSTRUCTIONS = `Server ini mengelola konten situs Delova Store (delova.id)
 - Halaman koleksi (URL /koleksi/<slug>): koleksi_*.
 - Teks beranda, bar pengumuman, strip keunggulan, link Shopee, info toko offline: web_content_get / web_content_update.
 - Sebelum mengubah konten yang sudah ada, baca dulu dengan *_get. Setiap perubahan mengembalikan nilai sebelumnya agar bisa dikembalikan.
-- Produk, harga, dan stok tidak dikelola di sini (itu berasal dari Shopee).`;
+- Data toko (BACA SAJA): shops_list, product_list, product_get, stock_get, product_photos, photos_list, reviews_list, orders_list (pesanan WhatsApp). Harga, harga coret, dan stok berasal dari Shopee (disinkronkan berkala; lihat synced_at) dan tidak bisa diubah di sini. Gunakan stock_get untuk cek stok, product_get untuk detail + varian + foto.`;
 
 type Req = { jsonrpc?: string; id?: string | number | null; method?: string; params?: Record<string, unknown> };
 type Res = { jsonrpc: "2.0"; id: string | number | null; result?: unknown; error?: { code: number; message: string } };
